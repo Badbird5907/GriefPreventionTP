@@ -1,0 +1,6 @@
+messages:
+  must-be-standing-in-claim: '<red>You must be standing in a claim!'
+  no-permission: '<red>You do not have permission to do that!'
+  public:
+    on: '<green>Your claim is now public!'
+    off: '<green>Your claim is no longer public!'

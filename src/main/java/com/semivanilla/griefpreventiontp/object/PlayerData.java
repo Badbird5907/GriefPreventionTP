@@ -1,5 +1,6 @@
 package com.semivanilla.griefpreventiontp.object;
 
+import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -24,6 +25,12 @@ public class PlayerData {
         OfflinePlayer op = Bukkit.getOfflinePlayer(uuid);
         this.uuid = uuid;
         this.name = op.getName();
+    }
+
+    public PlayerData load(JsonObject json) {
+
+
+        return this;
     }
 
 }
