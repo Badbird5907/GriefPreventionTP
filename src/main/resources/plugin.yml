@@ -1,0 +1,6 @@
+name: GriefPreventionTp
+version: '${project.version}'
+main: com.semivanilla.griefpreventiontp.GriefPreventionTp
+api-version: 1.18
+depend:
+  - GriefPrevention
