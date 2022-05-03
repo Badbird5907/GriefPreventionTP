@@ -1,6 +1,6 @@
 package com.semivanilla.griefpreventiontp.data.impl;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTp;
+import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.data.StorageProvider;
 import com.semivanilla.griefpreventiontp.object.PlayerData;
 
@@ -8,8 +8,9 @@ import java.io.File;
 
 public class FlatFileStorageProvider implements StorageProvider {
     private File folder;
+
     @Override
-    public void init(GriefPreventionTp plugin) {
+    public void init(GriefPreventionTP plugin) {
         folder = new File(plugin.getDataFolder(), "data");
         if (!folder.exists()) {
             folder.mkdir();

@@ -3,9 +3,9 @@ package com.semivanilla.griefpreventiontp;
 import lombok.Getter;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class GriefPreventionTp extends JavaPlugin {
+public final class GriefPreventionTP extends JavaPlugin {
     @Getter
-    private static GriefPreventionTp instance;
+    private static GriefPreventionTP instance;
 
     @Override
     public void onEnable() {

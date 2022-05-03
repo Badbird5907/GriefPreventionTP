@@ -1,10 +1,10 @@
 package com.semivanilla.griefpreventiontp.data;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTp;
+import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.object.PlayerData;
 
 public interface StorageProvider {
-    void init(GriefPreventionTp plugin);
+    void init(GriefPreventionTP plugin);
 
     void save(PlayerData data);
 
