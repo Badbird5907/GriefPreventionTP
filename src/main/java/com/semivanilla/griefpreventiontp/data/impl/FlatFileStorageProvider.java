@@ -7,8 +7,6 @@ import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.data.StorageProvider;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
 import com.semivanilla.griefpreventiontp.object.PlayerData;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.badbird5907.blib.utils.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
@@ -120,4 +118,5 @@ public class FlatFileStorageProvider implements StorageProvider {
         GriefPreventionTP.getInstance().setDisabledReason("Failed to load claims");
         return new ArrayList<>();
     }
+
 }

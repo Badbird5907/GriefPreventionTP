@@ -14,7 +14,7 @@ import net.badbird5907.blib.command.Sender;
 import org.bukkit.entity.Player;
 
 public class PublicCommand extends BaseCommand {
-    @Command(name = "public", aliases = {"private"}, playerOnly = true, description = "Toggle the public/private status of the claim you're standing in")
+    @Command(name = "public", aliases = {"private"}, playerOnly = true, description = "Toggle the public/private status of the claim you're standing in", cooldown = 15)
     public CommandResult execute(Sender sender, String[] args) {
         Player player = sender.getPlayer();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
@@ -32,6 +32,7 @@ public class PublicCommand extends BaseCommand {
         if (ci.isPublic()) {
             MessageManager.sendMessage(player, "messages.public.on");
         } else MessageManager.sendMessage(player, "messages.public.off");
+        ci.save();
         return CommandResult.SUCCESS;
     }
 }

@@ -16,10 +16,12 @@ public class ClaimInfo {
     private UUID owner;
     private StoredLocation center;
     private boolean isPublic;
+    private String name;
 
     public ClaimInfo(long claimID, UUID owner) {
         this.claimID = claimID;
         this.owner = owner;
+        this.name = "Unnamed (" + GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size() + 1 + ")";
     }
 
     public Claim getClaim() {

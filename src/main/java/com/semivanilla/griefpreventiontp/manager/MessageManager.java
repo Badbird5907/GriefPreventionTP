@@ -6,7 +6,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class MessageManager {
-    public static void sendMessage(Player player, String key, String... placeholders) {
+    public static void sendMessage(Player player, String key, Object... placeholders) {
         String raw = GriefPreventionTP.getInstance().getConfig().getString(key);
         String msg = StringUtils.replacePlaceholders(raw, placeholders);
         Component component = GriefPreventionTP.getInstance().getMiniMessage().deserialize(msg);

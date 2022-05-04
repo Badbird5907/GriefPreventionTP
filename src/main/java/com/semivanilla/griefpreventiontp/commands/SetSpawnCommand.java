@@ -6,7 +6,7 @@ import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.command.Sender;
 
 public class SetSpawnCommand extends BaseCommand {
-    @Command(name = "setspawn",playerOnly = true)
+    @Command(name = "setspawn", playerOnly = true)
     public CommandResult execute(Sender sender, String[] args) {
         return null;
     }

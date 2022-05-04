@@ -1,4 +1,5 @@
 messages:
+  claim-created: '<green>The spawn block of your claim has been set to </green><white>%1 %2 %3</white><green>. You can change it by typing </green><gradient:dark_purple:aqua:dark_purple>/claim set spawn</gradient><green>.</green>'
   must-be-standing-in-claim: '<red>You must be standing in a claim!'
   no-permission: '<red>You do not have permission to do that!'
   public:
