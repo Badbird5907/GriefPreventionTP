@@ -2,6 +2,16 @@ messages:
   claim-created: '<green>The spawn block of your claim has been set to </green><white>%1 %2 %3</white><green>. You can change it by typing </green><gradient:dark_purple:aqua:dark_purple>/claim set spawn</gradient><green>.</green>'
   must-be-standing-in-claim: '<red>You must be standing in a claim!'
   no-permission: '<red>You do not have permission to do that!'
+  teleporting: '<green>Teleporting in 5 seconds... Do not move or take damage.'
+  moved: '<red>You moved! Cancelled teleport!'
+  damaged: '<red>You took damage! Cancelled teleport!'
   public:
     on: '<green>Your claim is now public!'
     off: '<green>Your claim is no longer public!'
+teleport:
+  cooldown:
+    enabled: true
+    seconds: 10
+  warmup:
+    enabled: true
+    seconds: 5

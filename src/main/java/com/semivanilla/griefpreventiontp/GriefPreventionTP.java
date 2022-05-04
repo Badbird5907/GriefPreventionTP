@@ -7,6 +7,7 @@ import com.semivanilla.griefpreventiontp.data.StorageProvider;
 import com.semivanilla.griefpreventiontp.data.impl.FlatFileStorageProvider;
 import com.semivanilla.griefpreventiontp.listener.ClaimListener;
 import com.semivanilla.griefpreventiontp.manager.TPClaimManager;
+import com.semivanilla.griefpreventiontp.manager.TeleportManager;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
 import lombok.Getter;
 import lombok.Setter;
@@ -47,6 +48,9 @@ public final class GriefPreventionTP extends JavaPlugin {
     private TPClaimManager claimManager;
 
     @Getter
+    private TeleportManager teleportManager;
+
+    @Getter
     private MiniMessage miniMessage = MiniMessage.miniMessage();
 
     @Override
@@ -67,6 +71,8 @@ public final class GriefPreventionTP extends JavaPlugin {
 
         this.claimManager = new TPClaimManager();
         this.claimManager.init();
+
+        this.teleportManager = new TeleportManager(this);
 
         Listener[] listeners = {
                 new ClaimListener()

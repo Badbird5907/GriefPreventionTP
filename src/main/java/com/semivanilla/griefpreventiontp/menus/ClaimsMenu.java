@@ -89,7 +89,9 @@ public class ClaimsMenu extends PaginatedMenu {
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Click to teleport to this claim!").toSkullBuilder().withOwner(claimInfo.getOwner()).buildSkull();
+                    .lore(CC.GRAY + "Click to teleport to this claim!").toSkullBuilder()
+                    .withOwner(claimInfo.getOwner()) //TODO fix this
+                    .buildSkull();
         }
 
         @Override
