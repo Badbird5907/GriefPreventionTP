@@ -14,7 +14,7 @@ import java.util.UUID;
 public class ClaimInfo {
     private final long claimID;
     private UUID owner;
-    private StoredLocation center;
+    private StoredLocation center; //TODO rename this to spawnLocation
     private boolean isPublic;
     private String name;
 

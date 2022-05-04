@@ -101,7 +101,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            //5 second countdown to teleport the player
+            GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getCenter().getLocation());
         }
     }
 
