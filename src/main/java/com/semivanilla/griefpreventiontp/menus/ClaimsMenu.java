@@ -34,7 +34,7 @@ public class ClaimsMenu extends PaginatedMenu {
     @Override
     public List<Button> getPaginatedButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
-        Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllClaims();
+        Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
             buttons.add(new ClaimButton(claim));
         }
@@ -57,7 +57,8 @@ public class ClaimsMenu extends PaginatedMenu {
 
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Private Claims: " + (privateClaims ? "Yes" : CC.RED + "No")).build();
+                return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Private Claims: " + (privateClaims ? "Yes" : CC.RED + "No"))
+                        .lore(CC.GRAY + "Click to toggle.").build();
             }
 
             @Override
@@ -101,7 +102,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getCenter().getLocation());
+            GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getSpawn().getLocation());
         }
     }
 

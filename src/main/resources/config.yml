@@ -5,13 +5,13 @@ messages:
   teleporting: '<green>Teleporting in 5 seconds... Do not move or take damage.'
   moved: '<red>You moved! Cancelled teleport!'
   damaged: '<red>You took damage! Cancelled teleport!'
-  public:
-    on: '<green>Your claim is now public!'
-    off: '<green>Your claim is no longer public!'
+  public-on: '<green>Your claim is now public!'
+  public-off: '<green>Your claim is no longer public!'
+  updated-spawn: '<green>Updated the spawn block for your claim to <white>%1 %2 %3</white>.</green>'
+  name-too-long: '<red>The name you entered is too long!</red>'
+  updated-name: '<green>Updated the name of your claim to <white>%1</white>.</green>'
 teleport:
-  cooldown:
-    enabled: true
-    seconds: 10
   warmup:
     enabled: true
     seconds: 5
+max-claim-name-length: 32

@@ -29,9 +29,8 @@ public class PublicCommand extends BaseCommand {
         }
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
         ci.setPublic(!ci.isPublic());
-        if (ci.isPublic()) {
-            MessageManager.sendMessage(player, "messages.public.on");
-        } else MessageManager.sendMessage(player, "messages.public.off");
+        if (ci.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
+        else MessageManager.sendMessage(player, "messages.public-off");
         ci.save();
         return CommandResult.SUCCESS;
     }

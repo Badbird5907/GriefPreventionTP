@@ -5,6 +5,7 @@ import com.semivanilla.griefpreventiontp.manager.MessageManager;
 import com.semivanilla.griefpreventiontp.manager.TeleportManager;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -12,10 +13,11 @@ import java.util.UUID;
 
 public class TeleportRunnable extends BukkitRunnable {
     private final UUID uuid;
-    private final StoredLocation to,from;
+    private final Location to, from;
 
     private int countdown = GriefPreventionTP.getInstance().getConfig().getInt("teleport.warmup.seconds"); //TODO implement cooldowns
-    public TeleportRunnable(UUID uuid, StoredLocation to, StoredLocation from) {
+
+    public TeleportRunnable(UUID uuid, Location to, Location from) {
         this.uuid = uuid;
         this.to = to;
         this.from = from;
@@ -31,11 +33,11 @@ public class TeleportRunnable extends BukkitRunnable {
         }
         if (hasMoved()) {
             cancel();
-            MessageManager.sendMessage(player,"messages.moved");
+            MessageManager.sendMessage(player, "messages.moved");
             return;
         }
         if (countdown <= 0) {
-            player.teleport(to.getLocation());
+            player.teleport(to);
             cancel();
             return;
         }
@@ -51,7 +53,7 @@ public class TeleportRunnable extends BukkitRunnable {
     public boolean hasMoved() {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return false;
-        return player.getLocation().distance(from.getLocation()) > 0.5;
+        return player.getLocation().distance(from) > 0.5;
         /*
 
         int x = (int) player.getLocation().getX();

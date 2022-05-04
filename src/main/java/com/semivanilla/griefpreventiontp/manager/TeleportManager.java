@@ -27,10 +27,10 @@ public class TeleportManager implements Listener {
             player.teleport(loc);
             return;
         }
-        TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), new StoredLocation(loc), new StoredLocation(player.getLocation()));
+        TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation());
         runnableMap.put(player.getUniqueId(), runnable);
         MessageManager.sendMessage(player, "messages.teleporting");
-        runnable.runTaskTimerAsynchronously(GriefPreventionTP.getInstance(), 0, 20);
+        runnable.runTaskTimer(GriefPreventionTP.getInstance(), 0, 20);
     }
 
     public boolean cancelTeleport(UUID uuid) {
@@ -46,7 +46,7 @@ public class TeleportManager implements Listener {
     public void onDamage(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         Player player = (Player) event.getEntity();
-        if (cancelTeleport(player.getUniqueId())){
+        if (cancelTeleport(player.getUniqueId())) {
             MessageManager.sendMessage(player, "messages.damaged");
         }
     }

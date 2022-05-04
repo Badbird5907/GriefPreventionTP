@@ -11,12 +11,12 @@ import net.badbird5907.blib.command.BaseCommand;
 import net.badbird5907.blib.command.Command;
 import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.command.Sender;
-import net.badbird5907.blib.util.StoredLocation;
-import org.bukkit.Location;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
-public class SetSpawnCommand extends BaseCommand {
-    @Command(name = "setspawn", playerOnly = true,cooldown = 30)
+public class RenameCommand extends BaseCommand {
+    @Command(name = "rename", playerOnly = true, cooldown = 30)
     public CommandResult execute(Sender sender, String[] args) {
         Player player = sender.getPlayer();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
@@ -29,19 +29,14 @@ public class SetSpawnCommand extends BaseCommand {
             MessageManager.sendMessage(player, "messages.no-permission");
             return CommandResult.SUCCESS;
         }
-        Location loc = player.getLocation();
-        //check if the location is in the claim
-        if(!claim.contains(loc,true,
-                false //Don't know what excludeSubdivisions is, but i'll leave it false
-        )){
-            MessageManager.sendMessage(player,"messages.must-be-standing-in-claim");
+        String name = StringUtils.join(args, " ");
+        if (name.length() > GriefPreventionTP.getInstance().getConfig().getInt("max-claim-name-length")) {
+            MessageManager.sendMessage(player, "messages.name-too-long");
             return CommandResult.SUCCESS;
         }
-
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
-        ci.setSpawn(new StoredLocation(loc));
-        ci.save();
-        MessageManager.sendMessage(player, "messages.updated-spawn", ci.getSpawn().getX(), ci.getSpawn().getY(), ci.getSpawn().getZ());
+        ci.setName(name);
+        MessageManager.sendMessage(player, "messages.updated-name", name);
         return CommandResult.SUCCESS;
     }
 }

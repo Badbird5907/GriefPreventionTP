@@ -3,9 +3,7 @@ package com.semivanilla.griefpreventiontp.listener;
 import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.manager.MessageManager;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
-import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.events.*;
-import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -22,7 +20,7 @@ public class ClaimListener implements Listener {
         //set Y value to the highest block
         l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
         StoredLocation storedLocation = new StoredLocation(l);
-        claimInfo.setCenter(storedLocation);
+        claimInfo.setSpawn(storedLocation);
         claimInfo.save();
         Player player = Bukkit.getPlayer(event.getClaim().getOwnerID());
         if (player != null) {

@@ -2,6 +2,7 @@ package com.semivanilla.griefpreventiontp.manager;
 
 import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
+import lombok.Getter;
 import me.ryanhamshire.GriefPrevention.Claim;
 
 import java.util.List;
@@ -47,6 +48,10 @@ public class TPClaimManager {
         return allClaims.stream().filter(claim -> claim.getOwner().equals(owner)).collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
     }
 
+    public List<ClaimInfo> getAllPublicClaims() {
+        return publicClaims.stream().collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
+    }
+
     public ClaimInfo fromClaim(Claim claim) {
         ClaimInfo claimInfo = allClaims.stream().filter(c -> c.getClaim().equals(claim)).findFirst().orElse(null);
         if (claimInfo == null) {
@@ -58,5 +63,13 @@ public class TPClaimManager {
 
     public Set<ClaimInfo> getAllClaims() {
         return allClaims;
+    }
+
+    public void updatePublic(ClaimInfo claimInfo){
+        if (claimInfo.isPublic()) {
+            publicClaims.add(claimInfo);
+        } else {
+            publicClaims.remove(claimInfo);
+        }
     }
 }

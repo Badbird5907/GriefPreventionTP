@@ -14,14 +14,14 @@ import java.util.UUID;
 public class ClaimInfo {
     private final long claimID;
     private UUID owner;
-    private StoredLocation center; //TODO rename this to spawnLocation
+    private StoredLocation spawn; //TODO rename this to spawnLocation
     private boolean isPublic;
     private String name;
 
     public ClaimInfo(long claimID, UUID owner) {
         this.claimID = claimID;
         this.owner = owner;
-        this.name = "Unnamed (" + GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size() + 1 + ")";
+        this.name = "Unnamed (" + (GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size() + 1) + ")";
     }
 
     public Claim getClaim() {
@@ -34,5 +34,10 @@ public class ClaimInfo {
     public ClaimInfo save() {
         GriefPreventionTP.getInstance().getClaimManager().save();
         return this;
+    }
+
+    public void setPublic(boolean aPublic) {
+        isPublic = aPublic;
+        GriefPreventionTP.getInstance().getClaimManager().updatePublic(this);
     }
 }

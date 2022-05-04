@@ -8,7 +8,8 @@ import org.bukkit.entity.Player;
 public class MessageManager {
     public static void sendMessage(Player player, String key, Object... placeholders) {
         String raw = GriefPreventionTP.getInstance().getConfig().getString(key);
-        String msg = StringUtils.replacePlaceholders(raw, placeholders);
+        String msg = (placeholders == null || placeholders.length == 0) ? raw : StringUtils.replacePlaceholders(raw, placeholders);
+        assert msg != null;
         Component component = GriefPreventionTP.getInstance().getMiniMessage().deserialize(msg);
         player.sendMessage(component);
     }
