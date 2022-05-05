@@ -17,6 +17,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -113,6 +114,10 @@ public final class GriefPreventionTP extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (claimManager != null) {
+            claimManager.stop();
+        }
+
         if (this.storageProvider != null) {
             this.storageProvider.disable(this);
         }

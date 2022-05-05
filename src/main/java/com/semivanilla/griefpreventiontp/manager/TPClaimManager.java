@@ -4,6 +4,7 @@ import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
 import lombok.Getter;
 import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.ClaimPermission;
 
 import java.util.List;
 import java.util.Set;
@@ -19,6 +20,10 @@ public class TPClaimManager {
 
     public void init() {
         load();
+    }
+
+    public void stop() {
+        save();
     }
 
     public void load() {
@@ -45,7 +50,10 @@ public class TPClaimManager {
     }
 
     public List<ClaimInfo> getClaims(UUID owner) {
-        return allClaims.stream().filter(claim -> claim.getOwner().equals(owner)).collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
+        return allClaims.stream().filter(claim -> {
+            Claim c = claim.getClaim();
+            return claim.getOwner().equals(owner) || c.hasExplicitPermission(owner, ClaimPermission.Access) || c.hasExplicitPermission(owner, ClaimPermission.Build);
+        }).collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
     }
 
     public List<ClaimInfo> getAllPublicClaims() {
@@ -57,6 +65,7 @@ public class TPClaimManager {
         if (claimInfo == null) {
             claimInfo = new ClaimInfo(claim.getID(), claim.getOwnerID());
             allClaims.add(claimInfo);
+            save();
         }
         return claimInfo;
     }

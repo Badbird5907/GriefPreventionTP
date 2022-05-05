@@ -6,6 +6,8 @@ import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.util.StoredLocation;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
@@ -16,12 +18,13 @@ public class ClaimInfo {
     private UUID owner;
     private StoredLocation spawn; //TODO rename this to spawnLocation
     private boolean isPublic;
-    private String name;
+    private String name,ownerName;
 
     public ClaimInfo(long claimID, UUID owner) {
         this.claimID = claimID;
         this.owner = owner;
         this.name = "Unnamed (" + (GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size() + 1) + ")";
+        this.ownerName = Bukkit.getOfflinePlayer(owner).getName();
     }
 
     public Claim getClaim() {
@@ -39,5 +42,13 @@ public class ClaimInfo {
     public void setPublic(boolean aPublic) {
         isPublic = aPublic;
         GriefPreventionTP.getInstance().getClaimManager().updatePublic(this);
+    }
+
+    public String getOwnerName() {
+        if (ownerName == null) {
+            OfflinePlayer op = Bukkit.getOfflinePlayer(owner);
+            ownerName = op.getName();
+        }
+        return ownerName;
     }
 }

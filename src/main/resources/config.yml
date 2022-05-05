@@ -10,6 +10,7 @@ messages:
   updated-spawn: '<green>Spawn block set to %1 %2 %3.'
   name-too-long: '<red>The name you entered is too long!'
   updated-name: '<green>Updated the name of your claim to %1.'
+  no-spawn-set: '<red>This claim does not have a spawn block set yet! Use </green><gradient:dark_purple:aqua:dark_purple>/claim set spawn</gradient><red> to set one.</red>'
 teleport:
   warmup:
     enabled: true

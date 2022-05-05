@@ -1,6 +1,7 @@
 package com.semivanilla.griefpreventiontp.menus;
 
 import com.semivanilla.griefpreventiontp.GriefPreventionTP;
+import com.semivanilla.griefpreventiontp.manager.MessageManager;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
@@ -22,10 +23,21 @@ import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 public class ClaimsMenu extends PaginatedMenu {
     private final UUID uuid;
+    private final String searchTerm;
     private boolean privateClaims = true;
+
+    public ClaimsMenu(UUID uuid, String searchTerm) {
+        this.uuid = uuid;
+        this.searchTerm = searchTerm;
+    }
+    public ClaimsMenu(UUID uuid) {
+        this.uuid = uuid;
+        this.searchTerm = null;
+    }
+
+
     @Override
     public String getPagesTitle(Player player) {
         return "Claims";
@@ -36,6 +48,8 @@ public class ClaimsMenu extends PaginatedMenu {
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
+            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()))
+                continue;
             buttons.add(new ClaimButton(claim));
         }
         return buttons;
@@ -43,7 +57,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public List<Button> getEveryMenuSlots(Player player) {
-        return null;
+        return super.getEveryMenuSlots(player);
     }
 
     @Override
@@ -70,7 +84,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public Button getCloseButton() {
-        return new CloseButton(){
+        return new CloseButton() {
             @Override
             public ItemStack getItem(Player player) {
                 return new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name(CC.RED + "Close").build();
@@ -84,13 +98,13 @@ public class ClaimsMenu extends PaginatedMenu {
     }
 
     @RequiredArgsConstructor
-    private static class ClaimButton extends Button{
+    private static class ClaimButton extends Button {
         private final ClaimInfo claimInfo;
 
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Click to teleport to this claim!").toSkullBuilder()
+                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.").toSkullBuilder()
                     .withOwner(claimInfo.getOwner()) //TODO fix this
                     .buildSkull();
         }
@@ -102,6 +116,10 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (claimInfo.getSpawn() == null) {
+                MessageManager.sendMessage(player, "messages.no-spawn-set");
+                return;
+            }
             GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getSpawn().getLocation());
         }
     }
@@ -118,7 +136,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public Button getPreviousPageButton() {
-        return new PreviousPageButton(this){
+        return new PreviousPageButton(this) {
             @Override
             public int getSlot() {
                 return 39;
