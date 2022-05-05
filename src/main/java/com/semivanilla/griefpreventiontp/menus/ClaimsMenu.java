@@ -57,7 +57,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Private Claims: " + (privateClaims ? "Yes" : CC.RED + "No"))
+                return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Public Claims: " + (!privateClaims ? "Yes" : CC.RED + "No"))
                         .lore(CC.GRAY + "Click to toggle.").build();
             }
 
