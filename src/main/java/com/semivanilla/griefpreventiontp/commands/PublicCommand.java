@@ -23,7 +23,7 @@ public class PublicCommand extends BaseCommand {
             MessageManager.sendMessage(player, "messages.must-be-standing-in-claim");
             return CommandResult.SUCCESS;
         }
-        if (claim.getOwnerID() != player.getUniqueId()) {
+        if (claim.getOwnerID() != player.getUniqueId() && !claim.hasExplicitPermission(player, ClaimPermission.Manage)) {
             MessageManager.sendMessage(player, "messages.no-permission");
             return CommandResult.SUCCESS;
         }

@@ -4,6 +4,7 @@ import com.semivanilla.griefpreventiontp.GriefPreventionTP;
 import com.semivanilla.griefpreventiontp.manager.MessageManager;
 import com.semivanilla.griefpreventiontp.object.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.command.BaseCommand;
@@ -12,6 +13,7 @@ import net.badbird5907.blib.command.CommandResult;
 import net.badbird5907.blib.command.Sender;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.util.StringUtil;
 
 public class RenameCommand extends BaseCommand {
     @Command(name = "rename", playerOnly = true, cooldown = 30)
@@ -23,7 +25,7 @@ public class RenameCommand extends BaseCommand {
             MessageManager.sendMessage(player, "messages.must-be-standing-in-claim");
             return CommandResult.SUCCESS;
         }
-        if (claim.getOwnerID() != player.getUniqueId()) {
+        if (claim.getOwnerID() != player.getUniqueId() && !claim.hasExplicitPermission(player, ClaimPermission.Manage)) {
             MessageManager.sendMessage(player, "messages.no-permission");
             return CommandResult.SUCCESS;
         }
