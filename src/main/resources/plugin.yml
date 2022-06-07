@@ -1,5 +1,5 @@
 name: GriefPreventionTP
-version: '${project.version}'
+version: '${version}'
 main: dev.badbird.griefpreventiontp.GriefPreventionTP
 author: 'Badbird5907'
 website: 'https://badbird.dev'
