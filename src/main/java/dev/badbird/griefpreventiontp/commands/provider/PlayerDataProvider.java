@@ -3,6 +3,7 @@ package dev.badbird.griefpreventiontp.commands.provider;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
+import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.Sender;
 import net.octopvp.commander.command.CommandContext;
@@ -11,7 +12,9 @@ import net.octopvp.commander.command.ParameterInfo;
 import net.octopvp.commander.exception.CommandException;
 import net.octopvp.commander.provider.Provider;
 import net.octopvp.commander.sender.CoreCommandSender;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginDescriptionFile;
 
 import java.util.Deque;
 import java.util.List;
@@ -27,8 +30,8 @@ public class PlayerDataProvider implements Provider<PlayerData> {
             if (GriefPreventionTP.getInstance().getDescription().getAuthors().size() < 1) bruh = true;
             else if (!GriefPreventionTP.getInstance().getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
             if (bruh) {
-                GriefPreventionTP.getInstance().getLogger().severe("Please do not modify the plugin.yml file! To receive help, join the support server @ https://discord.badbird.dev/");
-                GriefPreventionTP.getInstance().getServer().getPluginManager().disablePlugin(GriefPreventionTP.getInstance());
+                Logger.error("Please do not modify the plugin.yml file! To receive help, join the support server @ https://discord.badbird.dev/");
+                Bukkit.getServer().getPluginManager().disablePlugin(GriefPreventionTP.getInstance());
                 return;
             }
         });

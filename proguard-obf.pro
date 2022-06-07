@@ -28,9 +28,9 @@
 }
 -repackageclasses 'dev.badbird.griefpreventiontp'
 
--obfuscationdictionary 'names.txt'
--classobfuscationdictionary 'names.txt'
--packageobfuscationdictionary 'names.txt'
+#-obfuscationdictionary 'names.txt'
+#-classobfuscationdictionary 'names.txt'
+#-packageobfuscationdictionary 'names.txt'
 
 -dontshrink
 -dontoptimize

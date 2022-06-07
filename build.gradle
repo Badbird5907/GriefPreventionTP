@@ -41,7 +41,7 @@ configurations {
     impl
 }
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'com.github.TechFortress:GriefPrevention:16.18'
 
     impl 'net.badbird5907:bLib-Bukkit:2.1.4-REL'
@@ -112,6 +112,8 @@ task obfuscate(type: ProGuardTask) {
 
     //libraryjars "${System.getProperty('java.home')}/lib/rt.jar" //java 8
     libraryjars 'libs'
+
+    println('Obfuscated.')
 }
 jar.dependsOn(project.tasks.shadowJar)
 jar.finalizedBy(project.tasks.obfuscate)
@@ -134,7 +136,7 @@ obfuscate.dependsOn(project.tasks.genDict)
 shadowJar {
     relocate 'net.badbid5907.bLib', 'dev.badbird.griefpreventiontp.dependencies'
     relocate 'net.octopvp', 'dev.badbird.griefpreventiontp.dependencies'
-    relocate 'net.kyori.adventure.text.minimessage', 'dev.badbird.griefpreventiontp.dependencies'
+    relocate 'net.kyori', 'dev.badbird.griefpreventiontp.dependencies'
     archiveName(jarName + '.jar')
 }
 task copyPlugin(type: Copy) {

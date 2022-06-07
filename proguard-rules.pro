@@ -12,6 +12,15 @@
 -keep class org.** { *; } # Catch-all for org.bukkit, org.spigotmc, org.jetbrains etc.
 -dontwarn org.**
 
+-keep class net.minecraft.** { *; }
+-dontwarn net.minecraft.**
+
+-keep class com.google.** { *; }
+-dontwarn com.google.**
+
+-keep class dev.badbird.griefpreventiontp.dependencies.** { *; }
+-dontwarn dev.badbird.griefpreventiontp.dependencies.**
+
 -keep class net.kyori.** { *; }
 -dontwarn net.kyori.**
 
@@ -24,14 +33,17 @@
 -keep class javax.** { *; }
 -dontwarn javax.**
 
+-keep class me.ryanhamshire.** { *; }
+-dontwarn me.ryanhamshire.**
+
 -keep class javassist.** { *; }
 -dontwarn javassist.**
 
--keep class net.minecraft.** { *; }
--dontwarn net.minecraft.**
+-keep class sun.** { *; }
+-dontwarn sun.**
 
--keep class com.google.** { *; }
--dontwarn com.google.**
+-keep class jdk.** { *; }
+-dontwarn jdk.**
 
--keep class dev.badbird.griefpreventiontp.dependencies.** { *; }
--dontwarn dev.badbird.griefpreventiontp.dependencies.**
+#-dontwarn dev.badbird.griefpreventiontp.GriefPreventionTP
+#-dontwarn dev.badbird.griefpreventiontp.manager.TeleportManager
