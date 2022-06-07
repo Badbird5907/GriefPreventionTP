@@ -1,4 +1,4 @@
-package dev.badbird.griefpreventiontp.object;
+package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import lombok.Getter;

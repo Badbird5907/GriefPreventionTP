@@ -2,24 +2,20 @@ package dev.badbird.griefpreventiontp.commands.impl;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
-import net.octopvp.commander.annotation.Command;
-import net.octopvp.commander.annotation.Cooldown;
-import net.octopvp.commander.annotation.JoinStrings;
-import net.octopvp.commander.annotation.Sender;
+import net.octopvp.commander.annotation.*;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.entity.Player;
 
 public class RenameCommand {
     @Command(name = "rename")
     @PlayerOnly
     @Cooldown(15)
-    public void execute(@Sender Player sender, @Sender PlayerData playerData, @JoinStrings String name) {
+    public void execute(@Sender Player sender, @Sender PlayerData playerData, @JoinStrings @Required @Name("name") String name) {
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(sender.getLocation(), true, playerData.lastClaim);
         if (claim == null) {
             MessageManager.sendMessage(sender, "messages.must-be-standing-in-claim");

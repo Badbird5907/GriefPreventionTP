@@ -3,7 +3,7 @@ package dev.badbird.griefpreventiontp.data.impl;
 import com.google.gson.reflect.TypeToken;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.data.StorageProvider;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import net.badbird5907.blib.util.Logger;
 
 import java.io.File;

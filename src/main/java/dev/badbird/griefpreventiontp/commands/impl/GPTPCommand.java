@@ -4,6 +4,7 @@ import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.Command;
+import net.octopvp.commander.annotation.Name;
 import net.octopvp.commander.annotation.Optional;
 import net.octopvp.commander.annotation.Sender;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class GPTPCommand {
     @Command(name = "griefpreventiontp", aliases = "gptp", description = "GriefPreventionTP Command")
-    public void execute(@Sender CommandSender sender, @Optional String[] args) {
+    public void execute(@Sender CommandSender sender, @Optional @Name("args") String[] args) {
         sender.sendMessage(CC.SEPARATOR);
         sender.sendMessage(CC.AQUA + "GriefPreventionTP" + CC.WHITE + " - " + CC.GRAY + "Grief Prevention Teleport v" + GriefPreventionTP.getInstance().getDescription().getVersion());
         sender.sendMessage(CC.AQUA + "By: " + CC.GRAY + "Badbird5907 - https://badbird.dev/ - Support Server: https://discord.badbird.dev/");
@@ -36,6 +37,7 @@ public class GPTPCommand {
                     player.sendMessage("Nonce: %%__NONCE__%%");
                     player.sendMessage("Claims: " + GriefPreventionTP.getInstance().getStorageProvider().getClaims().size());
                     player.sendMessage("");
+                    player.sendMessage("OBF: " + (!this.getClass().getSimpleName().equals("GPTPCommand")));
                     player.sendMessage("Server Version: " + Bukkit.getServer().getVersion());
                     player.sendMessage("Server Impl: " + Bukkit.getServer().getClass().getPackage().getImplementationVersion());
                     player.sendMessage("Server MC Version: " + Bukkit.getServer().getMinecraftVersion());

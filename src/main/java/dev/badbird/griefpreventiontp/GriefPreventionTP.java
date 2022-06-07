@@ -14,15 +14,17 @@ import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
 import net.badbird5907.blib.bstats.Metrics;
-import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
+import org.bukkit.Server;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 public final class GriefPreventionTP extends JavaPlugin {
     @Getter
@@ -70,7 +72,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             return;
         }
 
-        getLogger().info("Loading GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
+        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
 
         instance = this;
     }
@@ -163,5 +165,10 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (this.storageProvider != null) {
             this.storageProvider.disable(this);
         }
+    }
+
+    @Override
+    public @NotNull Logger getLogger() {
+        return super.getLogger();
     }
 }

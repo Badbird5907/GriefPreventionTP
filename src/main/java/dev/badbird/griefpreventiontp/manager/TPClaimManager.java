@@ -1,7 +1,7 @@
 package dev.badbird.griefpreventiontp.manager;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;

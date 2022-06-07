@@ -2,19 +2,25 @@
 #                           Obfuscation rules
 # ----------------------------------------------------------------------------
 
--overloadaggressively
+#-overloadaggressively
 -useuniqueclassmembernames
--dontpreverify
+-keepattributes Signature #Gson
 
 # Keep the public API
 -keep class dev.badbird.griefpreventiontp.api.** { *; }
--keepclassmembers class my.package.api.**
+-keepclassmembers class dev.badbird.griefpreventiontp.api.**
 
 # Keep your main class
--keep public class dev.badbird.griefpreventiontp.GriefPreventionTP {
+-keep public class dev.badbird.griefpreventiontp.GriefPreventionTP extends org.bukkit.plugin.java.JavaPlugin {
 	public void onLoad();
     public void onEnable();
 	public void onDisable();
+
+	public java.io.File getDataFolder();
+
+	public java.util.logging.Logger getLogger();
+	public org.bukkit.plugin.PluginDescriptionFile getDescription();
+	public org.bukkit.Server getServer();
 }
 
 -keepclassmembers class * extends java.lang.Enum {

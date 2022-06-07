@@ -17,9 +17,10 @@
 
 -keep class com.google.** { *; }
 -dontwarn com.google.**
+-keepclassmembers class com.google.**
 
--keep class dev.badbird.griefpreventiontp.dependencies.** { *; }
--dontwarn dev.badbird.griefpreventiontp.dependencies.**
+#-keep class dev.badbird.griefpreventiontp.dependencies.** { *; }
+#-dontwarn dev.badbird.griefpreventiontp.dependencies.**
 
 -keep class net.kyori.** { *; }
 -dontwarn net.kyori.**
@@ -47,3 +48,11 @@
 
 #-dontwarn dev.badbird.griefpreventiontp.GriefPreventionTP
 #-dontwarn dev.badbird.griefpreventiontp.manager.TeleportManager
+-keep class org.bukkit.plugin.java.JavaPlugin { *; }
+-dontwarn org.bukkit.plugin.java.JavaPlugin
+
+-keep class org.bukkit.plugin.PluginDescriptionFile { *; }
+-dontwarn org.bukkit.plugin.PluginDescriptionFile
+
+-dontwarn java.util.logging.Logger
+

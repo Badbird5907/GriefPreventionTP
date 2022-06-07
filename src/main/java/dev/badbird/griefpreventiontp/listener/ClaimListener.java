@@ -2,7 +2,7 @@ package dev.badbird.griefpreventiontp.listener;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.events.*;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.StoredLocation;

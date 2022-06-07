@@ -112,8 +112,6 @@ task obfuscate(type: ProGuardTask) {
 
     //libraryjars "${System.getProperty('java.home')}/lib/rt.jar" //java 8
     libraryjars 'libs'
-
-    println('Obfuscated.')
 }
 jar.dependsOn(project.tasks.shadowJar)
 jar.finalizedBy(project.tasks.obfuscate)
@@ -134,13 +132,17 @@ task genDict() {
 }
 obfuscate.dependsOn(project.tasks.genDict)
 shadowJar {
-    relocate 'net.badbid5907.bLib', 'dev.badbird.griefpreventiontp.dependencies'
+    relocate 'net.badbid5907.blib', 'dev.badbird.griefpreventiontp.dependencies'
     relocate 'net.octopvp', 'dev.badbird.griefpreventiontp.dependencies'
-    relocate 'net.kyori', 'dev.badbird.griefpreventiontp.dependencies'
+    //relocate 'net.kyori', 'dev.badbird.griefpreventiontp.dependencies'
+    //relocate 'org', 'dev.badbird.griefpreventiontp.dependencies'
+    //relocate 'javax', 'dev.badbird.griefpreventiontp.dependencies.javax'
+    //relocate 'javaassist', 'dev.badbird.griefpreventiontp.dependencies.javaassist'
+    //relocate 'com.google', 'dev.badbird.griefpreventiontp.dependencies'
     archiveName(jarName + '.jar')
 }
 task copyPlugin(type: Copy) {
-    from 'build/libs/' + jarName + '.jar'
+    from 'build/libs/' + jarName + '-obf.jar'
     into 'run/plugins'
 }
 copyPlugin.dependsOn(project.tasks.shadowJar)
