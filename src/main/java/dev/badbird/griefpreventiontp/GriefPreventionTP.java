@@ -1,22 +1,22 @@
-package com.semivanilla.griefpreventiontp;
+package dev.badbird.griefpreventiontp;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.semivanilla.griefpreventiontp.data.StorageProvider;
-import com.semivanilla.griefpreventiontp.data.impl.FlatFileStorageProvider;
-import com.semivanilla.griefpreventiontp.listener.ClaimListener;
-import com.semivanilla.griefpreventiontp.manager.TPClaimManager;
-import com.semivanilla.griefpreventiontp.manager.TeleportManager;
-import com.semivanilla.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.commands.impl.*;
+import dev.badbird.griefpreventiontp.commands.provider.PlayerDataProvider;
+import dev.badbird.griefpreventiontp.data.StorageProvider;
+import dev.badbird.griefpreventiontp.data.impl.FlatFileStorageProvider;
+import dev.badbird.griefpreventiontp.listener.ClaimListener;
+import dev.badbird.griefpreventiontp.manager.TPClaimManager;
+import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import lombok.Getter;
 import lombok.Setter;
+import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
-import net.badbird5907.blib.util.StoredLocation;
-import net.badbird5907.blib.util.Tasks;
+import net.badbird5907.blib.bstats.Metrics;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.Particle;
+import net.octopvp.commander.Commander;
+import net.octopvp.commander.bukkit.BukkitCommander;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -47,7 +47,32 @@ public final class GriefPreventionTP extends JavaPlugin {
     private TeleportManager teleportManager;
 
     @Getter
-    private MiniMessage miniMessage = MiniMessage.miniMessage();
+    private final MiniMessage miniMessage = MiniMessage.miniMessage();
+
+    @Getter
+    private final ConversationFactory conversationFactory = new ConversationFactory(this);
+
+    @Getter
+    private Commander commander;
+
+    @Getter
+    private static final String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
+
+    @Override
+    public void onLoad() {
+        boolean bruh = !getDescription().getName().equals("GriefPreventionTP") || !getDescription().getWebsite().equals("https://badbird.dev");
+        if (getDescription().getAuthors().size() < 1) bruh = true;
+        else if (!getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
+        if (bruh) {
+            getLogger().severe("Please do not modify the plugin.yml file! To receive help, join the support server @ https://discord.badbird.dev/");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
+        getLogger().info("Loading GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
+
+        instance = this;
+    }
 
     @Override
     public void onEnable() {
@@ -60,7 +85,23 @@ public final class GriefPreventionTP extends JavaPlugin {
             saveDefaultConfig();
         }
 
-        bLib.getCommandFramework().registerCommandsInPackage("com.semivanilla.griefpreventiontp.commands");
+        Metrics metrics;
+                //= new Metrics(this, -1);
+
+        //bLib.getCommandFramework().registerCommandsInPackage("com.semivanilla.griefpreventiontp.commands");
+        commander = BukkitCommander.getCommander(this)
+                .registerProvider(PlayerData.class, new PlayerDataProvider())
+                .registerDependency(GriefPreventionTP.class, this)
+                .registerDependency(TPClaimManager.class, claimManager)
+                .registerDependency(TeleportManager.class, teleportManager)
+                .registerDependency(StorageProvider.class, storageProvider)
+                .registerDependency(MiniMessage.class, miniMessage)
+                .registerDependency(ConversationFactory.class, conversationFactory)
+                .register(new ClaimsCommand(),
+                        new GPTPCommand(),
+                        new PublicCommand(),
+                        new RenameCommand(),
+                        new SetSpawnCommand());
 
         this.storageProvider = new FlatFileStorageProvider();
         this.storageProvider.init(this);

@@ -1,22 +1,22 @@
-package com.semivanilla.griefpreventiontp.manager;
+package dev.badbird.griefpreventiontp.manager;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
-import com.semivanilla.griefpreventiontp.object.ClaimInfo;
-import lombok.Getter;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.object.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import org.bukkit.entity.Player;
 
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class TPClaimManager {
     private ConcurrentHashMap<UUID, CopyOnWriteArrayList<ClaimInfo>> claims = new ConcurrentHashMap<>();
-    private Set<ClaimInfo> publicClaims = ConcurrentHashMap.newKeySet();
+    private CopyOnWriteArrayList<ClaimInfo> publicClaims = new CopyOnWriteArrayList<>();
 
-    private Set<ClaimInfo> allClaims = ConcurrentHashMap.newKeySet(); //Holds references to all claims
+    private CopyOnWriteArrayList<ClaimInfo> allClaims = new CopyOnWriteArrayList<>(); //Holds references to all claims
 
     public void init() {
         load();
@@ -64,21 +64,30 @@ public class TPClaimManager {
         ClaimInfo claimInfo = allClaims.stream().filter(c -> c.getClaim().equals(claim)).findFirst().orElse(null);
         if (claimInfo == null) {
             claimInfo = new ClaimInfo(claim.getID(), claim.getOwnerID());
+            if (claimInfo.getPlayerClaimCount() == 0) {
+                claimInfo.setPlayerClaimCount((int) (GriefPrevention.instance.dataStore.getPlayerData(claim.getOwnerID()).getClaims().stream().filter(c -> c.getID() != claim.getID()).count() + 1));
+                claimInfo.setName("Unnamed (" + claimInfo.getPlayerClaimCount() + ")");
+            }
             allClaims.add(claimInfo);
             save();
         }
         return claimInfo;
     }
-
-    public Set<ClaimInfo> getAllClaims() {
+    public CopyOnWriteArrayList<ClaimInfo> getAllClaims() {
         return allClaims;
     }
 
-    public void updatePublic(ClaimInfo claimInfo){
+    public void updatePublic(ClaimInfo claimInfo) {
         if (claimInfo.isPublic()) {
             publicClaims.add(claimInfo);
         } else {
             publicClaims.remove(claimInfo);
+        }
+    }
+
+    public void onPlayerJoin(Player player) {
+        for (Claim claim : GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).getClaims()) {
+            fromClaim(claim); //just to make sure its in the list
         }
     }
 }

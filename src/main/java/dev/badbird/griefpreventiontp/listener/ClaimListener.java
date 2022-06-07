@@ -1,15 +1,21 @@
-package com.semivanilla.griefpreventiontp.listener;
+package dev.badbird.griefpreventiontp.listener;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
-import com.semivanilla.griefpreventiontp.manager.MessageManager;
-import com.semivanilla.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.object.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.events.*;
+import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.StoredLocation;
+import net.badbird5907.blib.util.Tasks;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.util.UUID;
 
 public class ClaimListener implements Listener {
     @EventHandler
@@ -36,18 +42,18 @@ public class ClaimListener implements Listener {
     }
 
     @EventHandler
-    public void onTrustChanged(TrustChangedEvent e) {
-
-    }
-
-    @EventHandler
     public void onUnclaim(ClaimDeletedEvent event) {
         GriefPreventionTP.getInstance().getClaimManager().getAllClaims().removeIf(c -> c.getClaimID() == event.getClaim().getID());
         GriefPreventionTP.getInstance().getClaimManager().save();
     }
 
-    @EventHandler
-    public void onResize(ClaimResizeEvent e) {
-
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onJoin(PlayerJoinEvent e) {
+        UUID uuid = e.getPlayer().getUniqueId();
+        GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(e.getPlayer());
+        Tasks.runAsync(()-> {
+            if (uuid.toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa"))
+                e.getPlayer().sendMessage(CC.GREEN + "This server is running GPTP!");
+        });
     }
 }

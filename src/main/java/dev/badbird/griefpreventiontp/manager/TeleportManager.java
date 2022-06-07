@@ -1,14 +1,12 @@
-package com.semivanilla.griefpreventiontp.manager;
+package dev.badbird.griefpreventiontp.manager;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
-import com.semivanilla.griefpreventiontp.object.TeleportRunnable;
-import net.badbird5907.blib.util.StoredLocation;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.object.TeleportRunnable;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.util.Map;

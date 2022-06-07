@@ -1,6 +1,6 @@
-package com.semivanilla.griefpreventiontp.object;
+package dev.badbird.griefpreventiontp.object;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -18,13 +18,27 @@ public class ClaimInfo {
     private UUID owner;
     private StoredLocation spawn; //TODO rename this to spawnLocation
     private boolean isPublic;
-    private String name,ownerName;
+    private String name, ownerName;
+
+    private int playerClaimCount = -1;
 
     public ClaimInfo(long claimID, UUID owner) {
         this.claimID = claimID;
         this.owner = owner;
-        this.name = "Unnamed (" + (GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size() + 1) + ")";
         this.ownerName = Bukkit.getOfflinePlayer(owner).getName();
+        int claimCount = GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().indexOf(getClaim()) + 1;
+        this.name = "Unnamed (" + claimCount + ")";
+        playerClaimCount = claimCount;
+    }
+
+    public int getPlayerClaimCount() {
+        if (playerClaimCount == -1) {
+            playerClaimCount = GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().indexOf(getClaim()) + 1;
+            if (playerClaimCount == 0) {
+                playerClaimCount = 1;
+            }
+        }
+        return playerClaimCount;
     }
 
     public Claim getClaim() {

@@ -1,6 +1,8 @@
 name: GriefPreventionTP
 version: '${project.version}'
-main: com.semivanilla.griefpreventiontp.GriefPreventionTP
-api-version: 1.18
+main: dev.badbird.griefpreventiontp.GriefPreventionTP
+author: 'Badbird5907'
+website: 'https://badbird.dev'
+api-version: 1.13
 depend:
   - GriefPrevention

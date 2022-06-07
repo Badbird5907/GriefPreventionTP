@@ -1,9 +1,11 @@
-package com.semivanilla.griefpreventiontp.menus;
+package dev.badbird.griefpreventiontp.menus;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
-import com.semivanilla.griefpreventiontp.manager.MessageManager;
-import com.semivanilla.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.object.QuestionConversation;
 import lombok.RequiredArgsConstructor;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.buttons.impl.FilterButton;
@@ -12,11 +14,14 @@ import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,7 +30,7 @@ import java.util.UUID;
 
 public class ClaimsMenu extends PaginatedMenu {
     private final UUID uuid;
-    private final String searchTerm;
+    private String searchTerm;
     private boolean privateClaims = true;
 
     public ClaimsMenu(UUID uuid, String searchTerm) {
@@ -48,8 +53,7 @@ public class ClaimsMenu extends PaginatedMenu {
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
-            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()))
-                continue;
+            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase())) continue;
             buttons.add(new ClaimButton(claim));
         }
         return buttons;
@@ -57,7 +61,11 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public List<Button> getEveryMenuSlots(Player player) {
-        return super.getEveryMenuSlots(player);
+        List<Button> buttons = new ArrayList<>();
+        if (GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-search", true)) {
+            buttons.add(new SearchButton());
+        }
+        return buttons;
     }
 
     @Override
@@ -103,10 +111,15 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.").toSkullBuilder()
-                    .withOwner(claimInfo.getOwner()) //TODO fix this
-                    .buildSkull();
+            ItemStack stack = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
+                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.")
+                    .amount(claimInfo.getPlayerClaimCount())
+                    .build();
+            UUID owner = claimInfo.getOwner();
+            SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
+            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+            stack.setItemMeta(skullMeta);
+            return stack;
         }
 
         @Override
@@ -121,6 +134,38 @@ public class ClaimsMenu extends PaginatedMenu {
                 return;
             }
             GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getSpawn().getLocation());
+        }
+    }
+
+    private class SearchButton extends Button {
+
+        @Override
+        public ItemStack getItem(Player player) {
+            return new ItemBuilder(Material.OAK_SIGN)
+                    .setName("&aSearch")
+                    .lore(CC.GRAY + "Click to search claims!")
+                    .build();
+        }
+
+        @Override
+        public int getSlot() {
+            return 44;
+        }
+
+        @Override
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            new QuestionConversation(MessageManager.getComponent("messages.search"), (a)-> {
+                String answer = a.toLowerCase();
+                if (answer.equals("cancel")) {
+                    searchTerm = null;
+                    open(player);
+                    return Prompt.END_OF_CONVERSATION;
+                }
+
+                searchTerm = answer;
+                open(player);
+                return Prompt.END_OF_CONVERSATION;
+            }).start(player);
         }
     }
 

@@ -1,9 +1,7 @@
-package com.semivanilla.griefpreventiontp.object;
+package dev.badbird.griefpreventiontp.object;
 
-import com.semivanilla.griefpreventiontp.GriefPreventionTP;
-import com.semivanilla.griefpreventiontp.manager.MessageManager;
-import com.semivanilla.griefpreventiontp.manager.TeleportManager;
-import net.badbird5907.blib.util.StoredLocation;
+import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
