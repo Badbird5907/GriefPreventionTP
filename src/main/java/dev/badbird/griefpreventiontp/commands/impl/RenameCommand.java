@@ -15,7 +15,8 @@ public class RenameCommand {
     @Command(name = "rename")
     @PlayerOnly
     @Cooldown(15)
-    public void execute(@Sender Player sender, @Sender PlayerData playerData, @JoinStrings @Required @Name("name") String name) {
+    public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name) {
+        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(sender.getLocation(), true, playerData.lastClaim);
         if (claim == null) {
             MessageManager.sendMessage(sender, "messages.must-be-standing-in-claim");
@@ -25,12 +26,14 @@ public class RenameCommand {
             MessageManager.sendMessage(sender, "messages.no-permission");
             return;
         }
-        if (name.length() > GriefPreventionTP.getInstance().getConfig().getInt("max-claim-name-length")) {
+        //String fullName = String.join(" ", name);
+        String fullName = name;
+        if (fullName.length() > GriefPreventionTP.getInstance().getConfig().getInt("max-claim-name-length")) {
             MessageManager.sendMessage(sender, "messages.name-too-long");
             return;
         }
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
-        ci.setName(name);
-        MessageManager.sendMessage(sender, "messages.updated-name", name);
+        ci.setName(fullName);
+        MessageManager.sendMessage(sender, "messages.updated-name", fullName);
     }
 }

@@ -4,7 +4,7 @@
 
 #-overloadaggressively
 -useuniqueclassmembernames
--keepattributes Signature #Gson
+-keepattributes Signature # Gson
 
 # Keep the public API
 -keep class dev.badbird.griefpreventiontp.api.** { *; }
