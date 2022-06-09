@@ -143,9 +143,9 @@ public class ManageClaimMenu extends Menu {
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             claimInfo.setPublic(!claimInfo.isPublic());
+            claimInfo.save();
             if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
             else MessageManager.sendMessage(player, "messages.public-off");
-            claimInfo.save();
         }
     }
 }
