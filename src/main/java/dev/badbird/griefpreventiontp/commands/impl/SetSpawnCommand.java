@@ -3,6 +3,7 @@ package dev.badbird.griefpreventiontp.commands.impl;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -10,8 +11,10 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.util.StoredLocation;
 import net.octopvp.commander.annotation.Command;
 import net.octopvp.commander.annotation.Cooldown;
+import net.octopvp.commander.annotation.Dependency;
 import net.octopvp.commander.annotation.Sender;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
+import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -19,7 +22,8 @@ public class SetSpawnCommand {
     @Command(name = "setspawn")
     @PlayerOnly
     @Cooldown(15)
-    public void execute(@Sender Player player) {
+    public void execute(@Sender Player player, @Dependency PermissionsManager permissionsManager) {
+        if (permissionsManager.isClaimsPerm() && !player.hasPermission("gptp.command.setspawn")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, playerData.lastClaim);
         if (claim == null) {

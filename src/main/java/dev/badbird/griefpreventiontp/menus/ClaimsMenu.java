@@ -3,7 +3,6 @@ package dev.badbird.griefpreventiontp.menus;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
-import dev.badbird.griefpreventiontp.object.QuestionConversation;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;

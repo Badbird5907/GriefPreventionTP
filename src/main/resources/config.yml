@@ -20,3 +20,16 @@ max-claim-name-length: 32
 
 menu:
   enable-search: true
+commands:
+  claims: # gptp.command.claims
+    permission:
+      enabled: true
+  public: # gptp.command.public
+    permission:
+      enabled: true
+  rename: # gptp.command.rename
+    permission:
+      enabled: true
+  setspawn: # gptp.command.setspawn
+    permission:
+      enabled: true

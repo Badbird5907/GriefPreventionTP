@@ -7,6 +7,7 @@ import dev.badbird.griefpreventiontp.commands.provider.PlayerDataProvider;
 import dev.badbird.griefpreventiontp.data.StorageProvider;
 import dev.badbird.griefpreventiontp.data.impl.FlatFileStorageProvider;
 import dev.badbird.griefpreventiontp.listener.ClaimListener;
+import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import lombok.Getter;
@@ -56,6 +57,9 @@ public final class GriefPreventionTP extends JavaPlugin {
     private final ConversationFactory conversationFactory = new ConversationFactory(this);
 
     @Getter
+    private PermissionsManager permissionsManager;
+
+    @Getter
     private Commander commander;
 
     @Getter
@@ -100,6 +104,7 @@ public final class GriefPreventionTP extends JavaPlugin {
                 .registerDependency(StorageProvider.class, storageProvider)
                 .registerDependency(MiniMessage.class, miniMessage)
                 .registerDependency(ConversationFactory.class, conversationFactory)
+                .registerDependency(PermissionsManager.class, permissionsManager)
                 .register(new ClaimsCommand(),
                         new GPTPCommand(),
                         new PublicCommand(),
@@ -113,6 +118,8 @@ public final class GriefPreventionTP extends JavaPlugin {
         this.claimManager.init();
 
         this.teleportManager = new TeleportManager(this);
+
+        this.permissionsManager = new PermissionsManager(this);
 
         Listener[] listeners = {
                 new ClaimListener()
@@ -170,5 +177,11 @@ public final class GriefPreventionTP extends JavaPlugin {
     @Override
     public @NotNull Logger getLogger() {
         return super.getLogger();
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        permissionsManager.reload(this);
     }
 }

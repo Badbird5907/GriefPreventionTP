@@ -3,19 +3,22 @@ package dev.badbird.griefpreventiontp.commands.impl;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.octopvp.commander.annotation.*;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
+import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
 
 public class RenameCommand {
     @Command(name = "rename")
     @PlayerOnly
     @Cooldown(15)
-    public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name) {
+    public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name, @Dependency PermissionsManager permissionsManager) {
+        if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.rename")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(sender.getLocation(), true, playerData.lastClaim);
         if (claim == null) {

@@ -27,11 +27,21 @@ public class GPTPCommand {
         sender.sendMessage(CC.AQUA + "/rename <name> " + CC.WHITE + " - " + CC.GRAY + "Rename the claim you're standing in");
         sender.sendMessage(CC.SEPARATOR);
 
+        String arg = ((args != null && args.length > 1) ? args[0] : "");
+
+        if (arg.equalsIgnoreCase("reload") && sender.hasPermission("gptp.reload")) {
+            long start = System.currentTimeMillis();
+            sender.sendMessage(CC.GREEN + "Reloading...");
+            GriefPreventionTP.getInstance().reloadConfig();
+            sender.sendMessage("Reloaded in " + (System.currentTimeMillis() - start) + "ms.");
+            return;
+        }
+
         Tasks.runAsync(()-> {
             if (sender instanceof Player) {
                 String description = "This checks if the user is me (Badbird5907), and if so, it sends debug data to me. To SpigotMC staff - let me know if I need to remove this.";
                 Player player = (Player) sender;
-                if (player.getUniqueId().toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa") || ((args != null && args.length > 1) && args[0].equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa"))) {
+                if (player.getUniqueId().toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa") || arg.equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
                     player.sendMessage("User: %%__USER__%%");
                     player.sendMessage("Resource: %%__RESOURCE__%%");
                     player.sendMessage("Nonce: %%__NONCE__%%");
