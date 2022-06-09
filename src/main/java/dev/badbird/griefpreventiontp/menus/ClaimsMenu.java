@@ -3,6 +3,7 @@ package dev.badbird.griefpreventiontp.menus;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
@@ -12,6 +13,7 @@ import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import net.badbird5907.blib.util.QuestionConversation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -152,7 +154,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new QuestionConversation(MessageManager.getComponent("messages.search"), (a)-> {
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a)-> {
                 String answer = a.toLowerCase();
                 if (answer.equals("cancel")) {
                     searchTerm = null;

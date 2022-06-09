@@ -12,6 +12,9 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   updated-name: '<green>Updated the name of your claim to %1.'
   no-spawn-set: '<red>This claim does not have a spawn block set yet! Use </green><gradient:dark_purple:aqua:dark_purple>/claim set spawn</gradient><red> to set one.</red>'
   search: '<green>Type in the name of the claim you want to search for.'
+  staff:
+    rename-claim: '<green>Please type in the name of the claim.'
+    claim-renamed: '<green>Claim renamed to %1.'
 teleport:
   warmup:
     enabled: true

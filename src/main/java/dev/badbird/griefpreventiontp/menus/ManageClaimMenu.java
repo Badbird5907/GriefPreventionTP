@@ -1,6 +1,8 @@
 package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.menu.Menu;
@@ -8,6 +10,7 @@ import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
 import net.badbird5907.blib.util.QuestionConversation;
 import org.bukkit.Material;
+import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -63,7 +66,11 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new QuestionConversation()
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.staff.rename-claim"), (response)-> {
+                claimInfo.setName(response);
+                MessageManager.sendMessage(player, "messages.staff.claim-renamed", claimInfo.getName());
+                return Prompt.END_OF_CONVERSATION;
+            });
         }
     }
 }
