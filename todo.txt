@@ -1,3 +1,5 @@
 - Mod Tools
 - Reload Command
 - Configurable Commands (like /public can become /claims public etc)
+- Configurable menu
+- Configurable Default name
