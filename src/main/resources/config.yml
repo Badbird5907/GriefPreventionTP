@@ -15,6 +15,7 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   staff:
     rename-claim: '<green>Please type in the name of the claim.'
     claim-renamed: '<green>Claim renamed to %1.'
+    claim-deleted: '<red>Claim deleted.'
 teleport:
   warmup:
     enabled: true
