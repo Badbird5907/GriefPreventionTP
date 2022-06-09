@@ -30,7 +30,8 @@ public class SetSpawnCommand {
             MessageManager.sendMessage(player, "messages.must-be-standing-in-claim");
             return;
         }
-        if (claim.getOwnerID() != player.getUniqueId() && !claim.hasExplicitPermission(player, ClaimPermission.Manage)) {
+        //if (claim.getOwnerID() != player.getUniqueId() && !claim.hasExplicitPermission(player, ClaimPermission.Manage)) {
+        if (!permissionsManager.hasClaimPermission(player, claim)) {
             MessageManager.sendMessage(player, "messages.no-permission");
             return;
         }

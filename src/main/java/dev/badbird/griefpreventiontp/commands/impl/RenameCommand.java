@@ -25,7 +25,8 @@ public class RenameCommand {
             MessageManager.sendMessage(sender, "messages.must-be-standing-in-claim");
             return;
         }
-        if (claim.getOwnerID() != sender.getUniqueId() && !claim.hasExplicitPermission(sender, ClaimPermission.Manage)) {
+        //if (claim.getOwnerID() != sender.getUniqueId() && !claim.hasExplicitPermission(sender, ClaimPermission.Manage)) {
+        if (!permissionsManager.hasClaimPermission(sender, claim)) {
             MessageManager.sendMessage(sender, "messages.no-permission");
             return;
         }
@@ -37,6 +38,7 @@ public class RenameCommand {
         }
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
         ci.setName(fullName);
+        ci.save();
         MessageManager.sendMessage(sender, "messages.updated-name", fullName);
     }
 }

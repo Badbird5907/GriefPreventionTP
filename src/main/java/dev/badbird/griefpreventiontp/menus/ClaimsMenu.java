@@ -1,10 +1,11 @@
 package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
-import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
+import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.buttons.impl.FilterButton;
@@ -13,7 +14,6 @@ import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
-import net.badbird5907.blib.util.QuestionConversation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -37,6 +37,7 @@ public class ClaimsMenu extends PaginatedMenu {
         this.uuid = uuid;
         this.searchTerm = searchTerm;
     }
+
     public ClaimsMenu(UUID uuid) {
         this.uuid = uuid;
         this.searchTerm = null;
@@ -53,8 +54,9 @@ public class ClaimsMenu extends PaginatedMenu {
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
-            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase())) continue;
-            buttons.add(new ClaimButton(claim));
+            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase()))
+                continue;
+            buttons.add(new ClaimButton(claim, player));
         }
         return buttons;
     }
@@ -105,16 +107,31 @@ public class ClaimsMenu extends PaginatedMenu {
         };
     }
 
-    @RequiredArgsConstructor
     private static class ClaimButton extends Button {
         private final ClaimInfo claimInfo;
+        private final Player player;
+        public ClaimButton(ClaimInfo claimInfo, Player player) {
+            this.claimInfo = claimInfo;
+            this.player = player;
+            this.claim = claimInfo.getClaim();
+            this.canEdit = player.hasPermission("gptp.staff") ||
+                    GriefPreventionTP.getInstance().getPermissionsManager()
+                            .hasClaimPermission(player, claim);
+        }
+
+        private Claim claim;
+        private boolean canEdit;
 
         @Override
         public ItemStack getItem(Player player) {
-            ItemStack stack = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
+            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
                     .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.")
-                    .amount(claimInfo.getPlayerClaimCount())
-                    .build();
+                    .amount(claimInfo.getPlayerClaimCount());
+
+            if (canEdit) {
+                builder.lore(CC.GRAY + "Shift-Right Click to manage.");
+            }
+            ItemStack stack = builder.build();
             UUID owner = claimInfo.getOwner();
             SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
@@ -129,6 +146,10 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (clickType == ClickType.SHIFT_RIGHT && canEdit) {
+                new ManageClaimMenu(claimInfo).open(player);
+                return;
+            }
             if (claimInfo.getSpawn() == null) {
                 MessageManager.sendMessage(player, "messages.no-spawn-set");
                 return;
@@ -154,7 +175,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a)-> {
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a) -> {
                 String answer = a.toLowerCase();
                 if (answer.equals("cancel")) {
                     searchTerm = null;

@@ -12,7 +12,6 @@ import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
-import net.badbird5907.blib.util.QuestionConversation;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
@@ -44,6 +43,7 @@ public class ManageClaimMenu extends Menu {
         ArrayList<Button> buttons = new ArrayList<>();
         buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
+        buttons.add(new PublicButton());
         buttons.add(new Placeholders());
         return buttons;
     }
@@ -85,7 +85,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ConfirmMenu("delete this claim?", (res)-> {
+            new ConfirmMenu("delete this claim?", (res) -> {
                 if (res) {
                     GriefPrevention.instance.dataStore.deleteClaim(claimInfo.getClaim());
                     MessageManager.sendMessage(player, "messages.staff.claim-deleted");
@@ -113,11 +113,39 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ComponentQuestionConversation(MessageManager.getComponent("messages.staff.rename-claim"), (response)-> {
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.staff.rename-claim"), (response) -> {
+                if (response.length() > GriefPreventionTP.getInstance().getConfig().getInt("max-claim-name-length")) {
+                    MessageManager.sendMessage(player, "messages.name-too-long");
+                    return Prompt.END_OF_CONVERSATION;
+                }
                 claimInfo.setName(response);
                 MessageManager.sendMessage(player, "messages.staff.claim-renamed", claimInfo.getName());
+                claimInfo.save();
                 return Prompt.END_OF_CONVERSATION;
             });
+        }
+    }
+
+    private final class PublicButton extends Button {
+        @Override
+        public ItemStack getItem(Player player) {
+            return new ItemBuilder(Material.OAK_DOOR)
+                    .name(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")
+                    .lore(CC.GRAY + "Click to toggle public/private.")
+                    .build();
+        }
+
+        @Override
+        public int getSlot() {
+            return 15;
+        }
+
+        @Override
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            claimInfo.setPublic(!claimInfo.isPublic());
+            if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
+            else MessageManager.sendMessage(player, "messages.public-off");
+            claimInfo.save();
         }
     }
 }

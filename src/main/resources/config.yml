@@ -22,6 +22,8 @@ teleport:
     seconds: 5
 max-claim-name-length: 32
 
+permissions:
+  allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:
   enable-search: true
 commands:
