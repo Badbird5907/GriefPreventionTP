@@ -8,7 +8,6 @@ import net.octopvp.commander.annotation.Sender;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
 import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.ItemDespawnEvent;
 
 public class ClaimsCommand {
     @Command(name = "claims", description = "Open the claims GUI")

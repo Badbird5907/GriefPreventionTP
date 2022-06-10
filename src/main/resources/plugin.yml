@@ -9,3 +9,14 @@ depend:
 permissions:
   gptp.reload:
     description: Permission for /gptp reload
+  gptp.staff:
+    description: Staff permissions
+  gptp.command.claims:
+    description: Permission for /claims
+  gptp.command.public:
+    description: Permission for /public and /private
+  gptp.command.rename:
+    description: Permission for /rename
+  gptp.command.setspawn:
+    description: Permission for /setspawn
+

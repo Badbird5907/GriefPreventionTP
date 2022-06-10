@@ -104,21 +104,18 @@ public final class GriefPreventionTP extends JavaPlugin {
         }
         this.permissionsManager = new PermissionsManager(this);
 
-        Metrics metrics;
-        //= new Metrics(this, -1);
+        Metrics metrics = new Metrics(this, 15417);
 
         if (getConfig().getBoolean("update-check")) {
-            if (false) {
-                updateChecker = new UpdateChecker(123);
-                updateChecker.getVersion(version -> {
-                    if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                        updateAvailable = true;
-                        newVersion = version;
-                        getLogger().info("There a new update available! Download at https://badbird5907.xyz/gptp?ref=console");
-                    }
-                    //just dont say anything
-                });
-            }
+            updateChecker = new UpdateChecker(102521);
+            updateChecker.getVersion(version -> {
+                if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                    updateAvailable = true;
+                    newVersion = version;
+                    getLogger().info("There a new update available! Download at https://badbird5907.xyz/gptp?ref=console");
+                }
+                //just dont say anything
+            });
         }
 
         //bLib.getCommandFramework().registerCommandsInPackage("com.semivanilla.griefpreventiontp.commands");
