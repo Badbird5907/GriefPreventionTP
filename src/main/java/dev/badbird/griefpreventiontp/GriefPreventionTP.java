@@ -95,7 +95,6 @@ public final class GriefPreventionTP extends JavaPlugin {
     public void onEnable() {
         instance = this;
         bLib.create(this);
-        getLogger().info("abab");
         if (!getDataFolder().exists()) {
             getDataFolder().mkdir();
         }
