@@ -5,6 +5,7 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
+import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
@@ -12,6 +13,7 @@ import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import net.octopvp.commander.command.CommandInfo;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
@@ -40,8 +42,10 @@ public class ManageClaimMenu extends Menu {
 
     @Override
     public List<Button> getButtons(Player player) {
+        Claim claim = claimInfo.getClaim();
         ArrayList<Button> buttons = new ArrayList<>();
-        buttons.add(new DeleteButton());
+        if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
+            buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
         buttons.add(new PublicButton());
         buttons.add(new Placeholders());
@@ -69,7 +73,6 @@ public class ManageClaimMenu extends Menu {
     }
 
     private final class DeleteButton extends Button {
-
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.REDSTONE_BLOCK)
@@ -80,19 +83,27 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public int getSlot() {
-            return 36;
+            return 35;
         }
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ConfirmMenu("delete this claim?", (res) -> {
+            new ConfirmMenu("delete this claim", (res) -> {
                 if (res) {
-                    GriefPrevention.instance.dataStore.deleteClaim(claimInfo.getClaim());
-                    MessageManager.sendMessage(player, "messages.staff.claim-deleted");
+                    Claim claim = claimInfo.getClaim();
+                    if (!claim.getOwnerID().equals(player.getUniqueId())) {
+                        MessageManager.sendMessage(player, "messages.no-permission");
+                        return;
+                    }
+                    GriefPrevention.instance.dataStore.deleteClaim(claim);
+                    MessageManager.sendMessage(player, "messages.manager-gui.claim-deleted");
                     player.closeInventory();
                     new ClaimsMenu(player.getUniqueId()).open(player);
+                }else {
+                    player.closeInventory();
+                    //new ClaimsMenu(player.getUniqueId()).open(player);
                 }
-            });
+            }).open(player);
         }
     }
 
@@ -113,16 +124,24 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ComponentQuestionConversation(MessageManager.getComponent("messages.staff.rename-claim"), (response) -> {
+            CommandInfo ci = GriefPreventionTP.getInstance().getCommander().getCommandMap().get("rename");
+            if (ci != null) {
+                if (ci.isOnCooldown(player.getUniqueId())) {
+                    player.sendMessage(CC.RED + "You must wait " + ci.getCooldownSeconds(player.getUniqueId()) + " seconds before using this again.");
+                    return;
+                }
+            }
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.manager-gui.rename-claim"), (response) -> {
                 if (response.length() > GriefPreventionTP.getInstance().getConfig().getInt("max-claim-name-length")) {
                     MessageManager.sendMessage(player, "messages.name-too-long");
                     return Prompt.END_OF_CONVERSATION;
                 }
                 claimInfo.setName(response);
-                MessageManager.sendMessage(player, "messages.staff.claim-renamed", claimInfo.getName());
+                MessageManager.sendMessage(player, "messages.manager-gui.claim-renamed", claimInfo.getName());
                 claimInfo.save();
+                ci.addCooldown(player.getUniqueId());
                 return Prompt.END_OF_CONVERSATION;
-            });
+            }).start(player);
         }
     }
 
@@ -142,10 +161,23 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (!plugin.getConfig().getBoolean("enable-public")) {
+                MessageManager.sendMessage(player, "messages.public-disabled");
+                return;
+            }
+            CommandInfo ci = GriefPreventionTP.getInstance().getCommander().getCommandMap().get("rename");
+            if (ci != null) {
+                if (ci.isOnCooldown(player.getUniqueId())) {
+                    player.sendMessage(CC.RED + "You must wait " + ci.getCooldownSeconds(player.getUniqueId()) + " seconds before using this again.");
+                    return;
+                }
+            }
             claimInfo.setPublic(!claimInfo.isPublic());
             claimInfo.save();
             if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
             else MessageManager.sendMessage(player, "messages.public-off");
+            update(player);
+            ci.addCooldown(player.getUniqueId());
         }
     }
 }

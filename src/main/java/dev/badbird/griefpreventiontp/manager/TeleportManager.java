@@ -25,6 +25,10 @@ public class TeleportManager implements Listener {
             player.teleport(loc);
             return;
         }
+        if (runnableMap.containsKey(player.getUniqueId())) {
+            MessageManager.sendMessage(player, "messages.already-teleporting");
+            return;
+        }
         TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation());
         runnableMap.put(player.getUniqueId(), runnable);
         MessageManager.sendMessage(player, "messages.teleporting");

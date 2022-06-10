@@ -1,6 +1,8 @@
 package dev.badbird.griefpreventiontp.menus;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
 import net.badbird5907.blib.menu.menu.Menu;
@@ -24,6 +26,12 @@ public class ConfirmMenu extends Menu {
 
     private final Consumer<Boolean> callback;
 
+    @Getter
+    @Setter
+    private boolean permanent = false;
+
+    private boolean done = false;
+
     private static final int[] PLACEHOLDERS;
 
     static {
@@ -38,9 +46,9 @@ public class ConfirmMenu extends Menu {
     @Override
     public List<Button> getButtons(Player player) {
         return Arrays.asList(
-                new YesButton(callback),
-                new NoButton(callback),
-                new InfoButton(action),
+                new YesButton(),
+                new NoButton(),
+                new InfoButton(),
                 new Placeholders()
         );
     }
@@ -52,6 +60,10 @@ public class ConfirmMenu extends Menu {
 
     @Override
     public void onClose(Player player) {
+        if (done) {
+            return;
+        }
+        done = true;
         callback.accept(false);
     }
 
@@ -61,9 +73,7 @@ public class ConfirmMenu extends Menu {
             return PLACEHOLDERS;
         }
     }
-    @RequiredArgsConstructor
-    private static class YesButton extends Button {
-        private final Consumer<Boolean> callback;
+    private class YesButton extends Button {
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.GREEN_CONCRETE)
@@ -78,13 +88,14 @@ public class ConfirmMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (done) {
+                return;
+            }
+            done = true;
             callback.accept(true);
         }
     }
-    @RequiredArgsConstructor
-    private static class NoButton extends Button {
-        private final Consumer<Boolean> callback;
-
+    private class NoButton extends Button {
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.RED_CONCRETE)
@@ -99,19 +110,22 @@ public class ConfirmMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (done) return;
+            done = true;
             callback.accept(false);
         }
     }
 
-    @RequiredArgsConstructor
-    private static class InfoButton extends Button {
-        private final String action;
+    private class InfoButton extends Button {
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.PAPER)
+            ItemBuilder builder = new ItemBuilder(Material.PAPER)
                     .name(CC.GREEN + "Are you sure you want to " + action + "?")
-                    .lore(CC.GRAY + "Click &aYes&7 to confirm, or &cNo&7 to cancel.")
-                    .build();
+                    .lore(CC.GRAY + "Click &aYes&7 to confirm, or &cNo&7 to cancel.");
+            if (permanent) {
+                builder.lore(CC.GRAY + "This action cannot be undone.");
+            }
+            return builder.build();
         }
 
         @Override

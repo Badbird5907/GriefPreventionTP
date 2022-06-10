@@ -21,7 +21,7 @@ import org.bukkit.entity.Player;
 public class SetSpawnCommand {
     @Command(name = "setspawn")
     @PlayerOnly
-    @Cooldown(15)
+    @Cooldown(3)
     public void execute(@Sender Player player, @Dependency PermissionsManager permissionsManager) {
         if (permissionsManager.isClaimsPerm() && !player.hasPermission("gptp.command.setspawn")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());

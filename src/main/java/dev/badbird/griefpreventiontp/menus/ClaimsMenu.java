@@ -33,6 +33,8 @@ public class ClaimsMenu extends PaginatedMenu {
     private String searchTerm;
     private boolean privateClaims = true;
 
+    private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
+
     public ClaimsMenu(UUID uuid, String searchTerm) {
         this.uuid = uuid;
         this.searchTerm = searchTerm;
@@ -72,6 +74,9 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public Button getFilterButton() {
+        if (!plugin.getConfig().getBoolean("enable-public")) {
+            return null;
+        }
         return new FilterButton() {
             @Override
             public void clicked(Player player, ClickType type, int slot, InventoryClickEvent event) {
@@ -97,12 +102,12 @@ public class ClaimsMenu extends PaginatedMenu {
         return new CloseButton() {
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name(CC.RED + "Close").build();
+                return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
             }
 
             @Override
             public int getSlot() {
-                return 36;
+                return plugin.getConfig().getBoolean("enable-public") ? 36 : 40;
             }
         };
     }
@@ -125,11 +130,15 @@ public class ClaimsMenu extends PaginatedMenu {
         @Override
         public ItemStack getItem(Player player) {
             ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.")
+                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
                     .amount(claimInfo.getPlayerClaimCount());
+            builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            builder.lore(
+                    "", CC.GRAY + "Click to teleport."
+            );
 
             if (canEdit) {
-                builder.lore(CC.GRAY + "Shift-Right Click to manage.");
+                builder.lore(CC.GRAY + "Right Click to manage.");
             }
             ItemStack stack = builder.build();
             UUID owner = claimInfo.getOwner();
@@ -146,7 +155,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            if (clickType == ClickType.SHIFT_RIGHT && canEdit) {
+            if (clickType.isRightClick() && canEdit) {
                 new ManageClaimMenu(claimInfo).open(player);
                 return;
             }

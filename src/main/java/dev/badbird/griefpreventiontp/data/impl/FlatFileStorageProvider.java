@@ -27,7 +27,7 @@ public class FlatFileStorageProvider implements StorageProvider {
         if (GriefPreventionTP.getInstance().getDescription().getAuthors().size() < 1) bruh = true;
         else if (!GriefPreventionTP.getInstance().getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
         if (bruh) {
-            Logger.error("Please do not modify the plugin.yml file! To receive help, join the support server @ https://discord.badbird.dev/");
+            Logger.error("Please do not modify the plugin! To receive help, join the support server @ https://discord.badbird.dev/");
             GriefPreventionTP.getInstance().getServer().getPluginManager().disablePlugin(GriefPreventionTP.getInstance());
             return;
         }

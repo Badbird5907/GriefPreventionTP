@@ -35,9 +35,9 @@ public class ClaimListener implements Listener {
     }
 
     @EventHandler
-    public void onClaimTransfer(ClaimTransferEvent e) {
-        ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(e.getClaim());
-        claimInfo.setOwner(e.getNewOwner());
+    public void onClaimTransfer(ClaimTransferEvent event) {
+        ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(event.getClaim());
+        claimInfo.setOwner(event.getNewOwner());
         claimInfo.save();
     }
 
@@ -48,12 +48,17 @@ public class ClaimListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onJoin(PlayerJoinEvent e) {
-        UUID uuid = e.getPlayer().getUniqueId();
-        GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(e.getPlayer());
+    public void onJoin(PlayerJoinEvent event) {
+        if (event.getPlayer().hasPermission("gptp.staff") || event.getPlayer().isOp() && GriefPreventionTP.getInstance().getConfig().getBoolean("update-check") && GriefPreventionTP.getInstance().getUpdateChecker() != null) {
+            if (GriefPreventionTP.getInstance().isUpdateAvailable()){
+                event.getPlayer().sendMessage(CC.translate("&7[&bGriefPreventionTP&7] &aThere is a update available! Your current version is: " + CC.B + GriefPreventionTP.getInstance().getDescription().getVersion() + CC.R + CC.GREEN + " and the new version is: " + CC.B + GriefPreventionTP.getInstance().getNewVersion() + CC.R + CC.GREEN + ".\nDownload @ https://badbird5907.xyz/gptp?ref=server"));
+            }
+        }
+        UUID uuid = event.getPlayer().getUniqueId();
+        GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(event.getPlayer());
         Tasks.runAsync(()-> {
             if (uuid.toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa"))
-                e.getPlayer().sendMessage(CC.GREEN + "This server is running GPTP!");
+                event.getPlayer().sendMessage(CC.GREEN + "This server is running GPTP!");
         });
     }
 }

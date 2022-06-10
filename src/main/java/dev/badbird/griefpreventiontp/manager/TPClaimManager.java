@@ -50,6 +50,7 @@ public class TPClaimManager {
     }
 
     public List<ClaimInfo> getClaims(UUID owner) {
+        allClaims.removeIf(claim -> claim.getClaim() == null);
         return allClaims.stream().filter(claim -> {
             Claim c = claim.getClaim();
             return claim.getOwner().equals(owner) || c.hasExplicitPermission(owner, ClaimPermission.Access) || c.hasExplicitPermission(owner, ClaimPermission.Build);
@@ -57,6 +58,7 @@ public class TPClaimManager {
     }
 
     public List<ClaimInfo> getAllPublicClaims() {
+        publicClaims.removeIf(claim -> claim.getClaim() == null);
         return publicClaims.stream().collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
     }
 

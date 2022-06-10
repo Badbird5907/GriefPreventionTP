@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class RenameCommand {
     @Command(name = "rename")
     @PlayerOnly
-    @Cooldown(15)
+    @Cooldown(3)
     public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name, @Dependency PermissionsManager permissionsManager) {
         if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.rename")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());

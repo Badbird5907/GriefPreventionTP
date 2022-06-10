@@ -12,7 +12,9 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   updated-name: '<green>Updated the name of your claim to %1.'
   no-spawn-set: '<red>This claim does not have a spawn block set yet! Use </green><gradient:dark_purple:aqua:dark_purple>/claim set spawn</gradient><red> to set one.</red>'
   search: '<green>Type in the name of the claim you want to search for.'
-  staff:
+  already-teleporting: '<red>You''re already teleporting somewhere!'
+  public-disabled: '<red>Public claims are disabled!'
+  manager-gui:
     rename-claim: '<green>Please type in the name of the claim.'
     claim-renamed: '<green>Claim renamed to %1.'
     claim-deleted: '<red>Claim deleted.'
@@ -21,11 +23,14 @@ teleport:
     enabled: true
     seconds: 5
 max-claim-name-length: 32
-
+enable-public: true
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:
   enable-search: true
+  enable-delete: true # Enable the delete claim button in the manager menu
+  show-coordinates: true
+  close-button-type: 'BARRIER'
 commands:
   claims: # gptp.command.claims
     permission:
@@ -39,3 +44,5 @@ commands:
   setspawn: # gptp.command.setspawn
     permission:
       enabled: true
+
+update-check: true
