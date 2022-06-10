@@ -19,7 +19,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class SetSpawnCommand {
-    @Command(name = "setspawn")
+    @Command(name = "setspawn", description = "Set the spawn location of the claim you're standing in")
     @PlayerOnly
     @Cooldown(3)
     public void execute(@Sender Player player, @Dependency PermissionsManager permissionsManager) {

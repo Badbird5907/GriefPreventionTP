@@ -14,7 +14,7 @@ import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
 
 public class RenameCommand {
-    @Command(name = "rename")
+    @Command(name = "rename", description = "Rename the claim you're standing in")
     @PlayerOnly
     @Cooldown(3)
     public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name, @Dependency PermissionsManager permissionsManager) {

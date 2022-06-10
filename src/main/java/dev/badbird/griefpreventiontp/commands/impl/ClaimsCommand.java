@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.ItemDespawnEvent;
 
 public class ClaimsCommand {
-    @Command(name = "claims")
+    @Command(name = "claims", description = "Open the claims GUI")
     @PlayerOnly
     public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager) {
         if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.claims")) throw new NoPermissionException();
