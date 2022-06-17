@@ -1,13 +1,18 @@
-package dev.badbird.griefpreventiontp.object;
+package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.UUID;
 
@@ -16,7 +21,7 @@ import java.util.UUID;
 public class ClaimInfo {
     private final long claimID;
     private UUID owner;
-    private StoredLocation spawn; //TODO rename this to spawnLocation
+    private StoredLocation spawn;
     private boolean isPublic;
     private String name, ownerName;
 
@@ -64,5 +69,27 @@ public class ClaimInfo {
             ownerName = op.getName();
         }
         return ownerName;
+    }
+
+    public void checkValid() {
+        Claim claim = getClaim();
+        if (claim == null) {
+            return; //Claim has been deleted
+        }
+        if (getSpawn() == null) {
+            Logger.info("Claim %1 owned by %2 has an invalid spawn location! Resetting...", getName(), getOwnerName());
+            setSpawn(new StoredLocation(ClaimInfo.getDefaultLocation(claim)));
+            Player owner = Bukkit.getPlayer(getOwner());
+            if (owner != null) {
+                MessageManager.sendMessage(owner, "messages.invalid-claim", getName());
+            }
+        }
+    }
+
+    public static Location getDefaultLocation(Claim claim) {
+        Location l = claim.getGreaterBoundaryCorner().clone().add(claim.getLesserBoundaryCorner().clone()).multiply(0.5);
+        //set Y value to the highest block
+        l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
+        return l;
     }
 }

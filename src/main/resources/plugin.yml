@@ -1,8 +1,26 @@
 name: GriefPreventionTP
-version: '${project.version}'
+version: '${version}'
 main: dev.badbird.griefpreventiontp.GriefPreventionTP
 author: 'Badbird5907'
 website: 'https://badbird.dev'
 api-version: 1.13
 depend:
   - GriefPrevention
+softdepend:
+  - Vault
+permissions:
+  gptp.reload:
+    description: Permission for /gptp reload
+  gptp.staff:
+    description: Staff permissions
+  gptp.command.claims:
+    description: Permission for /claims
+  gptp.command.public:
+    description: Permission for /public and /private
+  gptp.command.rename:
+    description: Permission for /rename
+  gptp.command.setspawn:
+    description: Permission for /setspawn
+  gptp.bypass.public:
+    description: Permission for bypassing public claim limit
+

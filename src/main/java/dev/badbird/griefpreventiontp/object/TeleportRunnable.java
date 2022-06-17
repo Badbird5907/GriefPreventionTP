@@ -51,6 +51,7 @@ public class TeleportRunnable extends BukkitRunnable {
     public boolean hasMoved() {
         Player player = Bukkit.getPlayer(uuid);
         if (player == null) return false;
+        if (player.getLocation().getWorld() != from.getWorld()) return true;
         return player.getLocation().distance(from) > 0.5;
         /*
 

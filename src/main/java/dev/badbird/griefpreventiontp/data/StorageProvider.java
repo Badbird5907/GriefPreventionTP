@@ -1,7 +1,7 @@
 package dev.badbird.griefpreventiontp.data;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 
 import java.util.Collection;
 

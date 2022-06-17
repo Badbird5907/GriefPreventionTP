@@ -1,11 +1,10 @@
 package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.object.ClaimInfo;
-import dev.badbird.griefpreventiontp.object.QuestionConversation;
-import lombok.RequiredArgsConstructor;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
+import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.buttons.impl.FilterButton;
@@ -33,10 +32,13 @@ public class ClaimsMenu extends PaginatedMenu {
     private String searchTerm;
     private boolean privateClaims = true;
 
+    private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
+
     public ClaimsMenu(UUID uuid, String searchTerm) {
         this.uuid = uuid;
         this.searchTerm = searchTerm;
     }
+
     public ClaimsMenu(UUID uuid) {
         this.uuid = uuid;
         this.searchTerm = null;
@@ -53,8 +55,9 @@ public class ClaimsMenu extends PaginatedMenu {
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
-            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase())) continue;
-            buttons.add(new ClaimButton(claim));
+            if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase()))
+                continue;
+            buttons.add(new ClaimButton(claim, player));
         }
         return buttons;
     }
@@ -70,6 +73,9 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public Button getFilterButton() {
+        if (!plugin.getConfig().getBoolean("enable-public")) {
+            return null;
+        }
         return new FilterButton() {
             @Override
             public void clicked(Player player, ClickType type, int slot, InventoryClickEvent event) {
@@ -95,26 +101,51 @@ public class ClaimsMenu extends PaginatedMenu {
         return new CloseButton() {
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.RED_STAINED_GLASS_PANE).name(CC.RED + "Close").build();
+                return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
             }
 
             @Override
             public int getSlot() {
-                return 36;
+                return plugin.getConfig().getBoolean("enable-public") ? 36 : 40;
             }
         };
     }
 
-    @RequiredArgsConstructor
-    private static class ClaimButton extends Button {
+    private class ClaimButton extends Button {
         private final ClaimInfo claimInfo;
+        private final Player player;
+
+        public ClaimButton(ClaimInfo claimInfo, Player player) {
+            this.claimInfo = claimInfo;
+            this.player = player;
+            this.claim = claimInfo.getClaim();
+            this.canEdit = player.hasPermission("gptp.staff") ||
+                    GriefPreventionTP.getInstance().getPermissionsManager()
+                            .hasClaimPermission(player, claim);
+            claimInfo.checkValid();
+        }
+
+        private Claim claim;
+        private boolean canEdit;
 
         @Override
         public ItemStack getItem(Player player) {
-            ItemStack stack = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName(), "", CC.D_GRAY + "Click to teleport.")
-                    .amount(claimInfo.getPlayerClaimCount())
-                    .build();
+            boolean valid = claimInfo.getSpawn() != null;
+            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
+                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
+                    .amount(claimInfo.getPlayerClaimCount());
+            if (showCoords)
+                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            if (valid)
+                builder.lore(
+                        "", CC.GRAY + "Click to teleport."
+                );
+            else builder.lore("", CC.RED + "No spawn set!");
+
+            if (canEdit) {
+                builder.lore(CC.GRAY + "Right Click to manage.");
+            }
+            ItemStack stack = builder.build();
             UUID owner = claimInfo.getOwner();
             SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
@@ -129,6 +160,10 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+            if (clickType.isRightClick() && canEdit) {
+                new ManageClaimMenu(claimInfo).open(player);
+                return;
+            }
             if (claimInfo.getSpawn() == null) {
                 MessageManager.sendMessage(player, "messages.no-spawn-set");
                 return;
@@ -154,7 +189,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new QuestionConversation(MessageManager.getComponent("messages.search"), (a)-> {
+            new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a) -> {
                 String answer = a.toLowerCase();
                 if (answer.equals("cancel")) {
                     searchTerm = null;

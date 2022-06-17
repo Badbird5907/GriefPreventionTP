@@ -10,7 +10,7 @@ import org.bukkit.conversations.StringPrompt;
 import org.bukkit.entity.Player;
 
 @RequiredArgsConstructor
-public class QuestionConversation extends StringPrompt {
+public class ComponentQuestionConversation extends StringPrompt {
     private final Component prompt;
     private final TypeCallback<Prompt, String> callback;
 

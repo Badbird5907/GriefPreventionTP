@@ -4,6 +4,7 @@ import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.Command;
+import net.octopvp.commander.annotation.Name;
 import net.octopvp.commander.annotation.Optional;
 import net.octopvp.commander.annotation.Sender;
 import org.bukkit.Bukkit;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class GPTPCommand {
     @Command(name = "griefpreventiontp", aliases = "gptp", description = "GriefPreventionTP Command")
-    public void execute(@Sender CommandSender sender, @Optional String[] args) {
+    public void execute(@Sender CommandSender sender, @Optional @Name("args") String[] args) {
         sender.sendMessage(CC.SEPARATOR);
         sender.sendMessage(CC.AQUA + "GriefPreventionTP" + CC.WHITE + " - " + CC.GRAY + "Grief Prevention Teleport v" + GriefPreventionTP.getInstance().getDescription().getVersion());
         sender.sendMessage(CC.AQUA + "By: " + CC.GRAY + "Badbird5907 - https://badbird.dev/ - Support Server: https://discord.badbird.dev/");
@@ -26,16 +27,27 @@ public class GPTPCommand {
         sender.sendMessage(CC.AQUA + "/rename <name> " + CC.WHITE + " - " + CC.GRAY + "Rename the claim you're standing in");
         sender.sendMessage(CC.SEPARATOR);
 
+        String arg = ((args != null && args.length > 1) ? args[0] : "");
+
+        if (arg.equalsIgnoreCase("reload") && sender.hasPermission("gptp.reload")) {
+            long start = System.currentTimeMillis();
+            sender.sendMessage(CC.GREEN + "Reloading...");
+            GriefPreventionTP.getInstance().reloadConfig();
+            sender.sendMessage("Reloaded in " + (System.currentTimeMillis() - start) + "ms.");
+            return;
+        }
+
         Tasks.runAsync(()-> {
             if (sender instanceof Player) {
                 String description = "This checks if the user is me (Badbird5907), and if so, it sends debug data to me. To SpigotMC staff - let me know if I need to remove this.";
                 Player player = (Player) sender;
-                if (player.getUniqueId().toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa") || ((args != null && args.length > 1) && args[0].equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa"))) {
+                if (player.getUniqueId().toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa") || arg.equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
                     player.sendMessage("User: %%__USER__%%");
                     player.sendMessage("Resource: %%__RESOURCE__%%");
                     player.sendMessage("Nonce: %%__NONCE__%%");
                     player.sendMessage("Claims: " + GriefPreventionTP.getInstance().getStorageProvider().getClaims().size());
                     player.sendMessage("");
+                    player.sendMessage("OBF: " + (!this.getClass().getSimpleName().equals("GPTPCommand")));
                     player.sendMessage("Server Version: " + Bukkit.getServer().getVersion());
                     player.sendMessage("Server Impl: " + Bukkit.getServer().getClass().getPackage().getImplementationVersion());
                     player.sendMessage("Server MC Version: " + Bukkit.getServer().getMinecraftVersion());

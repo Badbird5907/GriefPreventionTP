@@ -7,6 +7,7 @@ import dev.badbird.griefpreventiontp.commands.provider.PlayerDataProvider;
 import dev.badbird.griefpreventiontp.data.StorageProvider;
 import dev.badbird.griefpreventiontp.data.impl.FlatFileStorageProvider;
 import dev.badbird.griefpreventiontp.listener.ClaimListener;
+import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import lombok.Getter;
@@ -14,14 +15,20 @@ import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
 import net.badbird5907.blib.bstats.Metrics;
+import net.badbird5907.blib.spigotmc.UpdateChecker;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
+import org.bukkit.Bukkit;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.logging.Logger;
 
 public final class GriefPreventionTP extends JavaPlugin {
     @Getter
@@ -53,7 +60,25 @@ public final class GriefPreventionTP extends JavaPlugin {
     private final ConversationFactory conversationFactory = new ConversationFactory(this);
 
     @Getter
+    private PermissionsManager permissionsManager;
+
+    @Getter
     private Commander commander;
+
+    @Getter
+    private UpdateChecker updateChecker = null;
+
+    @Getter
+    private boolean updateAvailable = false;
+
+    @Getter
+    private String newVersion = "";
+
+    @Getter
+    private Permission vaultPermissions;
+
+    @Getter
+    private boolean useVault = false;
 
     @Getter
     private static final String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
@@ -64,12 +89,12 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (getDescription().getAuthors().size() < 1) bruh = true;
         else if (!getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
         if (bruh) {
-            getLogger().severe("Please do not modify the plugin.yml file! To receive help, join the support server @ https://discord.badbird.dev/");
+            getLogger().severe("Please do not modify the plugin! To receive help, join the support server @ https://discord.badbird.dev/");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
 
-        getLogger().info("Loading GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
+        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
 
         instance = this;
     }
@@ -84,9 +109,21 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (!new File(getDataFolder(), "config.yml").exists()) {
             saveDefaultConfig();
         }
+        this.permissionsManager = new PermissionsManager(this);
 
-        Metrics metrics;
-                //= new Metrics(this, -1);
+        Metrics metrics = new Metrics(this, 15417);
+
+        if (getConfig().getBoolean("update-check")) {
+            updateChecker = new UpdateChecker(102521);
+            updateChecker.getVersion(version -> {
+                if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                    updateAvailable = true;
+                    newVersion = version;
+                    getLogger().info("There a new update available! Download at https://badbird5907.xyz/gptp?ref=console");
+                }
+                //just dont say anything
+            });
+        }
 
         //bLib.getCommandFramework().registerCommandsInPackage("com.semivanilla.griefpreventiontp.commands");
         commander = BukkitCommander.getCommander(this)
@@ -97,11 +134,13 @@ public final class GriefPreventionTP extends JavaPlugin {
                 .registerDependency(StorageProvider.class, storageProvider)
                 .registerDependency(MiniMessage.class, miniMessage)
                 .registerDependency(ConversationFactory.class, conversationFactory)
+                .registerDependency(PermissionsManager.class, permissionsManager)
                 .register(new ClaimsCommand(),
                         new GPTPCommand(),
-                        new PublicCommand(),
                         new RenameCommand(),
                         new SetSpawnCommand());
+        if (getConfig().getBoolean("enable-public"))
+            commander.register(new PublicCommand());
 
         this.storageProvider = new FlatFileStorageProvider();
         this.storageProvider.init(this);
@@ -111,12 +150,19 @@ public final class GriefPreventionTP extends JavaPlugin {
 
         this.teleportManager = new TeleportManager(this);
 
+
         Listener[] listeners = {
                 new ClaimListener()
         };
 
         for (Listener listener : listeners) {
             getServer().getPluginManager().registerEvents(listener, this);
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+            vaultPermissions = rsp.getProvider();
+            useVault = true;
         }
 
         /*
@@ -162,5 +208,17 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (this.storageProvider != null) {
             this.storageProvider.disable(this);
         }
+    }
+
+    @Override
+    public @NotNull Logger getLogger() {
+        return super.getLogger();
+    }
+
+    @Override
+    public void reloadConfig() {
+        super.reloadConfig();
+        if (permissionsManager != null)
+            permissionsManager.reload(this);
     }
 }
