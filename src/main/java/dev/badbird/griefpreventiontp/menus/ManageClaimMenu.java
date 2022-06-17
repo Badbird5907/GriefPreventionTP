@@ -3,6 +3,7 @@ package dev.badbird.griefpreventiontp.menus;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -47,7 +48,7 @@ public class ManageClaimMenu extends Menu {
         if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
-        buttons.add(new PublicButton());
+        buttons.add(new PublicButton(player));
         buttons.add(new Placeholders());
         return buttons;
     }
@@ -146,6 +147,13 @@ public class ManageClaimMenu extends Menu {
     }
 
     private final class PublicButton extends Button {
+
+        private boolean canMakePublic;
+
+        public PublicButton(Player player) {
+            canMakePublic = (!claimInfo.isPublic() && (player.hasPermission("gptp.bypass-public") || GriefPreventionTP.getInstance().getClaimManager().canMakePublic(player)));
+        }
+
         @Override
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.OAK_DOOR)
@@ -165,15 +173,21 @@ public class ManageClaimMenu extends Menu {
                 MessageManager.sendMessage(player, "messages.public-disabled");
                 return;
             }
-            CommandInfo ci = GriefPreventionTP.getInstance().getCommander().getCommandMap().get("rename");
+            CommandInfo ci = GriefPreventionTP.getInstance().getCommander().getCommandMap().get("public");
             if (ci != null) {
                 if (ci.isOnCooldown(player.getUniqueId())) {
                     player.sendMessage(CC.RED + "You must wait " + ci.getCooldownSeconds(player.getUniqueId()) + " seconds before using this again.");
                     return;
                 }
             }
-            claimInfo.setPublic(!claimInfo.isPublic());
-            claimInfo.save();
+            if (claimInfo.isPublic() || canMakePublic) {
+                claimInfo.setPublic(!claimInfo.isPublic());
+                claimInfo.save();
+            } else {
+                MessageManager.sendMessage(player, "messages.max-public-exceeded");
+                update(player);
+                return;
+            }
             if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
             else MessageManager.sendMessage(player, "messages.public-off");
             update(player);

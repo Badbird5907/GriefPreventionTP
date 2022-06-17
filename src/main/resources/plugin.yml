@@ -21,4 +21,6 @@ permissions:
     description: Permission for /rename
   gptp.command.setspawn:
     description: Permission for /setspawn
+  gptp.bypass.public:
+    description: Permission for bypassing public claim limit
 

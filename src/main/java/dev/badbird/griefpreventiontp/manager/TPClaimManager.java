@@ -7,12 +7,12 @@ import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.objects.tuple.Pair;
 import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TPClaimManager {
     private ConcurrentHashMap<UUID, CopyOnWriteArrayList<ClaimInfo>> claims = new ConcurrentHashMap<>();
@@ -129,9 +129,32 @@ public class TPClaimManager {
         }
     }
 
-    public boolean canMakePublic() {
+    public boolean canMakePublic(Player player) { //We may need to optimize this
         if (GriefPreventionTP.getInstance().isUseVault()) {
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
+            List<Pair<String, Integer>> maxPublic = new ArrayList<>();
+            for (Pair<String, Integer> pair : this.maxPublic) {
+                if (permission.playerInGroup(player, pair.getValue0())) {
+                    maxPublic.add(pair);
+                }
+            }
+            if (maxPublic.size() == 0) {
+                return true;
+            }
+            AtomicInteger count = new AtomicInteger();
+            getClaims(player.getUniqueId()).forEach(claimInfo -> {
+                if (claimInfo.isPublic()) {
+                    count.getAndIncrement();
+                }
+            });
+            for (Pair<String, Integer> pair : maxPublic) {
+                if (pair.getValue1() < 0) {
+                    return true;
+                }
+                if (count.get() < pair.getValue1()) {
+                    return true;
+                }
+            }
         }
         return false;
     }

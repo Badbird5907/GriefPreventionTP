@@ -37,7 +37,16 @@ public class PublicCommand {
             return;
         }
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
-        ci.setPublic(!ci.isPublic());
+        if (!ci.isPublic()) {
+            if ((sender.hasPermission("gptp.bypass-public") || GriefPreventionTP.getInstance().getClaimManager().canMakePublic(sender))) {
+                ci.setPublic(true);
+            } else {
+                MessageManager.sendMessage(sender, "messages.max-public-exceeded");
+                return;
+            }
+        } else {
+            ci.setPublic(false);
+        }
         if (ci.isPublic()) MessageManager.sendMessage(sender, "messages.public-on");
         else MessageManager.sendMessage(sender, "messages.public-off");
         ci.save();
