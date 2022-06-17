@@ -151,7 +151,7 @@ public class ManageClaimMenu extends Menu {
         private boolean canMakePublic;
 
         public PublicButton(Player player) {
-            canMakePublic = (!claimInfo.isPublic() && (player.hasPermission("gptp.bypass-public") || GriefPreventionTP.getInstance().getClaimManager().canMakePublic(player)));
+            canMakePublic = (!claimInfo.isPublic() && GriefPreventionTP.getInstance().getClaimManager().canMakePublic(player));
         }
 
         @Override

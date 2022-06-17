@@ -31,13 +31,11 @@ enable-public: true
 # You can set max per (permission) group
 # Requires Vault to be installed
 max-public:
-  default: -1
-  vip: -1
-  mvp: -1
-  aba: 100
-  abaa: 99
-  abs: 30
-  abc: 500
+  enable: false
+  rules:
+    default: -1
+    vip: -1
+    mvp: -1
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:

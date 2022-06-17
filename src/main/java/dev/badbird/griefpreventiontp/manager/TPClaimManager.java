@@ -21,6 +21,7 @@ public class TPClaimManager {
     private CopyOnWriteArrayList<ClaimInfo> allClaims = new CopyOnWriteArrayList<>(); //Holds references to all claims
 
     private List<Pair<String, Integer>> maxPublic = new ArrayList<>();
+    boolean enableMaxPublic = false;
 
     public void init() {
         load();
@@ -36,34 +37,36 @@ public class TPClaimManager {
         claims.clear();
         allClaims.addAll(GriefPreventionTP.getInstance().getStorageProvider().getClaims());
         sortClaims();
-        Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public").getValues(false);
-        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
-            String k = stringObjectEntry.getKey();
-            Object v = stringObjectEntry.getValue();
-            int i = -1;
-            if (v instanceof String) {
-                i = Integer.parseInt((String) v);
-            } else if (v instanceof Integer) {
-                i = (Integer) v;
+        enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable");
+        if (enableMaxPublic) {
+            Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public.rules").getValues(false);
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                String k = stringObjectEntry.getKey();
+                Object v = stringObjectEntry.getValue();
+                int i = -1;
+                if (v instanceof String) {
+                    i = Integer.parseInt((String) v);
+                } else if (v instanceof Integer) {
+                    i = (Integer) v;
+                }
+                maxPublic.add(new Pair<>(k, i));
             }
-            maxPublic.add(new Pair<>(k, i));
+
+            // sort by biggest first, consider -1 largest
+            // largest should be considered first when looping through this list
+            maxPublic.sort((o1, o2) -> {
+                int i1 = o1.getValue1();
+                int i2 = o2.getValue1();
+
+                if (i1 == -1) {
+                    return -1;
+                } else if (i2 == -1) {
+                    return 1;
+                } else {
+                    return i1 < i2 ? 1 : -1;
+                }
+            });
         }
-
-        // sort by biggest first, consider -1 largest
-        // largest should be considered first when looping through this list
-        maxPublic.sort((o1, o2) -> {
-            int i1 = o1.getValue1();
-            int i2 = o2.getValue1();
-
-            if (i1 == -1) {
-                return -1;
-            } else if (i2 == -1) {
-                return 1;
-            } else {
-                return i1 < i2 ? 1 : -1;
-            }
-        });
-
         //for (Pair<String, Integer> stringIntegerPair : maxPublic) {
         //    System.out.println(stringIntegerPair.getValue0() + " | " + stringIntegerPair.getValue1());
         //}
@@ -130,7 +133,8 @@ public class TPClaimManager {
     }
 
     public boolean canMakePublic(Player player) { //We may need to optimize this
-        if (GriefPreventionTP.getInstance().isUseVault()) {
+        if (GriefPreventionTP.getInstance().isUseVault() && enableMaxPublic) {
+            if (player.hasPermission("gptp.bypass-public")) return true;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
             List<Pair<String, Integer>> maxPublic = new ArrayList<>();
             for (Pair<String, Integer> pair : this.maxPublic) {
@@ -155,7 +159,8 @@ public class TPClaimManager {
                     return true;
                 }
             }
+            return false;
         }
-        return false;
+        return true;
     }
 }
