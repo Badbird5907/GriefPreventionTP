@@ -33,6 +33,7 @@ repositories {
         name = 'jitpack-repo'
         url = 'https://jitpack.io'
     }
+    maven { url 'https://jitpack.io' }
     flatDir {
         dirs 'libs'
     }
@@ -53,6 +54,8 @@ dependencies {
 
     testCompileOnly 'org.projectlombok:lombok:1.18.24'
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
+
+    compileOnly "com.github.MilkBowl:VaultAPI:1.7"
 
     configurations.impl.dependencies.each {
         implementation(it)

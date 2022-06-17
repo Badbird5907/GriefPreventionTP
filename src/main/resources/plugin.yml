@@ -6,6 +6,8 @@ website: 'https://badbird.dev'
 api-version: 1.13
 depend:
   - GriefPrevention
+softdepend:
+  - Vault
 permissions:
   gptp.reload:
     description: Permission for /gptp reload

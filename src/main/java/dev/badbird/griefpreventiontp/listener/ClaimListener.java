@@ -22,9 +22,8 @@ public class ClaimListener implements Listener {
     public void onClaim(ClaimCreatedEvent event) {
         ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(event.getClaim());
         //find the center of the claim
-        Location l = event.getClaim().getGreaterBoundaryCorner().clone().add(event.getClaim().getLesserBoundaryCorner().clone()).multiply(0.5);
-        //set Y value to the highest block
-        l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
+        Location l = ClaimInfo.getDefaultLocation(event.getClaim());
+
         StoredLocation storedLocation = new StoredLocation(l);
         claimInfo.setSpawn(storedLocation);
         claimInfo.save();
@@ -49,7 +48,7 @@ public class ClaimListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onJoin(PlayerJoinEvent event) {
-        if (event.getPlayer().hasPermission("gptp.staff") || event.getPlayer().isOp() && GriefPreventionTP.getInstance().getConfig().getBoolean("update-check") && GriefPreventionTP.getInstance().getUpdateChecker() != null) {
+        if ((event.getPlayer().hasPermission("gptp.staff") || event.getPlayer().isOp()) && (GriefPreventionTP.getInstance().getConfig().getBoolean("update-check") && GriefPreventionTP.getInstance().getUpdateChecker() != null)) {
             if (GriefPreventionTP.getInstance().isUpdateAvailable()){
                 event.getPlayer().sendMessage(CC.translate("&7[&bGriefPreventionTP&7] &aThere is a update available! Your current version is: " + CC.B + GriefPreventionTP.getInstance().getDescription().getVersion() + CC.R + CC.GREEN + " and the new version is: " + CC.B + GriefPreventionTP.getInstance().getNewVersion() + CC.R + CC.GREEN + ".\nDownload @ https://badbird5907.xyz/gptp?ref=server"));
             }

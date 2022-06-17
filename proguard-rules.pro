@@ -15,6 +15,9 @@
 -keep class net.minecraft.** { *; }
 -dontwarn net.minecraft.**
 
+-keep class net.milkbowl.** { *; }
+-dontwarn net.milkbowl.**
+
 -keep class com.google.** { *; }
 -dontwarn com.google.**
 -keepclassmembers class com.google.**

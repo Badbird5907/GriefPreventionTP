@@ -5,10 +5,12 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import net.badbird5907.blib.objects.tuple.Pair;
+import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -17,6 +19,8 @@ public class TPClaimManager {
     private CopyOnWriteArrayList<ClaimInfo> publicClaims = new CopyOnWriteArrayList<>();
 
     private CopyOnWriteArrayList<ClaimInfo> allClaims = new CopyOnWriteArrayList<>(); //Holds references to all claims
+
+    private List<Pair<String, Integer>> maxPublic = new ArrayList<>();
 
     public void init() {
         load();
@@ -32,6 +36,37 @@ public class TPClaimManager {
         claims.clear();
         allClaims.addAll(GriefPreventionTP.getInstance().getStorageProvider().getClaims());
         sortClaims();
+        Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public").getValues(false);
+        for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+            String k = stringObjectEntry.getKey();
+            Object v = stringObjectEntry.getValue();
+            int i = -1;
+            if (v instanceof String) {
+                i = Integer.parseInt((String) v);
+            } else if (v instanceof Integer) {
+                i = (Integer) v;
+            }
+            maxPublic.add(new Pair<>(k, i));
+        }
+
+        // sort by biggest first, consider -1 largest
+        // largest should be considered first when looping through this list
+        maxPublic.sort((o1, o2) -> {
+            int i1 = o1.getValue1();
+            int i2 = o2.getValue1();
+
+            if (i1 == -1) {
+                return -1;
+            } else if (i2 == -1) {
+                return 1;
+            } else {
+                return i1 < i2 ? 1 : -1;
+            }
+        });
+
+        //for (Pair<String, Integer> stringIntegerPair : maxPublic) {
+        //    System.out.println(stringIntegerPair.getValue0() + " | " + stringIntegerPair.getValue1());
+        //}
     }
 
     public void sortClaims() {
@@ -75,6 +110,7 @@ public class TPClaimManager {
         }
         return claimInfo;
     }
+
     public CopyOnWriteArrayList<ClaimInfo> getAllClaims() {
         return allClaims;
     }
@@ -91,5 +127,12 @@ public class TPClaimManager {
         for (Claim claim : GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).getClaims()) {
             fromClaim(claim); //just to make sure its in the list
         }
+    }
+
+    public boolean canMakePublic() {
+        if (GriefPreventionTP.getInstance().isUseVault()) {
+            Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
+        }
+        return false;
     }
 }

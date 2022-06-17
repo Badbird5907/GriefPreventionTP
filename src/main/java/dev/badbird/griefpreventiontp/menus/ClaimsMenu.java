@@ -4,7 +4,6 @@ import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
-import lombok.RequiredArgsConstructor;
 import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
@@ -112,9 +111,10 @@ public class ClaimsMenu extends PaginatedMenu {
         };
     }
 
-    private static class ClaimButton extends Button {
+    private class ClaimButton extends Button {
         private final ClaimInfo claimInfo;
         private final Player player;
+
         public ClaimButton(ClaimInfo claimInfo, Player player) {
             this.claimInfo = claimInfo;
             this.player = player;
@@ -122,6 +122,7 @@ public class ClaimsMenu extends PaginatedMenu {
             this.canEdit = player.hasPermission("gptp.staff") ||
                     GriefPreventionTP.getInstance().getPermissionsManager()
                             .hasClaimPermission(player, claim);
+            claimInfo.checkValid();
         }
 
         private Claim claim;
@@ -129,13 +130,17 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public ItemStack getItem(Player player) {
+            boolean valid = claimInfo.getSpawn() != null;
             ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
                     .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
                     .amount(claimInfo.getPlayerClaimCount());
-            builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
-            builder.lore(
-                    "", CC.GRAY + "Click to teleport."
-            );
+            if (showCoords)
+                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            if (valid)
+                builder.lore(
+                        "", CC.GRAY + "Click to teleport."
+                );
+            else builder.lore("", CC.RED + "No spawn set!");
 
             if (canEdit) {
                 builder.lore(CC.GRAY + "Right Click to manage.");

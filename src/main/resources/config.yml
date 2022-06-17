@@ -14,6 +14,7 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   search: '<green>Type in the name of the claim you want to search for.'
   already-teleporting: '<red>You''re already teleporting somewhere!'
   public-disabled: '<red>Public claims are disabled!'
+  invalid-claim: '<red>Your claim %1 had an invalid spawn location, so it has been reset.'
   manager-gui:
     rename-claim: '<green>Please type in the name of the claim.'
     claim-renamed: '<green>Claim renamed to %1.'
@@ -24,6 +25,18 @@ teleport:
     seconds: 5
 max-claim-name-length: 32
 enable-public: true
+# Maximum public claims
+# set to -1 to set to unlimited
+# You can set max per (permission) group
+# Requires Vault to be installed
+max-public:
+  default: -1
+  vip: -1
+  mvp: -1
+  aba: 100
+  abaa: 99
+  abs: 30
+  abc: 500
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:

@@ -17,11 +17,13 @@ import net.badbird5907.blib.bLib;
 import net.badbird5907.blib.bstats.Metrics;
 import net.badbird5907.blib.spigotmc.UpdateChecker;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
-import org.bukkit.Server;
+import org.bukkit.Bukkit;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,6 +73,12 @@ public final class GriefPreventionTP extends JavaPlugin {
 
     @Getter
     private String newVersion = "";
+
+    @Getter
+    private Permission vaultPermissions;
+
+    @Getter
+    private boolean useVault = false;
 
     @Getter
     private static final String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
@@ -149,6 +157,12 @@ public final class GriefPreventionTP extends JavaPlugin {
 
         for (Listener listener : listeners) {
             getServer().getPluginManager().registerEvents(listener, this);
+        }
+
+        if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
+            RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
+            vaultPermissions = rsp.getProvider();
+            useVault = true;
         }
 
         /*
