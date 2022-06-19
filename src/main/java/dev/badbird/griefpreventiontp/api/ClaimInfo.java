@@ -31,17 +31,15 @@ public class ClaimInfo {
         this.claimID = claimID;
         this.owner = owner;
         this.ownerName = Bukkit.getOfflinePlayer(owner).getName();
-        int claimCount = GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().indexOf(getClaim()) + 1;
+        this.playerClaimCount = -1;
+        int claimCount = getPlayerClaimCount();
         this.name = "Unnamed (" + claimCount + ")";
-        playerClaimCount = claimCount;
+        this.playerClaimCount = claimCount;
     }
 
     public int getPlayerClaimCount() {
         if (playerClaimCount == -1) {
-            playerClaimCount = GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().indexOf(getClaim()) + 1;
-            if (playerClaimCount == 0) {
-                playerClaimCount = 1;
-            }
+            playerClaimCount = GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims().size();
         }
         return playerClaimCount;
     }
