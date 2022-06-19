@@ -5,6 +5,7 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
+import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.objects.tuple.Pair;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
@@ -101,7 +102,7 @@ public class TPClaimManager {
     }
 
     public ClaimInfo fromClaim(Claim claim) {
-        ClaimInfo claimInfo = allClaims.stream().filter(c -> c.getClaim().equals(claim)).findFirst().orElse(null);
+        ClaimInfo claimInfo = allClaims.stream().filter(c -> Objects.equals(c.getClaim().getID(), claim.getID())).findFirst().orElse(null);
         if (claimInfo == null) {
             claimInfo = new ClaimInfo(claim.getID(), claim.getOwnerID());
             if (claimInfo.getPlayerClaimCount() == 0) {
@@ -162,5 +163,15 @@ public class TPClaimManager {
             return false;
         }
         return true;
+    }
+
+    public void updateClaims(UUID owner) {
+        PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(owner);
+        for (ClaimInfo claim : getClaims(owner)) {
+            claim.setPlayerClaimCount(playerData.getClaims().indexOf(claim.getClaim()) + 1);
+            if (claim.getName().startsWith("Unnamed (") && claim.getName().endsWith(")")) {
+                claim.setName("Unnamed (" + claim.getPlayerClaimCount() + ")");
+            }
+        }
     }
 }

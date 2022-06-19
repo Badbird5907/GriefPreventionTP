@@ -112,7 +112,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.ANVIL)
+            return new ItemBuilder(Material.NAME_TAG)
                     .setName(CC.GREEN + "Rename")
                     .lore(CC.GRAY + "Click to rename")
                     .build();

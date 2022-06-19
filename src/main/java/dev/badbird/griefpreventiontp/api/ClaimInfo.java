@@ -77,13 +77,24 @@ public class ClaimInfo {
             return; //Claim has been deleted
         }
         if (getSpawn() == null) {
-            Logger.info("Claim %1 owned by %2 has an invalid spawn location! Resetting...", getName(), getOwnerName());
+            Logger.info("Claim %1 owned by %2 has an invalid spawn location (not set)! Resetting...", getName(), getOwnerName());
             setSpawn(new StoredLocation(ClaimInfo.getDefaultLocation(claim)));
             Player owner = Bukkit.getPlayer(getOwner());
             if (owner != null) {
                 MessageManager.sendMessage(owner, "messages.invalid-claim", getName());
             }
+        }else {
+            Location spawn = getSpawn().getLocation();
+            if (GriefPrevention.instance.dataStore.getClaimAt(spawn, false, claim) == null) {
+                Logger.info("Claim %1 owned by %2 has an invalid spawn location (outside of claim)! Resetting...", getName(), getOwnerName());
+                setSpawn(new StoredLocation(ClaimInfo.getDefaultLocation(claim)));
+                Player owner = Bukkit.getPlayer(getOwner());
+                if (owner != null) {
+                    MessageManager.sendMessage(owner, "messages.invalid-claim", getName());
+                }
+            }
         }
+
     }
 
     public static Location getDefaultLocation(Claim claim) {

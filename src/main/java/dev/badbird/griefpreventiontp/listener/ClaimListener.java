@@ -3,6 +3,8 @@ package dev.badbird.griefpreventiontp.listener;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.events.*;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.StoredLocation;
@@ -38,12 +40,24 @@ public class ClaimListener implements Listener {
         ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(event.getClaim());
         claimInfo.setOwner(event.getNewOwner());
         claimInfo.save();
+        GriefPreventionTP.getInstance().getClaimManager().updateClaims(claimInfo.getOwner());
     }
 
     @EventHandler
     public void onUnclaim(ClaimDeletedEvent event) {
         GriefPreventionTP.getInstance().getClaimManager().getAllClaims().removeIf(c -> c.getClaimID() == event.getClaim().getID());
         GriefPreventionTP.getInstance().getClaimManager().save();
+        GriefPreventionTP.getInstance().getClaimManager().updateClaims(event.getClaim().getOwnerID());
+    }
+
+    @EventHandler
+    public void onClaimResize(ClaimResizeEvent event) {
+        Claim to = event.getTo();
+        Claim from = event.getFrom();
+        ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(to);
+        claimInfo.checkValid();
+
+        //System.out.println("Claim " + (claim == claim2) + " | " + claim.getID() + " | " + claim2.getID());
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
