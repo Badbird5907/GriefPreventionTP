@@ -134,8 +134,8 @@ public class ClaimsMenu extends PaginatedMenu {
             ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
                     .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
                     .amount(claimInfo.getPlayerClaimCount());
-            if (showCoords)
-                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            builder.lore(CC.GRAY + "ID: " + claimInfo.getClaimID());
+            if (showCoords) builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
             if (valid)
                 builder.lore(
                         "", CC.GRAY + "Click to teleport."
