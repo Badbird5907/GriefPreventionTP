@@ -92,7 +92,7 @@ public class TPClaimManager {
         allClaims.removeIf(claim -> claim.getClaim() == null);
         return allClaims.stream().filter(claim -> {
             Claim c = claim.getClaim();
-            return claim.getOwner().equals(owner) || c.hasExplicitPermission(owner, ClaimPermission.Access) || c.hasExplicitPermission(owner, ClaimPermission.Build);
+            return GriefPreventionTP.getInstance().getPermissionsManager().canTeleportToClaim(owner, c);
         }).collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
     }
 

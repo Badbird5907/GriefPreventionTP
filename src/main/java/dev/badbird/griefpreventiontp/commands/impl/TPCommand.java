@@ -36,7 +36,7 @@ public class TPCommand {
             c = claim.getClaim();
         }
 
-        if (!permissionsManager.hasClaimPermission(sender, c) && !claim.isPublic()) {
+        if (!permissionsManager.canTeleportToClaim(sender.getUniqueId(), c) && !claim.isPublic()) {
             MessageManager.sendMessage(sender, "messages.no-permission");
             return;
         }
