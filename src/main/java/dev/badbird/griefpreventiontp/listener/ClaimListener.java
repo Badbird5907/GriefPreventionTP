@@ -85,7 +85,15 @@ public class ClaimListener implements Listener {
                                                 .append(Component.text("%%__USER__%%").color(NamedTextColor.GOLD))
                                 .append(Component.text("\nNonce: ").color(NamedTextColor.GREEN)
                                         .append(Component.text("%%__NONCE__%%")
-                                                .color(NamedTextColor.GOLD)))))
+                                                .color(NamedTextColor.GOLD)))
+                                .append(Component.text("\nVersion: ").color(NamedTextColor.GREEN)
+                                        .append(Component.text(GriefPreventionTP.getInstance().getDescription().getVersion()))
+                                        .color(NamedTextColor.GOLD))
+                                .append(Component.text("\nPlugin Name: ").color(NamedTextColor.GREEN)
+                                        .append(Component.text(GriefPreventionTP.getInstance().getDescription().getName()))
+                                        .color(NamedTextColor.GOLD))
+                                )
+                        )
                         .clickEvent(ClickEvent.copyToClipboard("User: %%__USER__%% | Nonce: %%__NONCE__%%"));
 
                 event.getPlayer().sendMessage(component);
