@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 public class PermissionsManager {
     private boolean claimsPerm, publicPerm, renamePerm, setSpawnPerm,
-    allowManager;
+    allowManager, claimTPPerm;
 
     public PermissionsManager(GriefPreventionTP plugin) {
         reload(plugin);
@@ -27,6 +27,7 @@ public class PermissionsManager {
         this.publicPerm = config.getBoolean("commands.claims.public.enabled");
         this.renamePerm = config.getBoolean("commands.claims.rename.enabled");
         this.setSpawnPerm = config.getBoolean("commands.claims.setspawn.enabled");
+        this.claimTPPerm = config.getBoolean("commands.claims.teleport.enabled");
         this.allowManager = config.getBoolean("permissions.allow-manager");
     }
 

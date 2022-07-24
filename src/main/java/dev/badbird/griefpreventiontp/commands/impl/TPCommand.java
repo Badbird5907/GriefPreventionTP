@@ -8,12 +8,14 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.octopvp.commander.annotation.*;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
+import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
 
 public class TPCommand {
     @Command(name = "claimtp", description = "Teleport to a claim")
     @PlayerOnly
     public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager, @Required @Name("name") @JoinStrings String name) {
+        if (permissionsManager.isClaimTPPerm() && !sender.hasPermission("gptp.command.claimtp")) throw new NoPermissionException();
         ClaimInfo claim;
         Claim c;
         try {
