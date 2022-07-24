@@ -81,7 +81,7 @@ public final class GriefPreventionTP extends JavaPlugin {
     private boolean useVault = false;
 
     @Getter
-    private static final String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
+    private static String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
 
     @Override
     public void onLoad() {

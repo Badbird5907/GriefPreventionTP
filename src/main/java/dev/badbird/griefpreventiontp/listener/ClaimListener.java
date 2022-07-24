@@ -1,14 +1,20 @@
 package dev.badbird.griefpreventiontp.listener;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
-import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import me.ryanhamshire.GriefPrevention.events.*;
+import me.ryanhamshire.GriefPrevention.events.ClaimCreatedEvent;
+import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
+import me.ryanhamshire.GriefPrevention.events.ClaimResizeEvent;
+import me.ryanhamshire.GriefPrevention.events.ClaimTransferEvent;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.StoredLocation;
 import net.badbird5907.blib.util.Tasks;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -70,8 +76,20 @@ public class ClaimListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(event.getPlayer());
         Tasks.runAsync(()-> {
-            if (uuid.toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa"))
-                event.getPlayer().sendMessage(CC.GREEN + "This server is running GPTP!");
+            if (uuid.toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
+                Component component = Component.text("This server is running GPTP!")
+                                .color(NamedTextColor.GREEN)
+                        .hoverEvent(
+                                HoverEvent.showText(
+                                        Component.text("User: ").color(NamedTextColor.GREEN)
+                                                .append(Component.text("%%__USER__%%").color(NamedTextColor.GOLD))
+                                .append(Component.text("\nNonce: ").color(NamedTextColor.GREEN)
+                                        .append(Component.text("%%__NONCE__%%")
+                                                .color(NamedTextColor.GOLD)))))
+                        .clickEvent(ClickEvent.copyToClipboard("User: %%__USER__%% | Nonce: %%__NONCE__%%"));
+
+                event.getPlayer().sendMessage(component);
+            }
         });
     }
 }
