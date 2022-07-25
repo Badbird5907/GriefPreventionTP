@@ -94,7 +94,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             return;
         }
 
-        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
+        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to User: " + USER + " | ID: " + NONCE);
 
         instance = this;
     }
