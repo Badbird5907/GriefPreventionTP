@@ -81,7 +81,7 @@ public final class GriefPreventionTP extends JavaPlugin {
     private boolean useVault = false;
 
     @Getter
-    private static final String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
+    private static String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
 
     @Override
     public void onLoad() {
@@ -94,7 +94,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             return;
         }
 
-        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to %%__USER__%%, %%__RESOURCE__%%, %%__NONCE__%%");
+        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to User: " + USER + " | ID: " + NONCE);
 
         instance = this;
     }
@@ -138,7 +138,8 @@ public final class GriefPreventionTP extends JavaPlugin {
                 .register(new ClaimsCommand(),
                         new GPTPCommand(),
                         new RenameCommand(),
-                        new SetSpawnCommand());
+                        new SetSpawnCommand(),
+                        new TPCommand());
         if (getConfig().getBoolean("enable-public"))
             commander.register(new PublicCommand());
 
