@@ -119,7 +119,7 @@ public final class GriefPreventionTP extends JavaPlugin {
                 if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
                     updateAvailable = true;
                     newVersion = version;
-                    getLogger().info("There a new update available! Download at https://badbird5907.xyz/gptp?ref=console");
+                    getLogger().info("There a new update available! Download at https://s.badbird.dev/gptp?ref=console");
                 }
                 //just dont say anything
             });
