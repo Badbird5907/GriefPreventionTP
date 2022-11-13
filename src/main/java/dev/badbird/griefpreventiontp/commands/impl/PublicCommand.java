@@ -8,19 +8,17 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.milkbowl.vault.economy.Economy;
-import net.octopvp.commander.annotation.Command;
-import net.octopvp.commander.annotation.Cooldown;
-import net.octopvp.commander.annotation.Dependency;
-import net.octopvp.commander.annotation.Sender;
+import net.octopvp.commander.annotation.*;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
 import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
 
 public class PublicCommand {
-    @Command(name = "public", aliases = {"private"}, description = "Toggle the public/private status of the claim you're standing in")
+    @Command(name = "public", aliases = {"private"}, description = "Toggle the public/private status of the claim you're standing in", usage = "[confirm]")
     @Cooldown(3)
     @PlayerOnly
-    public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager, @Dependency GriefPreventionTP plugin) {
+    public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager, @Dependency GriefPreventionTP plugin,@Optional String verify) {
+        boolean verifyBool = verify != null && !verify.isEmpty();
         if (!plugin.getConfig().getBoolean("enable-public")) {
             MessageManager.sendMessage(sender, "messages.public-disabled");
             return;
@@ -51,8 +49,12 @@ public class PublicCommand {
             }
             cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(sender.getPlayer());
             if (cost > 0) {
+                if (GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.public-claim-cost.verify", true) && !verifyBool) {
+                    MessageManager.sendMessage(sender, "messages.verify-public-cost.message", cost);
+                    return;
+                }
                 Economy economy = (Economy) GriefPreventionTP.getInstance().getClaimManager().getVaultEconomy();
-                economy.withdrawPlayer(sender, cost);
+                if (!sender.hasPermission("gptp.bypass.public")) economy.withdrawPlayer(sender, cost);
             }
             ci.setPublic(true);
             MessageManager.sendMessage(sender, "messages.public-on", cost);

@@ -14,22 +14,30 @@ import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.octopvp.commander.command.CommandInfo;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class ManageClaimMenu extends Menu {
     private final ClaimInfo claimInfo;
+    private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
 
     private static final int[] PLACEHOLDERS;
 
@@ -49,6 +57,7 @@ public class ManageClaimMenu extends Menu {
         if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
+        buttons.add(new ClaimButton());
         buttons.add(new PublicButton(player));
         buttons.add(new Placeholders());
         return buttons;
@@ -101,7 +110,7 @@ public class ManageClaimMenu extends Menu {
                     MessageManager.sendMessage(player, "messages.manager-gui.claim-deleted");
                     player.closeInventory();
                     new ClaimsMenu(player.getUniqueId()).open(player);
-                }else {
+                } else {
                     player.closeInventory();
                     //new ClaimsMenu(player.getUniqueId()).open(player);
                 }
@@ -115,7 +124,7 @@ public class ManageClaimMenu extends Menu {
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.NAME_TAG)
                     .setName(CC.GREEN + "Rename")
-                    .lore(CC.GRAY + "Click to rename")
+                    .lore("", CC.GRAY + "Click to rename")
                     .build();
         }
 
@@ -161,10 +170,23 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.OAK_DOOR)
-                    .name(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")
-                    .lore(CC.GRAY + "Click to toggle public/private.")
-                    .build();
+            boolean isPublic = claimInfo.isPublic();
+            int cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
+            ItemStack item = new ItemStack(Material.OAK_DOOR);
+            ItemMeta meta = item.getItemMeta();
+            meta.displayName(LegacyComponentSerializer.legacySection().deserialize(CC.translate(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")).decoration(TextDecoration.ITALIC, false));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.empty());
+            if (!isPublic && cost > 0) {
+                Component component = MessageManager.getComponent("messages.verify-public-cost.menu", cost)
+                        .decoration(TextDecoration.ITALIC, false);
+                lore.add(component);
+            }
+            lore.add(LegacyComponentSerializer.legacySection().deserialize(CC.GRAY + "Click to toggle public/private.")
+                    .decoration(TextDecoration.ITALIC, false));
+            meta.lore(lore);
+            item.setItemMeta(meta);
+            return item;
         }
 
         @Override
@@ -191,7 +213,7 @@ public class ManageClaimMenu extends Menu {
                     cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
                     if (cost > 0) {
                         Economy economy = (Economy) GriefPreventionTP.getInstance().getClaimManager().getVaultEconomy();
-                        economy.withdrawPlayer(player, cost);
+                        if (!player.hasPermission("gptp.bypass.public")) economy.withdrawPlayer(player, cost);
                     }
                 }
                 claimInfo.setPublic(!claimInfo.isPublic());
@@ -210,6 +232,39 @@ public class ManageClaimMenu extends Menu {
             else MessageManager.sendMessage(player, "messages.public-off");
             update(player);
             ci.addCooldown(player.getUniqueId());
+        }
+    }
+
+    private class ClaimButton extends Button {
+        public ClaimButton() {
+            claimInfo.checkValid();
+        }
+        @Override
+        public ItemStack getItem(Player player) {
+            boolean valid = claimInfo.getSpawn() != null;
+            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
+                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
+                    .amount(claimInfo.getPlayerClaimCount());
+            builder.lore(CC.GRAY + "ID: " + claimInfo.getClaimID());
+            if (showCoords) builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            if (!valid) builder.lore("", CC.RED + "No spawn set!");
+
+            ItemStack stack = builder.build();
+            UUID owner = claimInfo.getOwner();
+            SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
+            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+            stack.setItemMeta(skullMeta);
+            return stack;
+        }
+
+        @Override
+        public int getSlot() {
+            return 13;
+        }
+
+        @Override
+        public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+
         }
     }
 }

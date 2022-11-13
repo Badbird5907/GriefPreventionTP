@@ -8,6 +8,9 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   public-on: '<green>Your claim is now public!' # Add the '%1' placeholder for cost, if it is enabled. The placeholder system will be revamped in the future.
                                                 #For example: '<green>Your claim is now public!<red>-$%1.'
   public-off: '<green>Your claim is no longer public!'
+  verify-public-cost:
+    message: '<green>It will cost $%1 to make this claim public. If you want to continue, please type /public confirm<green>.'
+    menu: '<gray>Cost: <green>$%1'
   updated-spawn: '<green>Spawn block set to %1 %2 %3.'
   name-too-long: '<red>The name you entered is too long!'
   updated-name: '<green>Updated the name of your claim to %1.'
@@ -43,6 +46,7 @@ vault-integration:
   enabled: true
   public-claim-cost:
     enabled: false
+    verify: true # Asks the player to confirm when using the command. check messages above
     groups:
       default: 100
       vip: 50
