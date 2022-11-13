@@ -42,8 +42,8 @@ public class TPClaimManager {
         allClaims.addAll(GriefPreventionTP.getInstance().getStorageProvider().getClaims());
         sortClaims();
         enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable", false);
-        enableVaultIntegration = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.enable", false);
-        enablePublicCost = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.public-claim-cost", false);
+        enableVaultIntegration = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.enabled", false);
+        enablePublicCost = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.public-claim-cost.enabled", false);
         if (enableMaxPublic) {
             Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public.rules").getValues(false);
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
@@ -180,7 +180,7 @@ public class TPClaimManager {
 
     public int canMakePublic(Player player) { //We may need to optimize this
         if (GriefPreventionTP.getInstance().isUseVault() && enableMaxPublic) {
-            if (player.hasPermission("gptp.bypass-public")) return 0;
+            if (player.hasPermission("gptp.bypass.public")) return 0;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
             List<Pair<String, Integer>> maxPublic = new ArrayList<>();
             for (Pair<String, Integer> pair : this.maxPublic) {
@@ -208,7 +208,7 @@ public class TPClaimManager {
             return 1;
         }
         if (GriefPreventionTP.getInstance().isUseVault() && enablePublicCost) {
-            if (player.hasPermission("gptp.bypass-public")) return 0;
+            if (player.hasPermission("gptp.bypass.public")) return 0;
             int cost = getCostToMakePublic(player);
             if (cost <= 0) {
                 return 0;
@@ -222,7 +222,7 @@ public class TPClaimManager {
     }
     public int getCostToMakePublic(Player player) {
         if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && enablePublicCost) {
-            if (player.hasPermission("gptp.bypass-cost")) return 0;
+            if (player.hasPermission("gptp.bypass.cost")) return 0;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
             for (Pair<String, Integer> pair : createCost) {
                 if (permission.playerInGroup(player, pair.getValue0())) {

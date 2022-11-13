@@ -110,8 +110,11 @@ public final class GriefPreventionTP extends JavaPlugin {
             saveDefaultConfig();
         }
         this.permissionsManager = new PermissionsManager(this);
-
-        Metrics metrics = new Metrics(this, 15417);
+        try {
+            Metrics metrics = new Metrics(this, 15417);
+        } catch (Exception e) {
+            // weird error
+        }
 
         if (getConfig().getBoolean("update-check")) {
             updateChecker = new UpdateChecker(102521);
