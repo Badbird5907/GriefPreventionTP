@@ -37,6 +37,8 @@ repositories {
     flatDir {
         dirs 'libs'
     }
+    maven { url 'https://jitpack.io' }
+
 }
 configurations {
     impl
@@ -47,7 +49,7 @@ dependencies {
 
     impl 'net.badbird5907:bLib-Bukkit:2.1.7-REL'
     impl 'net.kyori:adventure-text-minimessage:4.10.1'
-    impl 'net.octopvp:Commander-Bukkit:1.0-SNAPSHOT'
+    impl 'net.octopvp:Commander-Bukkit:0.0.1-DEV'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -119,7 +121,7 @@ task obfuscate(type: ProGuardTask) {
 jar.dependsOn(project.tasks.shadowJar)
 jar.finalizedBy(project.tasks.obfuscate)
 task genDict() {
-    def dict = file('names.txt')
+    def dict = file('names-v1.txt')
     def maxChars = 10, lines = 20000
     def chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".toCharArray()
     PrintStream out = new PrintStream(dict)

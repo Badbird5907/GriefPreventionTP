@@ -14,6 +14,7 @@ import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
+import net.milkbowl.vault.economy.Economy;
 import net.octopvp.commander.command.CommandInfo;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -148,10 +149,14 @@ public class ManageClaimMenu extends Menu {
 
     private final class PublicButton extends Button {
 
-        private boolean canMakePublic;
+        private int canMakePublic;
 
         public PublicButton(Player player) {
-            canMakePublic = (!claimInfo.isPublic() && GriefPreventionTP.getInstance().getClaimManager().canMakePublic(player));
+            if (claimInfo.isPublic()) {
+                canMakePublic = 0;
+            } else {
+                canMakePublic = GriefPreventionTP.getInstance().getClaimManager().canMakePublic(player);
+            }
         }
 
         @Override
@@ -180,15 +185,28 @@ public class ManageClaimMenu extends Menu {
                     return;
                 }
             }
-            if (claimInfo.isPublic() || canMakePublic) {
+            int cost = 0;
+            if (claimInfo.isPublic() || canMakePublic == 0) {
+                if (claimInfo.isPublic()) {
+                    cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
+                    if (cost > 0) {
+                        Economy economy = (Economy) GriefPreventionTP.getInstance().getClaimManager().getVaultEconomy();
+                        economy.withdrawPlayer(player, cost);
+                    }
+                }
                 claimInfo.setPublic(!claimInfo.isPublic());
                 claimInfo.save();
             } else {
+                if (canMakePublic == 2) {
+                    MessageManager.sendMessage(player, "messages.not-enough-money");
+                    update(player);
+                    return;
+                }
                 MessageManager.sendMessage(player, "messages.max-public-exceeded");
                 update(player);
                 return;
             }
-            if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on");
+            if (claimInfo.isPublic()) MessageManager.sendMessage(player, "messages.public-on", cost);
             else MessageManager.sendMessage(player, "messages.public-off");
             update(player);
             ci.addCooldown(player.getUniqueId());

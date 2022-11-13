@@ -119,7 +119,7 @@ public final class GriefPreventionTP extends JavaPlugin {
                 if (!this.getDescription().getVersion().equalsIgnoreCase(version)) {
                     updateAvailable = true;
                     newVersion = version;
-                    getLogger().info("There a new update available! Download at https://badbird5907.xyz/gptp?ref=console");
+                    getLogger().info("There a new update available! Download at https://s.badbird.dev/gptp?ref=console");
                 }
                 //just dont say anything
             });
@@ -198,6 +198,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             }
         }, 20l, 10l);
          */
+        getLogger().info("Please ignore any warnings about deprecated listeners. It is a bug (https://github.com/TechFortress/GriefPrevention/issues/1791#issuecomment-1312809553)");
     }
 
     @Override

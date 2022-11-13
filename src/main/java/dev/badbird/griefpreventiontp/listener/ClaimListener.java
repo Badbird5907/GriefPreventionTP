@@ -59,7 +59,6 @@ public class ClaimListener implements Listener {
     @EventHandler
     public void onClaimResize(ClaimResizeEvent event) {
         Claim to = event.getTo();
-        Claim from = event.getFrom();
         ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(to);
         claimInfo.checkValid();
 

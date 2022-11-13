@@ -5,7 +5,8 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   teleporting: '<yellow>Teleporting in 5 seconds, don''t move...'
   moved: '<red>Pending teleportation request cancelled.'
   damaged: '<red>Pending teleportation request cancelled.'
-  public-on: '<green>Your claim is now public!'
+  public-on: '<green>Your claim is now public!' # Add the '%1' placeholder for cost, if it is enabled. The placeholder system will be revamped in the future.
+                                                #For example: '<green>Your claim is now public!<red>-$%1.'
   public-off: '<green>Your claim is no longer public!'
   updated-spawn: '<green>Spawn block set to %1 %2 %3.'
   name-too-long: '<red>The name you entered is too long!'
@@ -17,6 +18,7 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   invalid-claim: '<red>Your claim %1 had an invalid spawn location, so it has been reset.'
   max-public-exceeded: '<red>You have reached the maximum number of public claims!'
   claim-not-found: '<red>Could not find that claim!'
+  not-enough-money: '<red>You do not have enough money to make this claim public!'
   manager-gui:
     rename-claim: '<green>Please type in the name of the claim.'
     claim-renamed: '<green>Claim renamed to %1.'
@@ -37,6 +39,14 @@ max-public:
     default: -1
     vip: -1
     mvp: -1
+vault-integration:
+  enabled: true
+  public-claim-cost:
+    enabled: false
+    groups:
+      default: 100
+      vip: 50
+      mvp: 10
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:
