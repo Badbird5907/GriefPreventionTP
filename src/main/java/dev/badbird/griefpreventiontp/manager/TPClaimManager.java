@@ -25,6 +25,7 @@ public class TPClaimManager {
             createCost = new ArrayList<>(); // List because we want to sort it
     private boolean enableMaxPublic = false, enableVaultIntegration = false, enablePublicCost = false;
 
+
     private Object vaultEconomy;
 
     public void init() {
@@ -112,6 +113,7 @@ public class TPClaimManager {
 
             vaultEconomy = GriefPreventionTP.getInstance().getServer().getServicesManager().getRegistration(Economy.class).getProvider();
         }
+
 
         //for (Pair<String, Integer> stringIntegerPair : maxPublic) {
         //    System.out.println(stringIntegerPair.getValue0() + " | " + stringIntegerPair.getValue1());
@@ -217,7 +219,7 @@ public class TPClaimManager {
         checkCost:
         {
             if (GriefPreventionTP.getInstance().isUseVault() && enablePublicCost) {
-                if (player.hasPermission("gptp.bypass.public")) return 0;
+                if (player.hasPermission("gptp.bypass.cost")) return 0;
                 int cost = getCostToMakePublic(player);
                 if (cost <= 0) {
                     break checkCost;
@@ -234,7 +236,7 @@ public class TPClaimManager {
 
     public int getCostToMakePublic(Player player) {
         if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && enablePublicCost) {
-            if (player.hasPermission("gptp.bypass.cost")) return 0;
+            if (player.hasPermission("gptp.bypass.cost.")) return 0;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
             for (Pair<String, Integer> pair : createCost) {
                 if (permission.playerInGroup(player, pair.getValue0())) {

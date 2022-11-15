@@ -51,6 +51,12 @@ vault-integration:
       default: 100
       vip: 50
       mvp: 10
+  tp-cost: # Cost to teleport to a claim
+    enabled: false
+    groups:
+      default: 100
+      vip: 50
+      mvp: 10
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:
