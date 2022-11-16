@@ -1,1 +1,32 @@
 title: 'Claims'
+title-search: 'Claims - %search%'
+filter:
+  slot: auto
+  enable: true
+  material: PAPER
+  amount: 1
+  name: '<green>Viewing Public Claims:</green> %public%' # public is yes/no, defined in config
+  lore:
+    - '<gray>Click to toggle.'
+claim:
+  material: PLAYER_HEAD
+  amount: 1
+  name: '<green>%name%'
+  valid: '<gray>Click to teleport.' # Valid placeholder: %cost%
+  invalid: '<red>No spawn set!'
+  lore:
+    - '<gray>Owner: %owner%'
+    - '<gray>ID: %id%'
+    - ''
+    - '<gray>%x%, %y%, %z%'
+    - '<gray>World: %world%' # Check world-aliases in config.yml
+    - ''
+    - '%status$' # valid/invalid above
+search:
+  material: OAK_SIGN
+  slot: auto
+  name: '<green>Search'
+  clear: '<gray>Click to clear search.'
+  search: '<gray>Click to search for a claim.'
+  lore:
+    - '%status%' # clear/search above

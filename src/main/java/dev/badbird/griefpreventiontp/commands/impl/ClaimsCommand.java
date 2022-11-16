@@ -14,7 +14,7 @@ public class ClaimsCommand {
     @PlayerOnly
     public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager) {
         if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.claims")) throw new NoPermissionException();
-        new ClaimsMenu(sender.getUniqueId()).open(sender);
+        new ClaimsMenu().open(sender);
     }
 }
 

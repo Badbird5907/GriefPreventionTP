@@ -98,7 +98,7 @@ public class ManageClaimMenu extends Menu {
                     GriefPrevention.instance.dataStore.deleteClaim(claim);
                     MessageManager.sendMessage(player, "messages.manager-gui.claim-deleted");
                     player.closeInventory();
-                    new ClaimsMenu(player.getUniqueId()).open(player);
+                    new ClaimsMenu().open(player);
                 }else {
                     player.closeInventory();
                     //new ClaimsMenu(player.getUniqueId()).open(player);

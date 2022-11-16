@@ -3,18 +3,16 @@ package dev.badbird.griefpreventiontp.data.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
-import dev.badbird.griefpreventiontp.data.StorageProvider;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.data.StorageProvider;
+import dev.badbird.griefpreventiontp.object.FilterOptions;
 import lombok.SneakyThrows;
-import lombok.extern.java.Log;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.util.Logger;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -170,6 +168,20 @@ public class FlatFileStorageProvider implements StorageProvider {
                 claims.add(allClaim);
         }
         return claims;
+    }
+
+    @Override
+    public int getTotalClaims(FilterOptions options) {
+        String nameFilter = options.getNameFilter();
+        boolean privateOnly = options.isPrivateClaims();
+
+        int total = 0;
+        for (ClaimInfo claim : getAllClaims()) {
+            if (privateOnly && claim.isPublic()) continue;
+            if (nameFilter != null && !claim.getOwnerName().equalsIgnoreCase(nameFilter)) continue;
+            total++;
+        }
+        return total;
     }
 
 }

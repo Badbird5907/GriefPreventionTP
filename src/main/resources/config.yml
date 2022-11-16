@@ -21,6 +21,8 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
     rename-claim: '<green>Please type in the name of the claim.'
     claim-renamed: '<green>Claim renamed to %1.'
     claim-deleted: '<red>Claim deleted.'
+  yes: '<green>Yes'
+  no: '<red>No'
 teleport:
   warmup:
     enabled: true
@@ -60,5 +62,10 @@ commands: # Permissions required to use the commands, set to false to stop check
   claimtp: # gptp.command.claimtp
     permission:
       enabled: true
+
+world-aliases:
+  world: 'Overworld'
+  world_nether: 'Nether'
+  world_the_end: 'End'
 
 update-check: true

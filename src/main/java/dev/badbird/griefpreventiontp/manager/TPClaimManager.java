@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.manager;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.object.FilterOptions;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
@@ -142,5 +143,9 @@ public class TPClaimManager {
                 claim.setName("Unnamed (" + claim.getPlayerClaimCount() + ")");
             }
         }
+    }
+
+    public int getTotalClaims(FilterOptions options) {
+        return GriefPreventionTP.getInstance().getStorageProvider().getTotalClaims(options);
     }
 }

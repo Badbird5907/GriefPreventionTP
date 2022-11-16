@@ -59,7 +59,6 @@ public class ClaimInfo {
 
     public void setPublic(boolean aPublic) {
         isPublic = aPublic;
-        GriefPreventionTP.getInstance().getClaimManager().updatePublic(this);
     }
 
     public String getOwnerName() {
