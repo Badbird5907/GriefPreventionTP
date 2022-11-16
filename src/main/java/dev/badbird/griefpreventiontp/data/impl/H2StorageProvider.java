@@ -57,7 +57,7 @@ public class H2StorageProvider implements StorageProvider {
 
     @SneakyThrows
     private ResultSet execute(String sql) {
-        connect();
+        //connect();
         return connection.createStatement().executeQuery(sql);
     }
 
