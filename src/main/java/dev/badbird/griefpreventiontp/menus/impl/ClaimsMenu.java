@@ -3,7 +3,6 @@ package dev.badbird.griefpreventiontp.menus.impl;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.menus.Menu;
 import dev.badbird.griefpreventiontp.menus.StreamedPaginatedGui;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;

@@ -46,6 +46,8 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'com.github.TechFortress:GriefPrevention:16.18'
 
+    compileOnly 'com.h2database:h2:2.1.214' // Compile only because spigot downloads it
+
     impl 'net.badbird5907:bLib-Bukkit:2.1.7-REL'
     impl 'net.kyori:adventure-text-minimessage:4.10.1'
     impl 'net.octopvp:Commander-Bukkit:0.0.1-DEV'
