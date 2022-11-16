@@ -45,7 +45,7 @@ public class GPTPCommand {
                     player.sendMessage("User: %%__USER__%%");
                     player.sendMessage("Resource: %%__RESOURCE__%%");
                     player.sendMessage("Nonce: %%__NONCE__%%");
-                    player.sendMessage("Claims: " + GriefPreventionTP.getInstance().getStorageProvider().getClaims().size());
+                    player.sendMessage("Claims: " + GriefPreventionTP.getInstance().getStorageProvider().getAllClaims().size());
                     player.sendMessage("");
                     player.sendMessage("OBF: " + (!this.getClass().getSimpleName().equals("GPTPCommand")));
                     player.sendMessage("Server Version: " + Bukkit.getServer().getVersion());

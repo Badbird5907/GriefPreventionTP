@@ -3,7 +3,6 @@ package dev.badbird.griefpreventiontp.manager;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.objects.tuple.Pair;
@@ -16,11 +15,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class TPClaimManager {
-    private ConcurrentHashMap<UUID, CopyOnWriteArrayList<ClaimInfo>> claims = new ConcurrentHashMap<>();
-    private CopyOnWriteArrayList<ClaimInfo> publicClaims = new CopyOnWriteArrayList<>();
-
-    private CopyOnWriteArrayList<ClaimInfo> allClaims = new CopyOnWriteArrayList<>(); //Holds references to all claims
-
     private List<Pair<String, Integer>> maxPublic = new ArrayList<>();
     boolean enableMaxPublic = false;
 
@@ -33,11 +27,6 @@ public class TPClaimManager {
     }
 
     public void load() {
-        allClaims.clear();
-        publicClaims.clear();
-        claims.clear();
-        allClaims.addAll(GriefPreventionTP.getInstance().getStorageProvider().getClaims());
-        sortClaims();
         enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable");
         if (enableMaxPublic) {
             Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public.rules").getValues(false);
@@ -73,60 +62,40 @@ public class TPClaimManager {
         //}
     }
 
-    public void sortClaims() {
-        claims.clear();
-        publicClaims.clear();
-        for (ClaimInfo claim : allClaims) {
-            if (claim.isPublic()) {
-                publicClaims.add(claim);
-            }
-            claims.computeIfAbsent(claim.getOwner(), k -> new CopyOnWriteArrayList<>()).add(claim);
-        }
-    }
-
     public void save() {
-        GriefPreventionTP.getInstance().getStorageProvider().saveClaims(allClaims);
+        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public List<ClaimInfo> getClaims(UUID owner) {
-        allClaims.removeIf(claim -> claim.getClaim() == null);
-        return allClaims.stream().filter(claim -> {
-            Claim c = claim.getClaim();
-            return GriefPreventionTP.getInstance().getPermissionsManager().canTeleportToClaim(owner, c);
-        }).collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
+        List<ClaimInfo> claims = new ArrayList<>();
+        for (Claim claim : GriefPrevention.instance.dataStore.getPlayerData(owner).getClaims()) {
+            claims.add(GriefPreventionTP.getInstance().getStorageProvider().fromClaim(claim));
+        }
+        return claims;
     }
 
     public List<ClaimInfo> getAllPublicClaims() {
-        publicClaims.removeIf(claim -> claim.getClaim() == null);
-        return publicClaims.stream().collect(CopyOnWriteArrayList::new, CopyOnWriteArrayList::add, CopyOnWriteArrayList::addAll);
+        Collection<ClaimInfo> col = GriefPreventionTP.getInstance().getStorageProvider().getPublicClaims();
+        return (List<ClaimInfo>) col;
     }
 
     public ClaimInfo fromClaim(Claim claim) {
-        ClaimInfo claimInfo = allClaims.stream().filter(c -> Objects.equals(c.getClaim().getID(), claim.getID())).findFirst().orElse(null);
-        if (claimInfo == null) {
-            claimInfo = new ClaimInfo(claim.getID(), claim.getOwnerID());
+        /*
             if (claimInfo.getPlayerClaimCount() == 0) {
                 claimInfo.setPlayerClaimCount((int) (GriefPrevention.instance.dataStore.getPlayerData(claim.getOwnerID()).getClaims().stream().filter(c -> c.getID() != claim.getID()).count() + 1));
                 claimInfo.setName("Unnamed (" + claimInfo.getPlayerClaimCount() + ")");
             }
-            allClaims.add(claimInfo);
-            save();
-        }
-        return claimInfo;
+             */
+        return GriefPreventionTP.getInstance().getStorageProvider().fromClaim(claim);
     }
 
-    public CopyOnWriteArrayList<ClaimInfo> getAllClaims() {
-        return allClaims;
+    /**
+     * @deprecated very inefficient.
+     */
+    @Deprecated
+    public List<ClaimInfo> getAllClaims() {
+        return (List<ClaimInfo>) GriefPreventionTP.getInstance().getStorageProvider().getAllClaims();
     }
-
-    public void updatePublic(ClaimInfo claimInfo) {
-        if (claimInfo.isPublic()) {
-            publicClaims.add(claimInfo);
-        } else {
-            publicClaims.remove(claimInfo);
-        }
-    }
-
     public void onPlayerJoin(Player player) {
         for (Claim claim : GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).getClaims()) {
             fromClaim(claim); //just to make sure its in the list

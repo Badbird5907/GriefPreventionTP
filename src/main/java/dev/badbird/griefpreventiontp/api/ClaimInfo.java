@@ -1,5 +1,6 @@
 package dev.badbird.griefpreventiontp.api;
 
+import com.google.gson.JsonObject;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
@@ -100,5 +101,8 @@ public class ClaimInfo {
         //set Y value to the highest block
         l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
         return l;
+    }
+    public JsonObject toJson(){
+        return GriefPreventionTP.getInstance().getGson().toJsonTree(this).getAsJsonObject(); //TODO: manually serialize
     }
 }
