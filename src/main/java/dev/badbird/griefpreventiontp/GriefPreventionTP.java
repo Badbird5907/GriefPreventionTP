@@ -10,6 +10,7 @@ import dev.badbird.griefpreventiontp.listener.ClaimListener;
 import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
+import dev.badbird.griefpreventiontp.object.config.MenuConfig;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
@@ -151,6 +152,7 @@ public final class GriefPreventionTP extends JavaPlugin {
 
         this.teleportManager = new TeleportManager(this);
 
+        MenuConfig.init(this);
 
         Listener[] listeners = {
                 new ClaimListener()

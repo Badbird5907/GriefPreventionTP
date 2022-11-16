@@ -34,6 +34,7 @@ repositories {
         url = 'https://jitpack.io'
     }
     maven { url 'https://jitpack.io' }
+    maven { url = "https://repo.mattstudios.me/artifactory/public/" }
     flatDir {
         dirs 'libs'
     }
@@ -48,6 +49,7 @@ dependencies {
     impl 'net.badbird5907:bLib-Bukkit:2.1.7-REL'
     impl 'net.kyori:adventure-text-minimessage:4.10.1'
     impl 'net.octopvp:Commander-Bukkit:0.0.1-DEV'
+    impl "dev.triumphteam:triumph-gui:3.1.2"
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -137,6 +139,7 @@ obfuscate.dependsOn(project.tasks.genDict)
 shadowJar {
     relocate 'net.badbid5907.blib', 'dev.badbird.griefpreventiontp.dependencies'
     relocate 'net.octopvp', 'dev.badbird.griefpreventiontp.dependencies'
+    relocate 'dev.triumphteam.gui', 'dev.badbird.griefpreventiontp.dependencies'
     //relocate 'net.kyori', 'dev.badbird.griefpreventiontp.dependencies'
     //relocate 'org', 'dev.badbird.griefpreventiontp.dependencies'
     //relocate 'javax', 'dev.badbird.griefpreventiontp.dependencies.javax'

@@ -1,9 +1,8 @@
-package dev.badbird.griefpreventiontp.menus;
+package dev.badbird.griefpreventiontp.menus.impl;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import lombok.RequiredArgsConstructor;
 import me.ryanhamshire.GriefPrevention.Claim;

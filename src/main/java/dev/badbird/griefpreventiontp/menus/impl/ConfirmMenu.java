@@ -1,4 +1,4 @@
-package dev.badbird.griefpreventiontp.menus;
+package dev.badbird.griefpreventiontp.menus.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

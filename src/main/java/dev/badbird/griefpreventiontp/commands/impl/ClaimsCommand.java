@@ -1,7 +1,7 @@
 package dev.badbird.griefpreventiontp.commands.impl;
 
 import dev.badbird.griefpreventiontp.manager.PermissionsManager;
-import dev.badbird.griefpreventiontp.menus.ClaimsMenu;
+import dev.badbird.griefpreventiontp.menus.impl.ClaimsMenu;
 import net.octopvp.commander.annotation.Command;
 import net.octopvp.commander.annotation.Dependency;
 import net.octopvp.commander.annotation.Sender;
