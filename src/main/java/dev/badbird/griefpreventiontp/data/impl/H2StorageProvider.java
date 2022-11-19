@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.List;
 
@@ -56,9 +55,9 @@ public class H2StorageProvider implements StorageProvider {
     }
 
     @SneakyThrows
-    private ResultSet execute(String sql) {
+    private void execute(String sql) {
         //connect();
-        return connection.createStatement().executeQuery(sql);
+        connection.createStatement().executeQuery(sql);
     }
 
     @Override
