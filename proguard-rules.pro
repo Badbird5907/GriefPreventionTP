@@ -59,3 +59,8 @@
 
 -dontwarn java.util.logging.Logger
 
+-keep class java.sql.** { *; }
+-dontwarn java.sql.**
+
+-keep class com.mojang.** { *; }
+-dontwarn com.mojang.**

@@ -184,4 +184,24 @@ public class FlatFileStorageProvider implements StorageProvider {
         return total;
     }
 
+    @Override
+    public Collection<ClaimInfo> getClaims(FilterOptions options, int max, int page) {
+        String nameFilter = options.getNameFilter();
+        boolean privateOnly = options.isPrivateClaims();
+
+        List<ClaimInfo> claims = new ArrayList<>();
+        for (ClaimInfo claim : getAllClaims()) {
+            if (privateOnly && claim.isPublic()) continue;
+            if (nameFilter != null && !claim.getOwnerName().equalsIgnoreCase(nameFilter)) continue;
+            claims.add(claim);
+        }
+
+        int start = (page - 1) * max; // Really inefficient, but whatever people should use sql anyway
+        int end = start + max;
+        if (end > claims.size()) {
+            end = claims.size();
+        }
+        return claims.subList(start, end);
+    }
+
 }
