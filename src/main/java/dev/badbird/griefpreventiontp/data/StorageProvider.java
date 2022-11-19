@@ -16,6 +16,8 @@ public interface StorageProvider {
 
     void saveClaim(ClaimInfo claim);
 
+    void deleteClaim(long id);
+
     Collection<ClaimInfo> getAllClaims();
 
     ClaimInfo getClaim(long claimId);

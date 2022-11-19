@@ -8,14 +8,17 @@ import dev.badbird.griefpreventiontp.menus.StreamedPaginatedGui;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import dev.badbird.griefpreventiontp.object.FilterOptions;
 import dev.badbird.griefpreventiontp.object.config.MenuConfig;
+import dev.triumphteam.gui.guis.Gui;
 import dev.triumphteam.gui.guis.GuiItem;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.objects.TypeCallback;
 import net.badbird5907.blib.objects.tuple.Pair;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -28,30 +31,28 @@ public class ClaimsMenu extends Menu {
     private static final int PAGE_SIZE = 45;
 
     @Override
-    public void open(Player player) {
+    public void open(HumanEntity humanEntity) {
         try {
+            Player player = (Player) humanEntity;
+            Component title;
+            if (filterOptions.getNameFilter() != null && !filterOptions.getNameFilter().isEmpty()) {
+                title = MenuConfig.getComponent(getMenuType(), "title-search", "Claims - %search%", "search", filterOptions.getNameFilter());
+            } else {
+                title = MenuConfig.getComponent(getMenuType(), "title", "Claims");
+            }
             StreamedPaginatedGui gui = new StreamedPaginatedGui(
-                    5,
+                    6,
                     PAGE_SIZE,
-                    MenuConfig.getGuiTitle(getMenuType(), "Claims"),
+                    title,
                     new HashSet<>(),
                     (TypeCallback<Integer, StreamedPaginatedGui>) paginatedGui -> GriefPreventionTP.getInstance().getClaimManager().getTotalClaims(filterOptions) / PAGE_SIZE,
                     (TypeCallback<List<GuiItem>, Integer>) (page) -> getItems(page, player)
             );
-            if (GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-search", true)) {
-                String publicYesNo = filterOptions.isPrivateClaims() ? GriefPreventionTP.getInstance().getConfig().getString("messages.no") : GriefPreventionTP.getInstance().getConfig().getString("messages.yes");
-                MenuConfig.ItemConfig filterButton = MenuConfig.getItemConfig(getMenuType(), "filter",
-                        "public", publicYesNo);
-                if (filterButton.isEnable()) {
-                    gui.setItem(filterButton.getSlot((set) -> 40), new GuiItem(filterButton.getItemStack(), event -> {
-                        filterOptions.setPrivateClaims(!filterOptions.isPrivateClaims());
-                        gui.update();
-                    }));
-                }
-            }
+            //if (GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-search", true)) {
+            MenuConfig.ItemConfig filterButton = setFilterButton(gui);
             MenuConfig.ItemConfig closeButton = MenuConfig.getItemConfig(getMenuType(), "close");
             if (closeButton != null && closeButton.isEnable()) {
-                gui.setItem(closeButton.getSlot((set) -> GriefPreventionTP.getInstance().getConfig().getBoolean("enable-public") ? 36 : 40), new GuiItem(closeButton.getItemStack(), event -> {
+                gui.setItem(closeButton.getSlot((set) -> GriefPreventionTP.getInstance().getConfig().getBoolean("enable-public") || filterButton.isEnable() ? 45 : 49), new GuiItem(closeButton.getItemStack(), event -> {
                     player.closeInventory();
                 }));
             }
@@ -60,10 +61,35 @@ public class ClaimsMenu extends Menu {
                 gui.setItem(searchButton.getValue0(), searchButton.getValue1());
             }
 
+            for (GuiItem item : getItems(gui.getCurrentPageNum(), player)) {
+                gui.addItem(item);
+            }
+
             gui.open(player);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public MenuConfig.ItemConfig setFilterButton(StreamedPaginatedGui gui) {
+        String publicYesNo = filterOptions.isPrivateClaims() ?
+                MenuConfig.getString(getMenuType(), "filter.no", "<red>No") :
+                MenuConfig.getString(getMenuType(), "filter.yes", "<green>Yes");
+        MenuConfig.ItemConfig filterButton = MenuConfig.getItemConfig(getMenuType(), "filter",
+                "public", publicYesNo);
+        if (filterButton.isEnable()) {
+            gui.setItem(filterButton.getSlot((set) -> 49), getFilterButton(filterButton, gui));
+        }
+        return filterButton;
+    }
+
+    public GuiItem getFilterButton(MenuConfig.ItemConfig filterButton, StreamedPaginatedGui gui) {
+        return new GuiItem(filterButton.getItemStack(), event -> {
+            filterOptions.setPrivateClaims(!filterOptions.isPrivateClaims());
+            event.setCancelled(true);
+            setFilterButton(gui);
+            gui.update();
+        });
     }
 
     public List<GuiItem> getItems(int page, Player player) {
@@ -128,9 +154,13 @@ public class ClaimsMenu extends Menu {
     }
 
     private Pair<Integer, GuiItem> getSearchButton() {
-        MenuConfig.ItemConfig itemConfig = MenuConfig.getItemConfig(getMenuType(), "search", "search", filterOptions.getNameFilter());
+        String str = filterOptions.getNameFilter() == null ||
+                filterOptions.getNameFilter().isEmpty() ?
+                MenuConfig.getString(getMenuType(), "search.search", "<gray>Click to search for a claim.") :
+                MenuConfig.getString(getMenuType(), "search.clear", "<gray>Click to clear search.");
+        MenuConfig.ItemConfig itemConfig = MenuConfig.getItemConfig(getMenuType(), "search", "search", str);
         if (!itemConfig.isEnable()) return null;
-        int slot = itemConfig.getSlot((TypeCallback<Integer, String>) s -> 44);
+        int slot = itemConfig.getSlot((TypeCallback<Integer, String>) s -> 53);
         ItemStack itemStack = itemConfig.getItemStack();
         return new Pair<>(slot, new GuiItem(itemStack, event -> {
             new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a) -> {

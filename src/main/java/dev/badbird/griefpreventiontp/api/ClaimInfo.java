@@ -53,7 +53,7 @@ public class ClaimInfo {
     }
 
     public ClaimInfo save() {
-        GriefPreventionTP.getInstance().getClaimManager().save();
+        GriefPreventionTP.getInstance().getStorageProvider().saveClaim(this);
         return this;
     }
 

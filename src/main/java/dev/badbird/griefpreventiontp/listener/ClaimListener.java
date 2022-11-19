@@ -51,8 +51,9 @@ public class ClaimListener implements Listener {
 
     @EventHandler
     public void onUnclaim(ClaimDeletedEvent event) {
-        GriefPreventionTP.getInstance().getClaimManager().getAllClaims().removeIf(c -> c.getClaimID() == event.getClaim().getID());
-        GriefPreventionTP.getInstance().getClaimManager().save();
+        //GriefPreventionTP.getInstance().getClaimManager().getAllClaims().removeIf(c -> c.getClaimID() == event.getClaim().getID());
+        //GriefPreventionTP.getInstance().getClaimManager().save();
+        GriefPreventionTP.getInstance().getStorageProvider().deleteClaim(event.getClaim().getID());
         GriefPreventionTP.getInstance().getClaimManager().updateClaims(event.getClaim().getOwnerID());
     }
 

@@ -22,11 +22,6 @@ public class TPClaimManager {
     public void init() {
         load();
     }
-
-    public void stop() {
-        save();
-    }
-
     public void load() {
         enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable");
         if (enableMaxPublic) {
@@ -61,10 +56,6 @@ public class TPClaimManager {
         //for (Pair<String, Integer> stringIntegerPair : maxPublic) {
         //    System.out.println(stringIntegerPair.getValue0() + " | " + stringIntegerPair.getValue1());
         //}
-    }
-
-    public void save() {
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     public List<ClaimInfo> getClaims(UUID owner) {

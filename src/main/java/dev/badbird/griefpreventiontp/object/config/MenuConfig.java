@@ -33,16 +33,6 @@ public class MenuConfig {
         claimsConfig = YamlConfiguration.loadConfiguration(claimsFile);
     }
 
-    public static Component getGuiTitle(Menu menu, String defaultTitle, String... placeholders) {
-        Map<String, String> placeholderMap = convertArr(placeholders);
-        return getGuiTitle(menu, defaultTitle, placeholderMap);
-    }
-
-    public static Component getGuiTitle(Menu menu, String defaultTitle, Map<String, String> placeholders) {
-        FileConfiguration configuration = menu.getConfig();
-        return MINI_MESSAGE.deserialize(replacePlaceholders(configuration.getString("title", defaultTitle), placeholders));
-    }
-
     public static ItemStack getItem(Menu menuType, String key, String... placeholders) {
         // convert placeholders to a map
         Map<String, String> placeholderMap = convertArr(placeholders);
@@ -139,9 +129,18 @@ public class MenuConfig {
         return in;
     }
 
-    public static String getString(Menu menu, String key, String defaultString) {
+    public static Component getComponent(Menu menu, String key, String defaultString, String... placeholders) {
+        String str = getString(menu, key, defaultString, placeholders);
+        return MINI_MESSAGE.deserialize(str);
+    }
+    public static String getString(Menu menu, String key, String defaultString, String... placeholders) {
         @NotNull FileConfiguration configuration = menu.getConfig();
-        return configuration.getString(key, defaultString);
+        Map<String, String> placeholderMap = convertArr(placeholders);
+        return replacePlaceholders(configuration.getString(key, defaultString), placeholderMap);
+    }
+    public static boolean getBoolean(Menu menu, String key, boolean def) {
+        @NotNull FileConfiguration configuration = menu.getConfig();
+        return configuration.getBoolean(key, def);
     }
     public static List<String> getStringList(Menu menu, String key) {
         @NotNull FileConfiguration configuration = menu.getConfig();

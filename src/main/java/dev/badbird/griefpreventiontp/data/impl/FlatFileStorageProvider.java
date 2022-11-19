@@ -128,6 +128,14 @@ public class FlatFileStorageProvider implements StorageProvider {
     }
 
     @Override
+    public void deleteClaim(long id) {
+        File claimFile = new File(folder, id + ".json");
+        if (claimFile.exists()) {
+            claimFile.delete();
+        }
+    }
+
+    @Override
     public Collection<ClaimInfo> getAllClaims() {
         List<ClaimInfo> claims = new ArrayList<>();
         for (Claim claim : GriefPrevention.instance.dataStore.getClaims()) {
@@ -157,7 +165,16 @@ public class FlatFileStorageProvider implements StorageProvider {
 
     @Override
     public ClaimInfo fromClaim(Claim claim) {
-        return getClaim(claim.getID());
+        ClaimInfo claimInfo = getClaim(claim.getID());
+        if (claimInfo == null) {
+            claimInfo = new ClaimInfo(claim.getID(), claim.getOwnerID());
+        }
+        if (claimInfo.getPlayerClaimCount() == 0) {
+            claimInfo.setPlayerClaimCount((int) (GriefPrevention.instance.dataStore.getPlayerData(claim.getOwnerID()).getClaims().stream().filter(c -> c.getID() != claim.getID()).count() + 1));
+            claimInfo.setName("Unnamed (" + claimInfo.getPlayerClaimCount() + ")");
+        }
+        saveClaim(claimInfo);
+        return claimInfo;
     }
 
     @Override
@@ -196,12 +213,28 @@ public class FlatFileStorageProvider implements StorageProvider {
             claims.add(claim);
         }
 
-        int start = (page - 1) * max; // Really inefficient, but whatever people should use sql anyway
+        // Filter them now
+        /*
+        int start = (page - 1) * max;
         int end = start + max;
         if (end > claims.size()) {
             end = claims.size();
         }
         return claims.subList(start, end);
+         */ // java.lang.IllegalArgumentException: fromIndex(1980) > toIndex(0)
+
+        // filter
+        List<ClaimInfo> filtered = new ArrayList<>();
+        int start = (page - 1) * max;
+        int end = start + max;
+        int current = 0;
+        for (ClaimInfo claim : claims) {
+            if (current >= start && current < end) {
+                filtered.add(claim);
+            }
+            current++;
+        }
+        return filtered;
     }
 
 }

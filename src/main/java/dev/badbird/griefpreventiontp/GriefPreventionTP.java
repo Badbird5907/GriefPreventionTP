@@ -204,10 +204,6 @@ public final class GriefPreventionTP extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (claimManager != null) {
-            claimManager.stop();
-        }
-
         if (this.storageProvider != null) {
             this.storageProvider.disable(this);
         }

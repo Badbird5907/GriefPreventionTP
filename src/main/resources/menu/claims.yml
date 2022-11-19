@@ -5,7 +5,9 @@ filter:
   enable: true
   material: PAPER
   amount: 1
-  name: '<green>Viewing Public Claims:</green> %public%' # public is yes/no, defined in config
+  yes: '<green>Yes'
+  no: '<red>No'
+  name: '<green>Viewing Public Claims:</green> %public%' # public is yes/no
   lore:
     - '<gray>Click to toggle.'
 claim:
@@ -29,4 +31,10 @@ search:
   clear: '<gray>Click to clear search.'
   search: '<gray>Click to search for a claim.'
   lore:
-    - '%status%' # clear/search above
+    - '%search%' # clear/search above
+close:
+  material: BARRIER
+  slot: auto
+  name: '<red>Close'
+  lore:
+    - '<gray>Click to close this menu.'

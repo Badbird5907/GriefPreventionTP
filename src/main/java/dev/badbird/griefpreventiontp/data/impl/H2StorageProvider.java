@@ -76,6 +76,11 @@ public class H2StorageProvider implements StorageProvider {
     }
 
     @Override
+    public void deleteClaim(long id) {
+
+    }
+
+    @Override
     public Collection<ClaimInfo> getAllClaims() {
         return null;
     }
