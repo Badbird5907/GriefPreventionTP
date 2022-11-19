@@ -29,37 +29,41 @@ public class ClaimsMenu extends Menu {
 
     @Override
     public void open(Player player) {
-        StreamedPaginatedGui gui = new StreamedPaginatedGui(
-                6,
-                PAGE_SIZE,
-                MenuConfig.getGuiTitle(getMenuType(), "Claims"),
-                new HashSet<>(),
-                (TypeCallback<Integer, StreamedPaginatedGui>) paginatedGui -> GriefPreventionTP.getInstance().getClaimManager().getTotalClaims(filterOptions) / PAGE_SIZE,
-                (TypeCallback<List<GuiItem>, Integer>) (page) -> getItems(page, player)
-        );
-        if (GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-search", true)) {
-            String publicYesNo = filterOptions.isPrivateClaims() ? GriefPreventionTP.getInstance().getConfig().getString("messages.no") : GriefPreventionTP.getInstance().getConfig().getString("messages.yes");
-            MenuConfig.ItemConfig filterButton = MenuConfig.getItemConfig(getMenuType(), "filter",
-                    "public", publicYesNo);
-            if (filterButton.isEnable()) {
-                gui.setItem(filterButton.getSlot((set) -> 40), new GuiItem(filterButton.getItemStack(), event -> {
-                    filterOptions.setPrivateClaims(!filterOptions.isPrivateClaims());
-                    gui.update();
+        try {
+            StreamedPaginatedGui gui = new StreamedPaginatedGui(
+                    5,
+                    PAGE_SIZE,
+                    MenuConfig.getGuiTitle(getMenuType(), "Claims"),
+                    new HashSet<>(),
+                    (TypeCallback<Integer, StreamedPaginatedGui>) paginatedGui -> GriefPreventionTP.getInstance().getClaimManager().getTotalClaims(filterOptions) / PAGE_SIZE,
+                    (TypeCallback<List<GuiItem>, Integer>) (page) -> getItems(page, player)
+            );
+            if (GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-search", true)) {
+                String publicYesNo = filterOptions.isPrivateClaims() ? GriefPreventionTP.getInstance().getConfig().getString("messages.no") : GriefPreventionTP.getInstance().getConfig().getString("messages.yes");
+                MenuConfig.ItemConfig filterButton = MenuConfig.getItemConfig(getMenuType(), "filter",
+                        "public", publicYesNo);
+                if (filterButton.isEnable()) {
+                    gui.setItem(filterButton.getSlot((set) -> 40), new GuiItem(filterButton.getItemStack(), event -> {
+                        filterOptions.setPrivateClaims(!filterOptions.isPrivateClaims());
+                        gui.update();
+                    }));
+                }
+            }
+            MenuConfig.ItemConfig closeButton = MenuConfig.getItemConfig(getMenuType(), "close");
+            if (closeButton != null && closeButton.isEnable()) {
+                gui.setItem(closeButton.getSlot((set) -> GriefPreventionTP.getInstance().getConfig().getBoolean("enable-public") ? 36 : 40), new GuiItem(closeButton.getItemStack(), event -> {
+                    player.closeInventory();
                 }));
             }
-        }
-        MenuConfig.ItemConfig closeButton = MenuConfig.getItemConfig(getMenuType(), "close");
-        if (closeButton.isEnable()) {
-            gui.setItem(closeButton.getSlot((set) -> GriefPreventionTP.getInstance().getConfig().getBoolean("enable-public") ? 36 : 40), new GuiItem(closeButton.getItemStack(), event -> {
-                player.closeInventory();
-            }));
-        }
-        Pair<Integer, GuiItem> searchButton = getSearchButton();
-        if (searchButton != null) {
-            gui.setItem(searchButton.getValue0(), searchButton.getValue1());
-        }
+            Pair<Integer, GuiItem> searchButton = getSearchButton();
+            if (searchButton != null) {
+                gui.setItem(searchButton.getValue0(), searchButton.getValue1());
+            }
 
-        gui.open(player);
+            gui.open(player);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public List<GuiItem> getItems(int page, Player player) {

@@ -121,7 +121,9 @@ task obfuscate(type: ProGuardTask) {
     libraryjars 'libs'
 }
 jar.dependsOn(project.tasks.shadowJar)
-jar.finalizedBy(project.tasks.obfuscate)
+def obf = System.getProperty("obf", "true").equalsIgnoreCase("true")
+System.out.println("Obfuscation: " + obf)
+if (obf) jar.finalizedBy(project.tasks.obfuscate)
 task genDict() {
     def dict = file('names.txt')
     def maxChars = 10, lines = 20000
@@ -137,11 +139,12 @@ task genDict() {
     }
     out.close()
 }
-obfuscate.dependsOn(project.tasks.genDict)
+//obfuscate.dependsOn(project.tasks.genDict)
 shadowJar {
     relocate 'net.badbid5907.blib', 'dev.badbird.griefpreventiontp.dependencies'
     relocate 'net.octopvp', 'dev.badbird.griefpreventiontp.dependencies'
-    relocate 'dev.triumphteam.gui', 'dev.badbird.griefpreventiontp.dependencies'
+    //relocate 'dev.triumphteam.gui', 'dev.badbird.griefpreventiontp.dependencies'
+
     //relocate 'net.kyori', 'dev.badbird.griefpreventiontp.dependencies'
     //relocate 'org', 'dev.badbird.griefpreventiontp.dependencies'
     //relocate 'javax', 'dev.badbird.griefpreventiontp.dependencies.javax'
@@ -149,8 +152,14 @@ shadowJar {
     //relocate 'com.google', 'dev.badbird.griefpreventiontp.dependencies'
     archiveName(jarName + '.jar')
 }
+def fr = "build/libs/" + jarName;
+if (obf) {
+    fr += "-obf.jar"
+} else {
+    fr += ".jar"
+}
 task copyPlugin(type: Copy) {
-    from 'build/libs/' + jarName + '-obf.jar'
+    from fr
     into 'run/plugins'
 }
 copyPlugin.dependsOn(project.tasks.shadowJar)

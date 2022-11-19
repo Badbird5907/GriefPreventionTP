@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.badbird5907.blib.objects.TypeCallback;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -114,8 +115,8 @@ public class MenuConfig {
         ).toList();
         ItemStack item = new ItemStack(mat, amount);
         ItemMeta meta = item.getItemMeta();
-        meta.displayName(MINI_MESSAGE.deserialize(name));
-        meta.lore(lore.stream().map(MINI_MESSAGE::deserialize).collect(Collectors.toList()));
+        meta.displayName(MINI_MESSAGE.deserialize(name).decoration(TextDecoration.ITALIC, false));
+        meta.lore(lore.stream().map(line -> MINI_MESSAGE.deserialize(line).decoration(TextDecoration.ITALIC, false)).collect(Collectors.toList()));
         item.setItemMeta(meta);
         return item;
     }
