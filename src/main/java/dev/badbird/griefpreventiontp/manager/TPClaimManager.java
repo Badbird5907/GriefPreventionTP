@@ -3,10 +3,10 @@ package dev.badbird.griefpreventiontp.manager;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.ClaimPermission;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.objects.tuple.Pair;
+import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
 
@@ -21,8 +21,12 @@ public class TPClaimManager {
 
     private CopyOnWriteArrayList<ClaimInfo> allClaims = new CopyOnWriteArrayList<>(); //Holds references to all claims
 
-    private List<Pair<String, Integer>> maxPublic = new ArrayList<>();
-    boolean enableMaxPublic = false;
+    private List<Pair<String, Integer>> maxPublic = new ArrayList<>(),
+            createCost = new ArrayList<>(); // List because we want to sort it
+    private boolean enableMaxPublic = false, enableVaultIntegration = false, enablePublicCost = false;
+
+
+    private Object vaultEconomy;
 
     public void init() {
         load();
@@ -38,7 +42,9 @@ public class TPClaimManager {
         claims.clear();
         allClaims.addAll(GriefPreventionTP.getInstance().getStorageProvider().getClaims());
         sortClaims();
-        enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable");
+        enableMaxPublic = GriefPreventionTP.getInstance().getConfig().getBoolean("max-public.enable", false);
+        enableVaultIntegration = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.enabled", false);
+        enablePublicCost = GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.public-claim-cost.enabled", false);
         if (enableMaxPublic) {
             Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("max-public.rules").getValues(false);
             for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
@@ -68,6 +74,47 @@ public class TPClaimManager {
                 }
             });
         }
+        if (enableVaultIntegration) {
+            boolean vaultEnabled = GriefPreventionTP.getInstance().getServer().getPluginManager().isPluginEnabled("Vault");
+            if (!vaultEnabled) {
+                GriefPreventionTP.getInstance().getLogger().warning("Vault is not enabled, but vault-integration is enabled in the config! Vault integration will not work.");
+                enableVaultIntegration = false;
+                return;
+            }
+        }
+        if (enableVaultIntegration && enablePublicCost) {
+            Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("vault-integration.public-claim-cost.groups").getValues(false);
+            for (Map.Entry<String, Object> stringObjectEntry : map.entrySet()) {
+                String k = stringObjectEntry.getKey();
+                Object v = stringObjectEntry.getValue();
+                int i = -1;
+                if (v instanceof String) {
+                    i = Integer.parseInt((String) v);
+                } else if (v instanceof Integer) {
+                    i = (Integer) v;
+                }
+                createCost.add(new Pair<>(k, i));
+            }
+
+            // sort by biggest first, consider -1 largest
+            // largest should be considered first when looping through this list
+            createCost.sort((o1, o2) -> {
+                int i1 = o1.getValue1();
+                int i2 = o2.getValue1();
+
+                if (i1 == -1) {
+                    return -1;
+                } else if (i2 == -1) {
+                    return 1;
+                } else {
+                    return i1 < i2 ? 1 : -1;
+                }
+            });
+
+            vaultEconomy = GriefPreventionTP.getInstance().getServer().getServicesManager().getRegistration(Economy.class).getProvider();
+        }
+
+
         //for (Pair<String, Integer> stringIntegerPair : maxPublic) {
         //    System.out.println(stringIntegerPair.getValue0() + " | " + stringIntegerPair.getValue1());
         //}
@@ -133,34 +180,78 @@ public class TPClaimManager {
         }
     }
 
-    public boolean canMakePublic(Player player) { //We may need to optimize this
-        if (GriefPreventionTP.getInstance().isUseVault() && enableMaxPublic) {
-            if (player.hasPermission("gptp.bypass-public")) return true;
+    public int canMakePublic(Player player) { //We may need to optimize this
+        int result = 0;
+        checkMax:
+        {
+            if (GriefPreventionTP.getInstance().isUseVault() && enableMaxPublic) {
+                if (player.hasPermission("gptp.bypass.public")) {
+                    break checkMax;
+                }
+                Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
+                List<Pair<String, Integer>> maxPublic = new ArrayList<>();
+                for (Pair<String, Integer> pair : this.maxPublic) {
+                    if (permission.playerInGroup(player, pair.getValue0())) {
+                        maxPublic.add(pair);
+                    }
+                }
+                if (maxPublic.size() == 0) {
+                    break checkMax;
+                }
+                AtomicInteger count = new AtomicInteger();
+                getClaims(player.getUniqueId()).forEach(claimInfo -> {
+                    if (claimInfo.isPublic()) {
+                        count.getAndIncrement();
+                    }
+                });
+                for (Pair<String, Integer> pair : maxPublic) {
+                    if (pair.getValue1() < 0) {
+                        break checkMax;
+                    }
+                    if (count.get() < pair.getValue1()) {
+                        break checkMax;
+                    }
+                }
+                result = 1;
+                return result;
+            }
+        }
+        checkCost:
+        {
+            if (GriefPreventionTP.getInstance().isUseVault() && enablePublicCost) {
+                if (player.hasPermission("gptp.bypass.cost")) return 0;
+                int cost = getCostToMakePublic(player);
+                if (cost <= 0) {
+                    break checkCost;
+                }
+                if (playerHasEnough(player, cost)) {
+                    break checkCost;
+                }
+                result = 2;
+                return result;
+            }
+        }
+        return result;
+    }
+
+    public int getCostToMakePublic(Player player) {
+        if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && enablePublicCost) {
+            if (player.hasPermission("gptp.bypass.cost.")) return 0;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
-            List<Pair<String, Integer>> maxPublic = new ArrayList<>();
-            for (Pair<String, Integer> pair : this.maxPublic) {
+            for (Pair<String, Integer> pair : createCost) {
                 if (permission.playerInGroup(player, pair.getValue0())) {
-                    maxPublic.add(pair);
+                    return pair.getValue1();
                 }
             }
-            if (maxPublic.size() == 0) {
-                return true;
-            }
-            AtomicInteger count = new AtomicInteger();
-            getClaims(player.getUniqueId()).forEach(claimInfo -> {
-                if (claimInfo.isPublic()) {
-                    count.getAndIncrement();
-                }
-            });
-            for (Pair<String, Integer> pair : maxPublic) {
-                if (pair.getValue1() < 0) {
-                    return true;
-                }
-                if (count.get() < pair.getValue1()) {
-                    return true;
-                }
-            }
-            return false;
+        }
+        return 0;
+    }
+
+    public boolean playerHasEnough(Player player, int cost) {
+        if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && cost > 0) {
+            Economy economy = (Economy) vaultEconomy;
+            double balance = economy.getBalance(player);
+            return balance >= cost;
         }
         return true;
     }
@@ -173,5 +264,9 @@ public class TPClaimManager {
                 claim.setName("Unnamed (" + claim.getPlayerClaimCount() + ")");
             }
         }
+    }
+
+    public Object getVaultEconomy() {
+        return vaultEconomy;
     }
 }

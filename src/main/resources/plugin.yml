@@ -25,4 +25,6 @@ permissions:
     description: Permission for /setspawn
   gptp.bypass.public:
     description: Permission for bypassing public claim limit
+  gptp.bypass.cost:
+    description: Permission for bypassing public claim cost
 

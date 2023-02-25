@@ -110,8 +110,11 @@ public final class GriefPreventionTP extends JavaPlugin {
             saveDefaultConfig();
         }
         this.permissionsManager = new PermissionsManager(this);
-
-        Metrics metrics = new Metrics(this, 15417);
+        try {
+            Metrics metrics = new Metrics(this, 15417);
+        } catch (Exception e) {
+            // weird error
+        }
 
         if (getConfig().getBoolean("update-check")) {
             updateChecker = new UpdateChecker(102521);
@@ -198,6 +201,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             }
         }, 20l, 10l);
          */
+        getLogger().info("Please ignore any warnings about deprecated listeners. It is a bug (https://github.com/TechFortress/GriefPrevention/issues/1791#issuecomment-1312809553)");
     }
 
     @Override
