@@ -51,6 +51,11 @@ public class ClaimsMenu extends PaginatedMenu {
     }
 
     @Override
+    public boolean showPageNumbersInTitle() {
+        return false;
+    }
+
+    @Override
     public List<Button> getPaginatedButtons(Player player) {
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
