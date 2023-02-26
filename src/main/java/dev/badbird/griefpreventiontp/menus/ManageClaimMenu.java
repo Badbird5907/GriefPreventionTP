@@ -10,6 +10,7 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.PlaceholderButton;
+import net.badbird5907.blib.menu.buttons.impl.BackButton;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
@@ -30,37 +31,59 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
 
+import static net.badbird5907.blib.util.CC.GRAY;
+import static net.badbird5907.blib.util.XMaterial.GRAY_STAINED_GLASS_PANE;
+
 @RequiredArgsConstructor
 public class ManageClaimMenu extends Menu {
     private final ClaimInfo claimInfo;
+    private final Menu previousMenu;
     private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
 
-    private static final int[] PLACEHOLDERS;
+    private static final List<Integer> PLACEHOLDERS = new ArrayList<>();
+
+    private boolean hasPublicPerm = true;
 
     static {
-        List<Integer> a = new ArrayList<>();
         IntStream.range(0, 36).forEach((i) -> {
             if (i != 11 && i != 15 && i != 36)
-                a.add(i);
+                PLACEHOLDERS.add(i);
         });
-        PLACEHOLDERS = a.stream().mapToInt(i -> i).toArray();
     }
 
     @Override
     public List<Button> getButtons(Player player) {
+        hasPublicPerm = player.hasPermission("gptp.command.public");
         Claim claim = claimInfo.getClaim();
         ArrayList<Button> buttons = new ArrayList<>();
         if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
         buttons.add(new ClaimButton());
-        buttons.add(new PublicButton(player));
+        if (hasPublicPerm) buttons.add(new PublicButton(player));
         buttons.add(new Placeholders());
         return buttons;
+    }
+
+    @Override
+    public Button getBackButton(Player player) {
+        if (previousMenu == null) return null;
+        return new BackButton() {
+            @Override
+            public void clicked(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
+                previousMenu.open(player);
+            }
+
+            @Override
+            public int getSlot() {
+                return 27;
+            }
+        };
     }
 
     @Override
@@ -74,7 +97,12 @@ public class ManageClaimMenu extends Menu {
     private class Placeholders extends PlaceholderButton {
         @Override
         public int[] getSlots() {
-            return PLACEHOLDERS;
+            List<Integer> a = new ArrayList<>(PLACEHOLDERS);
+            if (!hasPublicPerm) {
+                a.add(13);
+                a.add(15);
+            }
+            return a.stream().mapToInt(i -> i).toArray();
         }
     }
 
@@ -124,7 +152,7 @@ public class ManageClaimMenu extends Menu {
         public ItemStack getItem(Player player) {
             return new ItemBuilder(Material.NAME_TAG)
                     .setName(CC.GREEN + "Rename")
-                    .lore("", CC.GRAY + "Click to rename")
+                    .lore("", CC.GRAY + "Click to rename.")
                     .build();
         }
 
@@ -170,6 +198,9 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
+            if (!hasPublicPerm) {
+                return null;
+            }
             boolean isPublic = claimInfo.isPublic();
             int cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
             ItemStack item = new ItemStack(Material.OAK_DOOR);
@@ -259,7 +290,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public int getSlot() {
-            return 13;
+            return hasPublicPerm ? 13 : 15;
         }
 
         @Override

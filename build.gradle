@@ -14,7 +14,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 group = 'dev.badbird'
-version = '1.2.0'
+version = '1.2.1'
 
 def jarName = "GriefPreventionTP-${version}"
 
@@ -49,7 +49,7 @@ dependencies {
 
     impl 'net.badbird5907:bLib-Bukkit:2.1.7-REL'
     impl 'net.kyori:adventure-text-minimessage:4.10.1'
-    impl 'net.octopvp:Commander-Bukkit:0.0.1-DEV'
+    impl 'net.octopvp:Commander-Bukkit:0.0.3-REL'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'

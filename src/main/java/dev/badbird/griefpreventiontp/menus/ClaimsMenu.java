@@ -166,7 +166,7 @@ public class ClaimsMenu extends PaginatedMenu {
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             if (clickType.isRightClick() && canEdit) {
-                new ManageClaimMenu(claimInfo).open(player);
+                new ManageClaimMenu(claimInfo, ClaimsMenu.this).open(player);
                 return;
             }
             if (claimInfo.getSpawn() == null) {
