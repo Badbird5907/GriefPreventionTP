@@ -29,7 +29,7 @@ public class ClaimsCommand {
         }
         new ClaimsMenu(sender.getUniqueId()).open(sender);
     }
-    @Completer(name = "claims", index = 0)
+    @Completer(name = "claims", index = 1)
     public String[] complete() {
         return Bukkit.getOnlinePlayers().stream().map(Player::getName).toArray(String[]::new);
     }

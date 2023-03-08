@@ -18,7 +18,9 @@ permissions:
   gptp.command.claimtp:
     description: Permission for /claimtp
   gptp.command.public:
-    description: Permission for /public and /private
+    description: Permission for /public
+  gptp.command.private:
+    description: Permission for /private
   gptp.command.rename:
     description: Permission for /rename
   gptp.command.setspawn:
