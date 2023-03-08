@@ -47,7 +47,7 @@ public class ManageClaimMenu extends Menu {
 
     private static final List<Integer> PLACEHOLDERS = new ArrayList<>();
 
-    private boolean hasPublicPerm = true;
+    private boolean hasPublicPerm = true, hasPrivatePerm = true;
 
     static {
         IntStream.range(0, 36).forEach((i) -> {
@@ -59,13 +59,14 @@ public class ManageClaimMenu extends Menu {
     @Override
     public List<Button> getButtons(Player player) {
         hasPublicPerm = player.hasPermission("gptp.command.public");
+        hasPrivatePerm = player.hasPermission("gptp.command.private");
         Claim claim = claimInfo.getClaim();
         ArrayList<Button> buttons = new ArrayList<>();
         if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
         buttons.add(new ClaimButton());
-        if (hasPublicPerm) buttons.add(new PublicButton(player));
+        if (hasPublicPerm || hasPrivatePerm) buttons.add(new PublicButton(player));
         buttons.add(new Placeholders());
         return buttons;
     }
@@ -98,7 +99,7 @@ public class ManageClaimMenu extends Menu {
         @Override
         public int[] getSlots() {
             List<Integer> a = new ArrayList<>(PLACEHOLDERS);
-            if (!hasPublicPerm) {
+            if (!hasPublicPerm && !hasPrivatePerm) {
                 a.add(13);
                 a.add(15);
             }
@@ -198,7 +199,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
-            if (!hasPublicPerm) {
+            if (!hasPublicPerm && !hasPrivatePerm) {
                 return null;
             }
             boolean isPublic = claimInfo.isPublic();
@@ -290,7 +291,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public int getSlot() {
-            return hasPublicPerm ? 13 : 15;
+            return hasPublicPerm || hasPrivatePerm ? 13 : 15;
         }
 
         @Override
