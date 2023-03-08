@@ -72,6 +72,9 @@ commands: # Permissions required to use the commands, set to false to stop check
   public: # gptp.command.public
     permission:
       enabled: true
+  private: # gptp.command.private
+    permission:
+      enabled: true
   rename: # gptp.command.rename
     permission:
       enabled: true

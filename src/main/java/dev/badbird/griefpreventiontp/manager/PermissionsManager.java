@@ -14,7 +14,7 @@ import java.util.UUID;
 @Setter
 public class PermissionsManager {
     private boolean claimsPerm, publicPerm, renamePerm, setSpawnPerm,
-    allowManager, claimTPPerm;
+    allowManager, claimTPPerm, privatePerm;
 
     public PermissionsManager(GriefPreventionTP plugin) {
         reload(plugin);

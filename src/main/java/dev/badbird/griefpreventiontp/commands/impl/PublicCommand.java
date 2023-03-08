@@ -51,7 +51,7 @@ public class PublicCommand {
         ClaimInfo ci = GriefPreventionTP.getInstance().getClaimManager().fromClaim(claim);
         int cost = 0;
         if (!ci.isPublic()) { // make public
-            if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.public"))
+            if (permissionsManager.isPublicPerm() && !sender.hasPermission("gptp.command.public"))
                 throw new NoPermissionException();
             int canMakePublic = GriefPreventionTP.getInstance().getClaimManager().canMakePublic(sender);  // 0: can make public, 1: max public reached, 2: not enough money
             if (canMakePublic == 1) {
@@ -73,7 +73,7 @@ public class PublicCommand {
             ci.setPublic(true);
             MessageManager.sendMessage(sender, "messages.public-on", cost);
         } else {
-            if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.private"))
+            if (permissionsManager.isPrivatePerm() && !sender.hasPermission("gptp.command.private"))
                 throw new NoPermissionException();
             ci.setPublic(false);
             MessageManager.sendMessage(sender, "messages.public-off");
