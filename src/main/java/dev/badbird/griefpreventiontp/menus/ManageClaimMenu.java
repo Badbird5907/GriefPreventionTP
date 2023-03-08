@@ -81,6 +81,17 @@ public class ManageClaimMenu extends Menu {
             }
 
             @Override
+            public ItemStack getItem(Player player) {
+                ItemStack item = new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.back-button.type")))
+                        .build();
+                Component component = MessageManager.getComponent("menu.back-button.name");
+                item.editMeta(meta -> {
+                    meta.displayName(component);
+                });
+                return item;
+            }
+
+            @Override
             public int getSlot() {
                 return 27;
             }
