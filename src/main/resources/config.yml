@@ -65,6 +65,9 @@ menu:
   enable-delete: true # Enable the delete claim button in the manager menu
   show-coordinates: true
   close-button-type: 'BARRIER'
+  back-button:
+    type: 'ARROW'
+    name: '<green>Back'
 commands: # Permissions required to use the commands, set to false to stop checking for permissions
   claims: # gptp.command.claims
     permission:
