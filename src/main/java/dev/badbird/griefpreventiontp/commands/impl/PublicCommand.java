@@ -8,20 +8,34 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.milkbowl.vault.economy.Economy;
-import net.octopvp.commander.annotation.*;
+import net.octopvp.commander.annotation.Command;
+import net.octopvp.commander.annotation.Dependency;
+import net.octopvp.commander.annotation.Optional;
+import net.octopvp.commander.annotation.Sender;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
+import net.octopvp.commander.command.CommandInfo;
+import net.octopvp.commander.exception.CooldownException;
 import net.octopvp.commander.exception.NoPermissionException;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+
 public class PublicCommand {
     @Command(name = "public", aliases = {"private"}, description = "Toggle the public/private status of the claim you're standing in", usage = "[confirm]")
-    @Cooldown(3)
     @PlayerOnly
-    public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager, @Dependency GriefPreventionTP plugin,@Optional String verify) {
+    public void execute(@Sender Player sender, @Dependency PermissionsManager permissionsManager, @Dependency GriefPreventionTP plugin, @Optional String verify, CommandInfo cmdInfo) {
         boolean verifyBool = verify != null && !verify.isEmpty();
         if (!plugin.getConfig().getBoolean("enable-public")) {
             MessageManager.sendMessage(sender, "messages.public-disabled");
             return;
+        }
+
+        // check cooldowns
+        if (cmdInfo.getCooldownMap() == null) {
+            cmdInfo.setCooldownMap(new HashMap<>());
+        }
+        if (cmdInfo.isOnCooldown(sender.getUniqueId())) {
+            throw new CooldownException(cmdInfo.getCooldownSeconds(sender.getUniqueId()));
         }
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(sender.getLocation(), true, playerData.lastClaim);
