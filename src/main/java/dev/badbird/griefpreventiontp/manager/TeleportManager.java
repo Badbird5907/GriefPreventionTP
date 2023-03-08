@@ -53,6 +53,11 @@ public class TeleportManager implements Listener {
             MessageManager.sendMessage(player, "messages.already-teleporting");
             return;
         }
+        if (player.hasPermission("gptp.bypass.warmup")) {
+            MessageManager.sendMessage(player, "messages.teleported");
+            player.teleport(loc);
+            return;
+        }
         TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation());
         runnableMap.put(player.getUniqueId(), runnable);
         MessageManager.sendMessage(player, "messages.teleporting");

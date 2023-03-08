@@ -36,6 +36,7 @@ public class TeleportRunnable extends BukkitRunnable {
         }
         if (countdown <= 0) {
             player.teleport(to);
+            MessageManager.sendMessage(player, "messages.teleported");
             cancel();
             return;
         }

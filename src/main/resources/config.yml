@@ -3,6 +3,7 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
   must-be-standing-in-claim: '<red>You must be standing in a claim!'
   no-permission: '<red>You do not own this claim, or do not have permission to do that!'
   teleporting: '<yellow>Teleporting in 5 seconds, don''t move...'
+  teleported: '<green>Teleported.'
   moved: '<red>Pending teleportation request cancelled.'
   damaged: '<red>Pending teleportation request cancelled.'
   public-on: '<green>Your claim is now public!' # Add the '%1' placeholder for cost, if it is enabled. The placeholder system will be revamped in the future.
