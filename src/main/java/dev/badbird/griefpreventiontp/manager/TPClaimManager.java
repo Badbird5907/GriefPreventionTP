@@ -236,7 +236,7 @@ public class TPClaimManager {
 
     public int getCostToMakePublic(Player player) {
         if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && enablePublicCost) {
-            if (player.hasPermission("gptp.bypass.cost.")) return 0;
+            if (player.hasPermission("gptp.bypass.cost")) return 0;
             Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
             for (Pair<String, Integer> pair : createCost) {
                 if (permission.playerInGroup(player, pair.getValue0())) {

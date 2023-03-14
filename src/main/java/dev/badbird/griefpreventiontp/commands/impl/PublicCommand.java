@@ -62,13 +62,13 @@ public class PublicCommand {
                 return;
             }
             cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(sender.getPlayer());
-            if (cost > 0) {
+            if (cost > 0 && !sender.hasPermission("gptp.bypass.public")) {
                 if (GriefPreventionTP.getInstance().getConfig().getBoolean("vault-integration.public-claim-cost.verify", true) && !verifyBool) {
                     MessageManager.sendMessage(sender, "messages.verify-public-cost.message", cost);
                     return;
                 }
                 Economy economy = (Economy) GriefPreventionTP.getInstance().getClaimManager().getVaultEconomy();
-                if (!sender.hasPermission("gptp.bypass.public")) economy.withdrawPlayer(sender, cost);
+                economy.withdrawPlayer(sender, cost);
             }
             ci.setPublic(true);
             MessageManager.sendMessage(sender, "messages.public-on", cost);
