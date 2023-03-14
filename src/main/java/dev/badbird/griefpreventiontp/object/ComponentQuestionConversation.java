@@ -1,6 +1,7 @@
 package dev.badbird.griefpreventiontp.object;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.objects.TypeCallback;
 import net.kyori.adventure.text.Component;
@@ -30,7 +31,7 @@ public class ComponentQuestionConversation extends StringPrompt {
 
     public void start(Player p) {
         p.closeInventory();
-        p.sendMessage(prompt);
+        AdventureUtil.sendMessage(p, prompt);
         GriefPreventionTP.getInstance().getConversationFactory().withFirstPrompt(this).withLocalEcho(false)
                 .buildConversation(p).begin();
     }

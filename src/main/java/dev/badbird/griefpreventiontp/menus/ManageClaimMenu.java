@@ -5,6 +5,7 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
@@ -85,9 +86,7 @@ public class ManageClaimMenu extends Menu {
                 ItemStack item = new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.back-button.type")))
                         .build();
                 Component component = MessageManager.getComponent("menu.back-button.name");
-                item.editMeta(meta -> {
-                    meta.displayName(component);
-                });
+                AdventureUtil.setItemDisplayName(item, component);
                 return item;
             }
 
@@ -216,8 +215,7 @@ public class ManageClaimMenu extends Menu {
             boolean isPublic = claimInfo.isPublic();
             int cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
             ItemStack item = new ItemStack(Material.OAK_DOOR);
-            ItemMeta meta = item.getItemMeta();
-            meta.displayName(LegacyComponentSerializer.legacySection().deserialize(CC.translate(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")).decoration(TextDecoration.ITALIC, false));
+            AdventureUtil.setItemDisplayName(item, LegacyComponentSerializer.legacySection().deserialize(CC.translate(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")).decoration(TextDecoration.ITALIC, false));
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             if (!isPublic && cost > 0) {
@@ -227,8 +225,7 @@ public class ManageClaimMenu extends Menu {
             }
             lore.add(LegacyComponentSerializer.legacySection().deserialize(CC.GRAY + "Click to toggle public/private.")
                     .decoration(TextDecoration.ITALIC, false));
-            meta.lore(lore);
-            item.setItemMeta(meta);
+            AdventureUtil.setItemLore(item, lore);
             return item;
         }
 

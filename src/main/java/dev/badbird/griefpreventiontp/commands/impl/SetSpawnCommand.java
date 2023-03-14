@@ -23,7 +23,7 @@ public class SetSpawnCommand {
     @PlayerOnly
     @Cooldown(3)
     public void execute(@Sender Player player, @Dependency PermissionsManager permissionsManager) {
-        if (permissionsManager.isClaimsPerm() && !player.hasPermission("gptp.command.setspawn")) throw new NoPermissionException();
+        if (permissionsManager.isSetSpawnPerm() && !player.hasPermission("gptp.command.setspawn")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(player.getLocation(), true, playerData.lastClaim);
         if (claim == null) {

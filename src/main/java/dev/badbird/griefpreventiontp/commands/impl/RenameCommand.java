@@ -18,7 +18,7 @@ public class RenameCommand {
     @PlayerOnly
     @Cooldown(3)
     public void rename(@Sender Player sender, @JoinStrings @Required @Name("name") String name, @Dependency PermissionsManager permissionsManager) {
-        if (permissionsManager.isClaimsPerm() && !sender.hasPermission("gptp.command.rename")) throw new NoPermissionException();
+        if (permissionsManager.isRenamePerm() && !sender.hasPermission("gptp.command.rename")) throw new NoPermissionException();
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(sender.getUniqueId());
         Claim claim = GriefPrevention.instance.dataStore.getClaimAt(sender.getLocation(), true, playerData.lastClaim);
         if (claim == null) {
