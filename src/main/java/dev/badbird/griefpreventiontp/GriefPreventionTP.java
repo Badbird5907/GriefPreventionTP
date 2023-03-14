@@ -10,17 +10,17 @@ import dev.badbird.griefpreventiontp.listener.ClaimListener;
 import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
+import dev.badbird.griefpreventiontp.util.Metrics;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
-import net.badbird5907.blib.bstats.Metrics;
 import net.badbird5907.blib.spigotmc.UpdateChecker;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
-import net.octopvp.commander.config.CommanderConfig;
 import org.bukkit.Bukkit;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
@@ -117,6 +117,8 @@ public final class GriefPreventionTP extends JavaPlugin {
             // weird error
         }
 
+        AdventureUtil.init();
+
         if (getConfig().getBoolean("update-check")) {
             updateChecker = new UpdateChecker(102521);
             updateChecker.getVersion(version -> {
@@ -129,7 +131,6 @@ public final class GriefPreventionTP extends JavaPlugin {
             });
         }
 
-        //bLib.getCommandFramework().registerCommandsInPackage("com.semivanilla.griefpreventiontp.commands");
         commander = BukkitCommander.getCommander(this)
                 .registerProvider(PlayerData.class, new PlayerDataProvider())
                 .registerDependency(GriefPreventionTP.class, this)
@@ -214,6 +215,8 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (this.storageProvider != null) {
             this.storageProvider.disable(this);
         }
+
+        AdventureUtil.adventure().close();
     }
 
     @Override

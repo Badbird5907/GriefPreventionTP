@@ -3,6 +3,7 @@ package dev.badbird.griefpreventiontp.listener;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.events.ClaimCreatedEvent;
 import me.ryanhamshire.GriefPrevention.events.ClaimDeletedEvent;
@@ -75,7 +76,7 @@ public class ClaimListener implements Listener {
         UUID uuid = event.getPlayer().getUniqueId();
         GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(event.getPlayer());
         Tasks.runAsync(()-> {
-            if (uuid.toString().equals("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
+            if (uuid.toString().equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
                 Component component = Component.text("This server is running GPTP!")
                                 .color(NamedTextColor.GREEN)
                         .hoverEvent(
@@ -91,11 +92,14 @@ public class ClaimListener implements Listener {
                                 .append(Component.text("\nPlugin Name: ").color(NamedTextColor.GREEN)
                                         .append(Component.text(GriefPreventionTP.getInstance().getDescription().getName()))
                                         .color(NamedTextColor.GOLD))
+                                .append(Component.text("\nServer Version: ").color(NamedTextColor.GREEN)
+                                        .append(Component.text(Bukkit.getVersion()))
+                                        .color(NamedTextColor.GOLD))
                                 )
                         )
                         .clickEvent(ClickEvent.copyToClipboard("User: %%__USER__%% | Nonce: %%__NONCE__%%"));
 
-                event.getPlayer().sendMessage(component);
+                AdventureUtil.sendMessage(event.getPlayer(), component);
             }
         });
     }

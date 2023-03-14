@@ -1,13 +1,14 @@
 package dev.badbird.griefpreventiontp.manager;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import net.badbird5907.blib.utils.StringUtils;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 
 public class MessageManager {
     public static void sendMessage(Player player, String key, Object... placeholders) {
-        player.sendMessage(getComponent(key, placeholders));
+        AdventureUtil.sendMessage(player, getComponent(key, placeholders));
     }
 
     public static Component getComponent(String key, Object... placeholders) {

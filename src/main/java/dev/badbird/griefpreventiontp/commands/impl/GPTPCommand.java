@@ -3,10 +3,7 @@ package dev.badbird.griefpreventiontp.commands.impl;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
-import net.octopvp.commander.annotation.Command;
-import net.octopvp.commander.annotation.Name;
-import net.octopvp.commander.annotation.Optional;
-import net.octopvp.commander.annotation.Sender;
+import net.octopvp.commander.annotation.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,15 +11,21 @@ import org.bukkit.entity.Player;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
+@Command(name = "griefpreventiontp", aliases = "gptp", description = "GriefPreventionTP Command")
 public class GPTPCommand {
-    @Command(name = "griefpreventiontp", aliases = "gptp", description = "GriefPreventionTP Command")
+    @Command(name = "", description = "GriefPreventionTP Command")
     public void execute(@Sender CommandSender sender, @Optional @Name("args") String[] args) {
         sender.sendMessage(CC.SEPARATOR);
         sender.sendMessage(CC.AQUA + "GriefPreventionTP" + CC.WHITE + " - " + CC.GRAY + "Grief Prevention Teleport v" + GriefPreventionTP.getInstance().getDescription().getVersion());
-        sender.sendMessage(CC.AQUA + "By: " + CC.GRAY + "Badbird5907 - https://badbird.dev/ - Support Server: https://discord.badbird.dev/");
+        sender.sendMessage(CC.AQUA + "By: " + CC.GRAY + "Badbird5907 - https://badbird.dev/");
+        sender.sendMessage(CC.AQUA + "Support Server: " + CC.GRAY + "https://discord.badbird.dev/");
         sender.sendMessage("");
         sender.sendMessage(CC.AQUA + "Commands: ");
+        sender.sendMessage(CC.AQUA + "/gptp reload " + CC.WHITE + " - " + CC.GRAY + "Reload config");
         sender.sendMessage(CC.AQUA + "/claims " + CC.WHITE + " - " + CC.GRAY + "Open the claims menu");
+        if (sender.hasPermission("gptp.command.claims.others")) {
+            sender.sendMessage(CC.AQUA + "/claims <player> " + CC.WHITE + " - " + CC.GRAY + "Open the claims menu as another player (gptp.command.claims.others)");
+        }
         sender.sendMessage(CC.AQUA + "/public " + CC.WHITE + "|" + CC.AQUA + " /private " + CC.WHITE + " - " + CC.GRAY + "Toggle the public/private status of the claim you're standing in");
         sender.sendMessage(CC.AQUA + "/rename <name> " + CC.WHITE + " - " + CC.GRAY + "Rename the claim you're standing in");
         sender.sendMessage(CC.SEPARATOR);
@@ -33,7 +36,7 @@ public class GPTPCommand {
             long start = System.currentTimeMillis();
             sender.sendMessage(CC.GREEN + "Reloading...");
             GriefPreventionTP.getInstance().reloadConfig();
-            sender.sendMessage("Reloaded in " + (System.currentTimeMillis() - start) + "ms.");
+            sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
             return;
         }
 
@@ -50,7 +53,9 @@ public class GPTPCommand {
                     player.sendMessage("OBF: " + (!this.getClass().getSimpleName().equals("GPTPCommand")));
                     player.sendMessage("Server Version: " + Bukkit.getServer().getVersion());
                     player.sendMessage("Server Impl: " + Bukkit.getServer().getClass().getPackage().getImplementationVersion());
-                    player.sendMessage("Server MC Version: " + Bukkit.getServer().getMinecraftVersion());
+                    try {
+                        player.sendMessage("Server MC Version: " + Bukkit.getServer().getMinecraftVersion());
+                    } catch (Exception e) {}
                     player.sendMessage("Server Bukkit Version: " + Bukkit.getServer().getBukkitVersion());
                     player.sendMessage("Name: " + GriefPreventionTP.getInstance().getDescription().getName());
                     player.sendMessage("Version: " + GriefPreventionTP.getInstance().getDescription().getVersion());
@@ -61,5 +66,13 @@ public class GPTPCommand {
                 }
             }
         });
+    }
+    @Command(name = "reload", description = "GriefPreventionTP Reload Command")
+    @Permission("gptp.reload")
+    public void reload(@Sender CommandSender sender) {
+        long start = System.currentTimeMillis();
+        sender.sendMessage(CC.GREEN + "Reloading...");
+        GriefPreventionTP.getInstance().reloadConfig();
+        sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
     }
 }

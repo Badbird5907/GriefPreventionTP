@@ -24,11 +24,11 @@ public class PermissionsManager {
         FileConfiguration config = plugin.getConfig();
 
         this.claimsPerm = config.getBoolean("commands.claims.permission.enabled");
-        this.publicPerm = config.getBoolean("commands.claims.public.enabled");
-        this.renamePerm = config.getBoolean("commands.claims.rename.enabled");
-        this.setSpawnPerm = config.getBoolean("commands.claims.setspawn.enabled");
-        this.claimTPPerm = config.getBoolean("commands.claims.teleport.enabled");
-        this.allowManager = config.getBoolean("permissions.allow-manager");
+        this.publicPerm = config.getBoolean("commands.public.permission.enabled");
+        this.privatePerm = config.getBoolean("commands.private.permission.enabled");
+        this.renamePerm = config.getBoolean("commands.rename.permission.enabled");
+        this.setSpawnPerm = config.getBoolean("commands.setspawn.permission.enabled");
+        this.claimTPPerm = config.getBoolean("commands.claimtp.permission.enabled");
     }
 
     public boolean hasClaimPermission(Player player, Claim claim) {

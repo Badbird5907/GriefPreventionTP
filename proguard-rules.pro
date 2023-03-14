@@ -49,6 +49,9 @@
 -keep class jdk.** { *; }
 -dontwarn jdk.**
 
+-keep class java.util.** { *; }
+-dontwarn java.util.**
+
 #-dontwarn dev.badbird.griefpreventiontp.GriefPreventionTP
 #-dontwarn dev.badbird.griefpreventiontp.manager.TeleportManager
 -keep class org.bukkit.plugin.java.JavaPlugin { *; }
