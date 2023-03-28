@@ -1,3 +1,0 @@
-USER=%%__USER__%%
-RESOURCE=%%__RESOURCE__%%
-NONCE=%%__NONCE__%%
