@@ -4,6 +4,7 @@ import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
+import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.CloseButton;
@@ -12,7 +13,8 @@ import net.badbird5907.blib.menu.buttons.impl.NextPageButton;
 import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
-import net.badbird5907.blib.util.ItemBuilder;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -47,7 +49,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public String getPagesTitle(Player player) {
-        return "Claims";
+        return CC.translate(GriefPreventionTP.getInstance().getConfig().getString("menu.claims.title", "Claims"));
     }
 
     @Override
@@ -90,8 +92,15 @@ public class ClaimsMenu extends PaginatedMenu {
 
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Public Claims: " + (!privateClaims ? "Yes" : CC.RED + "No"))
-                        .lore(CC.GRAY + "Click to toggle.").build();
+                String base = "menu.claims.items.filter." + (privateClaims ? "disabled" : "enabled");
+                // return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Public Claims: " + (!privateClaims ? "Yes" : CC.RED + "No"))
+                //        .lore(CC.GRAY + "Click to toggle.").build();
+                ItemStack itemStack = new ItemStack(Material.PAPER);
+                Component name = AdventureUtil.getComponentFromConfig(base + ".name", "<green>Viewing Public Claims: " + (!privateClaims ? "<green>Yes" : "<red>No"));
+                List<Component> lore = AdventureUtil.getComponentListFromConfigDef(base + ".lore", List.of("<gray>Click to toggle."));
+                AdventureUtil.setItemDisplayName(itemStack, name);
+                AdventureUtil.setItemLore(itemStack, lore);
+                return itemStack;
             }
 
             @Override
@@ -106,7 +115,14 @@ public class ClaimsMenu extends PaginatedMenu {
         return new CloseButton() {
             @Override
             public ItemStack getItem(Player player) {
-                return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
+                // return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
+                ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
+                Component name = AdventureUtil.getComponentFromConfig("menu.close-button.title", "<red>Close");
+                AdventureUtil.setItemDisplayName(itemStack, name);
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.close-button.lore");
+                if (!lore.isEmpty())
+                    AdventureUtil.setItemLore(itemStack, lore);
+                return itemStack;
             }
 
             @Override
@@ -136,11 +152,14 @@ public class ClaimsMenu extends PaginatedMenu {
         @Override
         public ItemStack getItem(Player player) {
             boolean valid = claimInfo.getSpawn() != null;
-            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
+            /*
+            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD)
+                    .setName(CC.GREEN + claimInfo.getName())
                     .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
                     .amount(claimInfo.getPlayerClaimCount());
             builder.lore(CC.GRAY + "ID: " + claimInfo.getClaimID());
-            if (showCoords) builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            if (showCoords)
+                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
             if (valid)
                 builder.lore(
                         "", CC.GRAY + "Click to teleport."
@@ -151,6 +170,33 @@ public class ClaimsMenu extends PaginatedMenu {
                 builder.lore(CC.GRAY + "Right Click to manage.");
             }
             ItemStack stack = builder.build();
+             */
+            ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+            String base = "menu.claims.items.claim";
+            Component name = AdventureUtil.getComponentFromConfig(base + ".title", "<green>{name}", "name", claimInfo.getName());
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef(base + ".lore", List.of(
+                    "<gray>Owner: {owner}",
+                            "<gray>ID: {id}",
+                            "<gray>{x}, {y}, {z}",
+                            "",
+                            "<gray>Click to teleport.",
+                            "canEdit:<gray>Right click to manage."
+            ), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ());
+            for (int i = 0; i < lore.size(); i++) {
+                Component component = lore.get(i);
+                if (component instanceof TextComponent tc) {
+                    if (tc.content().startsWith("canEdit:")) {
+                        if (canEdit) {
+                            lore.set(i, tc.content(tc.content().substring(8)));
+                            continue;
+                        }
+                        lore.remove(component);
+                    }
+                }
+            }
+            AdventureUtil.setItemDisplayName(stack, name);
+            AdventureUtil.setItemLore(stack, lore);
+
             UUID owner = claimInfo.getOwner();
             SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
@@ -181,10 +227,22 @@ public class ClaimsMenu extends PaginatedMenu {
 
         @Override
         public ItemStack getItem(Player player) {
+            /*
             return new ItemBuilder(Material.OAK_SIGN)
                     .setName("&aSearch")
                     .lore(CC.GRAY + "Click to search claims!")
                     .build();
+             */
+            ItemStack item = new ItemStack(
+                    Material.valueOf(plugin.getConfig().getString("menu.claims.items.search.type"))
+            );
+            Component name = AdventureUtil.getComponentFromConfig("menu.claims.items.search.name", "<green>Search");
+            List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.claims.items.search.lore", List.of(
+                    "<gray>Click to search claims!"
+            ));
+            AdventureUtil.setItemDisplayName(item, name);
+            AdventureUtil.setItemLore(item, lore);
+            return item;
         }
 
         @Override
@@ -196,7 +254,15 @@ public class ClaimsMenu extends PaginatedMenu {
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             new ComponentQuestionConversation(MessageManager.getComponent("messages.search"), (a) -> {
                 String answer = a.toLowerCase();
+                List<String> cancelMessages = plugin.getConfig().getStringList("search.cancel-messages");
+                /*
                 if (answer.equals("cancel")) {
+                    searchTerm = null;
+                    open(player);
+                    return Prompt.END_OF_CONVERSATION;
+                }
+                 */
+                if (cancelMessages.stream().anyMatch(s -> s.equalsIgnoreCase(answer))) {
                     searchTerm = null;
                     open(player);
                     return Prompt.END_OF_CONVERSATION;
@@ -216,6 +282,19 @@ public class ClaimsMenu extends PaginatedMenu {
             public int getSlot() {
                 return 41;
             }
+
+            @Override
+            public ItemStack getItem(Player player) {
+                Material material = Material.valueOf(plugin.getConfig().getString("menu.next-page.type"));
+                ItemStack item = new ItemStack(material);
+                Component name = AdventureUtil.getComponentFromConfig("menu.next-page.name", "<green>Next Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.next-page.lore", List.of(
+                        "<gray>Click to go to the next page."
+                ));
+                AdventureUtil.setItemDisplayName(item, name);
+                AdventureUtil.setItemLore(item, lore);
+                return item;
+            }
         };
     }
 
@@ -225,6 +304,19 @@ public class ClaimsMenu extends PaginatedMenu {
             @Override
             public int getSlot() {
                 return 39;
+            }
+
+            @Override
+            public ItemStack getItem(Player player) {
+                Material material = Material.valueOf(plugin.getConfig().getString("menu.previous-page.type"));
+                ItemStack item = new ItemStack(material);
+                Component name = AdventureUtil.getComponentFromConfig("menu.previous-page.name", "<green>Previous Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.previous-page.lore", List.of(
+                        "<gray>Click to go to the previous page."
+                ));
+                AdventureUtil.setItemDisplayName(item, name);
+                AdventureUtil.setItemLore(item, lore);
+                return item;
             }
         };
     }

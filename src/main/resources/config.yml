@@ -56,18 +56,95 @@ vault-integration:
     enabled: false
     groups:
       default: 100
-      vip: 50
+      vip: 50+
       mvp: 10
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 menu:
+  claims:
+    title: 'Claims'
+    items:
+      filter:
+        enabled:
+          name: '<green>Viewing Public Claims: Yes'
+          lore:
+            - '<gray>Click to toggle'
+        disabled:
+          name: '<green>Viewing Public Claims: <red>No'
+          lore:
+            - '<gray>Click to toggle'
+      claim:
+        name: '<green>{name}'
+        lore:
+          - '<gray>Owner: {owner}'
+          - '<gray>ID: {id}'
+          - '<gray>{x}, {y}, {z}'
+          - ''
+          - '<gray>Click to teleport.'
+          - 'canEdit:<gray>Right click to manage.'
+      search:
+        type: OAK_SIGN
+        name: '<green>Search'
+        lore:
+          - '<gray>Click to search claims!'
+  confirm:
+    title: 'Are you sure?'
+    items:
+      confirm:
+        type: 'GREEN_STAINED_GLASS_PANE'
+        name: '<green>Yes'
+        lore:
+          - '<gray>Click to confirm.'
+      cancel:
+        type: 'RED_STAINED_GLASS_PANE'
+        name: '<red>No'
+        lore:
+          - '<gray>Click to cancel.'
+      info:
+        type: 'PAPER'
+        name: '<green>Are you sure you want to {action}?'
+        lore:
+          - '<gray>Click <green>yes</green> to confirm, or <red>no</red> to cancel.'
+          - 'permanent:<gray>This action cannot be undone.'
+  manage-claim:
+    action-delete-this-claim: 'delete this claim' # Used in the confirm menu
+    title: 'Manage Claim - {claim}'
+    rename-claim:
+      name: '<green>Rename Claim'
+      lore:
+        - ''
+        - '<gray>Click to rename.'
+    claim:
+      name: '<green>{name}'
+      lore:
+        - '<gray>Owner: {owner}'
+        - '<gray>ID: {id}'
+        - '<gray>{x}, {y}, {z}'
   enable-search: true
   enable-delete: true # Enable the delete claim button in the manager menu
-  show-coordinates: true
-  close-button-type: 'BARRIER'
+  close-button:
+    type: 'BARRIER'
+    name: '<red>Close'
+    lore: []
   back-button:
     type: 'ARROW'
     name: '<green>Back'
+    lore:
+      - '<gray>Click to go back'
+  next-page:
+    type: 'ARROW'
+    name: '<green>Next Page'
+    lore:
+      - '<gray>Click to go to the next page'
+  previous-page:
+    type: 'ARROW'
+    name: '<green>Previous Page'
+    lore:
+      - '<gray>Click to go to the previous page'
+search:
+  cancel-messages: # If the player says this when searching, it will cancel the search
+    - 'cancel'
+    - 'stop'
 commands: # Permissions required to use the commands, set to false to stop checking for permissions
   claims: # gptp.command.claims
     permission:

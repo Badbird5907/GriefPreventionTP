@@ -3,7 +3,6 @@ package dev.badbird.griefpreventiontp.menus;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +27,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
@@ -36,9 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
-
-import static net.badbird5907.blib.util.CC.GRAY;
-import static net.badbird5907.blib.util.XMaterial.GRAY_STAINED_GLASS_PANE;
 
 @RequiredArgsConstructor
 public class ManageClaimMenu extends Menu {
@@ -99,7 +94,8 @@ public class ManageClaimMenu extends Menu {
 
     @Override
     public String getName(Player player) {
-        String title = "Manage Claim - " + claimInfo.getName();
+        String title = plugin.getConfig().getString("menu.manage-claim.title", "Manage Claim - {claim}");
+        title = title.replace("{claim}", claimInfo.getName());
         if (title.length() > 29)
             title = title.substring(0, 29) + "...";
         return title;
@@ -119,7 +115,19 @@ public class ManageClaimMenu extends Menu {
 
     @Override
     public Button getCloseButton() {
-        return new CloseButton();
+        return new CloseButton() {
+            @Override
+            public ItemStack getItem(Player player) {
+                // return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
+                ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
+                Component name = AdventureUtil.getComponentFromConfig("menu.close-button.title", "<red>Close");
+                AdventureUtil.setItemDisplayName(itemStack, name);
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.close-button.lore");
+                if (!lore.isEmpty())
+                    AdventureUtil.setItemLore(itemStack, lore);
+                return itemStack;
+            }
+        };
     }
 
     private final class DeleteButton extends Button {
@@ -138,7 +146,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ConfirmMenu("delete this claim", (res) -> {
+            new ConfirmMenu(plugin.getConfig().getString("menu.manage-claim.action-delete-this-claim", "delete this claim"), (res) -> {
                 if (res) {
                     Claim claim = claimInfo.getClaim();
                     if (!claim.getOwnerID().equals(player.getUniqueId())) {
@@ -161,10 +169,19 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public ItemStack getItem(Player player) {
+            /*
             return new ItemBuilder(Material.NAME_TAG)
                     .setName(CC.GREEN + "Rename")
                     .lore("", CC.GRAY + "Click to rename.")
                     .build();
+             */
+            ItemStack itemStack = new ItemStack(Material.NAME_TAG);
+            Component name = AdventureUtil.getComponentFromConfig("menu.manage-claim.rename-claim.title", "<green>Rename Claim");
+            AdventureUtil.setItemDisplayName(itemStack, name);
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("menu.manage-claim.rename-claim.lore", Arrays.asList("", "<gray>Click to rename."));
+            if (!lore.isEmpty())
+                AdventureUtil.setItemLore(itemStack, lore);
+            return itemStack;
         }
 
         @Override
@@ -279,17 +296,30 @@ public class ManageClaimMenu extends Menu {
         public ClaimButton() {
             claimInfo.checkValid();
         }
+
         @Override
         public ItemStack getItem(Player player) {
             boolean valid = claimInfo.getSpawn() != null;
+            /*
             ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD).setName(CC.GREEN + claimInfo.getName())
                     .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
                     .amount(claimInfo.getPlayerClaimCount());
             builder.lore(CC.GRAY + "ID: " + claimInfo.getClaimID());
-            if (showCoords) builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
+            if (showCoords)
+                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
             if (!valid) builder.lore("", CC.RED + "No spawn set!");
 
             ItemStack stack = builder.build();
+             */
+            ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+            Component name = AdventureUtil.getComponentFromConfig("menu.manage-claim.claim.name", "<green>{name}", "name", claimInfo.getName(), "owner", claimInfo.getOwnerName());
+            AdventureUtil.setItemDisplayName(stack, name);
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("menu.manage-claim.claim.lore", Arrays.asList(
+                    "<gray>Owner: {owner}",
+                    "<gray>ID: {id}",
+                    "<gray>{x}, {y}, {z}"
+            ), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
+            AdventureUtil.setItemLore(stack, lore);
             UUID owner = claimInfo.getOwner();
             SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
             skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
