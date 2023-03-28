@@ -1,6 +1,7 @@
 package dev.badbird.griefpreventiontp.commands.impl;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.*;
@@ -74,5 +75,9 @@ public class GPTPCommand {
         sender.sendMessage(CC.GREEN + "Reloading...");
         GriefPreventionTP.getInstance().reloadConfig();
         sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
+    }
+    @Command(name = "setspawn", description = "Set spawn")
+    public void execute(@Sender Player player, @Dependency PermissionsManager permissionsManager) {
+        new SetSpawnCommand().execute(player, permissionsManager);
     }
 }
