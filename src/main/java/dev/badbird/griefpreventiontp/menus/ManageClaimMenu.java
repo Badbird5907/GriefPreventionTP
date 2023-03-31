@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
@@ -37,20 +38,17 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class ManageClaimMenu extends Menu {
-    private final ClaimInfo claimInfo;
-    private final Menu previousMenu;
-    private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
-
     private static final List<Integer> PLACEHOLDERS = new ArrayList<>();
-
-    private boolean hasPublicPerm = true, hasPrivatePerm = true;
 
     static {
         IntStream.range(0, 36).forEach((i) -> {
-            if (i != 11 && i != 15 && i != 36)
-                PLACEHOLDERS.add(i);
+            if (i != 11 && i != 15 && i != 36) PLACEHOLDERS.add(i);
         });
     }
+
+    private final ClaimInfo claimInfo;
+    private final Menu previousMenu;
+    private boolean hasPublicPerm = true, hasPrivatePerm = true;
 
     @Override
     public List<Button> getButtons(Player player) {
@@ -58,7 +56,7 @@ public class ManageClaimMenu extends Menu {
         hasPrivatePerm = player.hasPermission("gptp.command.private");
         Claim claim = claimInfo.getClaim();
         ArrayList<Button> buttons = new ArrayList<>();
-        if (claim.ownerID.equals(player.getUniqueId()) && GriefPreventionTP.getInstance().getConfig().getBoolean("menu.enable-delete")) //Only allow owner to delete claim
+        if (claim.ownerID.equals(player.getUniqueId()) && MenuManager.getBoolean("manage-claim", "enable-delete", true)) // Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
         buttons.add(new ClaimButton());
@@ -78,8 +76,7 @@ public class ManageClaimMenu extends Menu {
 
             @Override
             public ItemStack getItem(Player player) {
-                ItemStack item = new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.back-button.type")))
-                        .build();
+                ItemStack item = new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.back-button.type"))).build();
                 Component component = MessageManager.getComponent("menu.back-button.name");
                 AdventureUtil.setItemDisplayName(item, component);
                 return item;
@@ -94,11 +91,24 @@ public class ManageClaimMenu extends Menu {
 
     @Override
     public String getName(Player player) {
-        String title = plugin.getConfig().getString("menu.manage-claim.title", "Manage Claim - {claim}");
-        title = title.replace("{claim}", claimInfo.getName());
-        if (title.length() > 29)
-            title = title.substring(0, 29) + "...";
+        String title = MenuManager.getString("manage-claim", "title", "Manage Claim - {claim}").replace("{claim}", claimInfo.getName());
+        if (title.length() > 29) title = title.substring(0, 29) + "...";
         return title;
+    }
+
+    @Override
+    public Button getCloseButton() {
+        return new CloseButton() {
+            @Override
+            public ItemStack getItem(Player player) {
+                ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
+                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.close-button.title", "<red>Close");
+                AdventureUtil.setItemDisplayName(itemStack, name);
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.close-button.lore");
+                if (!lore.isEmpty()) AdventureUtil.setItemLore(itemStack, lore);
+                return itemStack;
+            }
+        };
     }
 
     private class Placeholders extends PlaceholderButton {
@@ -113,30 +123,10 @@ public class ManageClaimMenu extends Menu {
         }
     }
 
-    @Override
-    public Button getCloseButton() {
-        return new CloseButton() {
-            @Override
-            public ItemStack getItem(Player player) {
-                // return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
-                ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
-                Component name = AdventureUtil.getComponentFromConfig("menu.close-button.title", "<red>Close");
-                AdventureUtil.setItemDisplayName(itemStack, name);
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.close-button.lore");
-                if (!lore.isEmpty())
-                    AdventureUtil.setItemLore(itemStack, lore);
-                return itemStack;
-            }
-        };
-    }
-
     private final class DeleteButton extends Button {
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.REDSTONE_BLOCK)
-                    .setName(CC.RED + "Delete Claim")
-                    .lore(CC.GRAY + "Click to delete this claim.")
-                    .build();
+            return new ItemBuilder(Material.REDSTONE_BLOCK).setName(CC.RED + "Delete Claim").lore(CC.GRAY + "Click to delete this claim.").build();
         }
 
         @Override
@@ -146,7 +136,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            new ConfirmMenu(plugin.getConfig().getString("menu.manage-claim.action-delete-this-claim", "delete this claim"), (res) -> {
+            new ConfirmMenu(MenuManager.getString("manage-claim", "action-delete-this-claim", "delete this claim"), (res) -> {
                 if (res) {
                     Claim claim = claimInfo.getClaim();
                     if (!claim.getOwnerID().equals(player.getUniqueId())) {
@@ -176,11 +166,10 @@ public class ManageClaimMenu extends Menu {
                     .build();
              */
             ItemStack itemStack = new ItemStack(Material.NAME_TAG);
-            Component name = AdventureUtil.getComponentFromConfig("menu.manage-claim.rename-claim.title", "<green>Rename Claim");
+            Component name = AdventureUtil.getComponentFromConfig("manage-claim", "rename-claim.title", "<green>Rename Claim");
             AdventureUtil.setItemDisplayName(itemStack, name);
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("menu.manage-claim.rename-claim.lore", Arrays.asList("", "<gray>Click to rename."));
-            if (!lore.isEmpty())
-                AdventureUtil.setItemLore(itemStack, lore);
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "rename-claim.lore", Arrays.asList("", "<gray>Click to rename."));
+            if (!lore.isEmpty()) AdventureUtil.setItemLore(itemStack, lore);
             return itemStack;
         }
 
@@ -236,12 +225,10 @@ public class ManageClaimMenu extends Menu {
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             if (!isPublic && cost > 0) {
-                Component component = MessageManager.getComponent("messages.verify-public-cost.menu", cost)
-                        .decoration(TextDecoration.ITALIC, false);
+                Component component = MessageManager.getComponent("messages.verify-public-cost.menu", cost).decoration(TextDecoration.ITALIC, false);
                 lore.add(component);
             }
-            lore.add(LegacyComponentSerializer.legacySection().deserialize(CC.GRAY + "Click to toggle public/private.")
-                    .decoration(TextDecoration.ITALIC, false));
+            lore.add(LegacyComponentSerializer.legacySection().deserialize(CC.GRAY + "Click to toggle public/private.").decoration(TextDecoration.ITALIC, false));
             AdventureUtil.setItemLore(item, lore);
             return item;
         }
@@ -312,13 +299,9 @@ public class ManageClaimMenu extends Menu {
             ItemStack stack = builder.build();
              */
             ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
-            Component name = AdventureUtil.getComponentFromConfig("menu.manage-claim.claim.name", "<green>{name}", "name", claimInfo.getName(), "owner", claimInfo.getOwnerName());
+            Component name = AdventureUtil.getComponentFromConfig("manage-claim", "claim.name", "<green>{name}", "name", claimInfo.getName(), "owner", claimInfo.getOwnerName());
             AdventureUtil.setItemDisplayName(stack, name);
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("menu.manage-claim.claim.lore", Arrays.asList(
-                    "<gray>Owner: {owner}",
-                    "<gray>ID: {id}",
-                    "<gray>{x}, {y}, {z}"
-            ), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "claim.lore", Arrays.asList("<gray>Owner: {owner}", "<gray>ID: {id}", "<gray>{x}, {y}, {z}"), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
             AdventureUtil.setItemLore(stack, lore);
             UUID owner = claimInfo.getOwner();
             SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();

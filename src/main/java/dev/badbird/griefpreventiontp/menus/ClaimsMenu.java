@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
@@ -15,6 +16,8 @@ import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -34,8 +37,6 @@ public class ClaimsMenu extends PaginatedMenu {
     private String searchTerm;
     private boolean privateClaims = true;
 
-    private boolean showCoords = GriefPreventionTP.getInstance().getConfig().getBoolean("menu.show-coordinates");
-
     public ClaimsMenu(UUID uuid, String searchTerm) {
         this.uuid = uuid;
         this.searchTerm = searchTerm;
@@ -49,7 +50,7 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public String getPagesTitle(Player player) {
-        return CC.translate(GriefPreventionTP.getInstance().getConfig().getString("menu.claims.title", "Claims"));
+        return CC.translate(MenuManager.getString("claims", "title", "Claims"));
     }
 
     @Override
@@ -92,12 +93,12 @@ public class ClaimsMenu extends PaginatedMenu {
 
             @Override
             public ItemStack getItem(Player player) {
-                String base = "menu.claims.items.filter." + (privateClaims ? "disabled" : "enabled");
+                String base = "filter." + (privateClaims ? "disabled" : "enabled");
                 // return new ItemBuilder(Material.PAPER).setName(CC.GREEN + "Viewing Public Claims: " + (!privateClaims ? "Yes" : CC.RED + "No"))
                 //        .lore(CC.GRAY + "Click to toggle.").build();
                 ItemStack itemStack = new ItemStack(Material.PAPER);
-                Component name = AdventureUtil.getComponentFromConfig(base + ".name", "<green>Viewing Public Claims: " + (!privateClaims ? "<green>Yes" : "<red>No"));
-                List<Component> lore = AdventureUtil.getComponentListFromConfigDef(base + ".lore", List.of("<gray>Click to toggle."));
+                Component name = AdventureUtil.getComponentFromConfig("claims", base + ".name", "<green>Viewing Public Claims: " + (!privateClaims ? "<green>Yes" : "<red>No"));
+                List<Component> lore = AdventureUtil.getComponentListFromConfigDef("claims", base + ".lore", List.of("<gray>Click to toggle."));
                 AdventureUtil.setItemDisplayName(itemStack, name);
                 AdventureUtil.setItemLore(itemStack, lore);
                 return itemStack;
@@ -117,9 +118,9 @@ public class ClaimsMenu extends PaginatedMenu {
             public ItemStack getItem(Player player) {
                 // return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
                 ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
-                Component name = AdventureUtil.getComponentFromConfig("menu.close-button.title", "<red>Close");
+                Component name = AdventureUtil.getComponentFromConfig("", "menu.close-button.title", "<red>Close");
                 AdventureUtil.setItemDisplayName(itemStack, name);
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.close-button.lore");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("", "menu.close-button.lore");
                 if (!lore.isEmpty())
                     AdventureUtil.setItemLore(itemStack, lore);
                 return itemStack;
@@ -132,10 +133,57 @@ public class ClaimsMenu extends PaginatedMenu {
         };
     }
 
+    @Override
+    public Button getNextPageButton() {
+        return new NextPageButton(this) {
+            @Override
+            public int getSlot() {
+                return 41;
+            }
+
+            @Override
+            public ItemStack getItem(Player player) {
+                Material material = Material.valueOf(plugin.getConfig().getString("menu.next-page.type"));
+                ItemStack item = new ItemStack(material);
+                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.next-page.name", "<green>Next Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.next-page.lore", List.of(
+                        "<gray>Click to go to the next page."
+                ));
+                AdventureUtil.setItemDisplayName(item, name);
+                AdventureUtil.setItemLore(item, lore);
+                return item;
+            }
+        };
+    }
+
+    @Override
+    public Button getPreviousPageButton() {
+        return new PreviousPageButton(this) {
+            @Override
+            public int getSlot() {
+                return 39;
+            }
+
+            @Override
+            public ItemStack getItem(Player player) {
+                Material material = Material.valueOf(plugin.getConfig().getString("menu.previous-page.type"));
+                ItemStack item = new ItemStack(material);
+                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.previous-page.name", "<green>Previous Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.previous-page.lore", List.of(
+                        "<gray>Click to go to the previous page."
+                ));
+                AdventureUtil.setItemDisplayName(item, name);
+                AdventureUtil.setItemLore(item, lore);
+                return item;
+            }
+        };
+    }
+
     private class ClaimButton extends Button {
         private final ClaimInfo claimInfo;
         private final Player player;
-
+        private Claim claim;
+        private boolean canEdit;
         public ClaimButton(ClaimInfo claimInfo, Player player) {
             this.claimInfo = claimInfo;
             this.player = player;
@@ -145,9 +193,6 @@ public class ClaimsMenu extends PaginatedMenu {
                             .hasClaimPermission(player, claim);
             claimInfo.checkValid();
         }
-
-        private Claim claim;
-        private boolean canEdit;
 
         @Override
         public ItemStack getItem(Player player) {
@@ -172,26 +217,28 @@ public class ClaimsMenu extends PaginatedMenu {
             ItemStack stack = builder.build();
              */
             ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
-            String base = "menu.claims.items.claim";
-            Component name = AdventureUtil.getComponentFromConfig(base + ".title", "<green>{name}", "name", claimInfo.getName());
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef(base + ".lore", List.of(
-                    "<gray>Owner: {owner}",
+            Component name = AdventureUtil.getComponentFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
+            List<Component> lore =
+                    new ArrayList<>(AdventureUtil.getComponentListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
+                            "<gray>Owner: {owner}",
                             "<gray>ID: {id}",
                             "<gray>{x}, {y}, {z}",
                             "",
                             "<gray>Click to teleport.",
                             "canEdit:<gray>Right click to manage."
-            ), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ());
+                    )), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ()));
             for (int i = 0; i < lore.size(); i++) {
                 Component component = lore.get(i);
-                if (component instanceof TextComponent tc) {
-                    if (tc.content().startsWith("canEdit:")) {
-                        if (canEdit) {
-                            lore.set(i, tc.content(tc.content().substring(8)));
-                            continue;
-                        }
-                        lore.remove(component);
+                String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
+                if (content.startsWith("canEdit:")) {
+                    if (canEdit) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("canEdit:")
+                                .replacement("")
+                                .build()));
+                        continue;
                     }
+                    lore.remove(component);
                 }
             }
             AdventureUtil.setItemDisplayName(stack, name);
@@ -234,10 +281,10 @@ public class ClaimsMenu extends PaginatedMenu {
                     .build();
              */
             ItemStack item = new ItemStack(
-                    Material.valueOf(plugin.getConfig().getString("menu.claims.items.search.type"))
+                    Material.valueOf(MenuManager.getString("claims", "search.type", "OAK_SIGN"))
             );
-            Component name = AdventureUtil.getComponentFromConfig("menu.claims.items.search.name", "<green>Search");
-            List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.claims.items.search.lore", List.of(
+            Component name = AdventureUtil.getComponentFromConfig("claims", "search.name", "<green>Search");
+            List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "search.lore", List.of(
                     "<gray>Click to search claims!"
             ));
             AdventureUtil.setItemDisplayName(item, name);
@@ -273,51 +320,5 @@ public class ClaimsMenu extends PaginatedMenu {
                 return Prompt.END_OF_CONVERSATION;
             }).start(player);
         }
-    }
-
-    @Override
-    public Button getNextPageButton() {
-        return new NextPageButton(this) {
-            @Override
-            public int getSlot() {
-                return 41;
-            }
-
-            @Override
-            public ItemStack getItem(Player player) {
-                Material material = Material.valueOf(plugin.getConfig().getString("menu.next-page.type"));
-                ItemStack item = new ItemStack(material);
-                Component name = AdventureUtil.getComponentFromConfig("menu.next-page.name", "<green>Next Page");
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.next-page.lore", List.of(
-                        "<gray>Click to go to the next page."
-                ));
-                AdventureUtil.setItemDisplayName(item, name);
-                AdventureUtil.setItemLore(item, lore);
-                return item;
-            }
-        };
-    }
-
-    @Override
-    public Button getPreviousPageButton() {
-        return new PreviousPageButton(this) {
-            @Override
-            public int getSlot() {
-                return 39;
-            }
-
-            @Override
-            public ItemStack getItem(Player player) {
-                Material material = Material.valueOf(plugin.getConfig().getString("menu.previous-page.type"));
-                ItemStack item = new ItemStack(material);
-                Component name = AdventureUtil.getComponentFromConfig("menu.previous-page.name", "<green>Previous Page");
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.previous-page.lore", List.of(
-                        "<gray>Click to go to the previous page."
-                ));
-                AdventureUtil.setItemDisplayName(item, name);
-                AdventureUtil.setItemLore(item, lore);
-                return item;
-            }
-        };
     }
 }

@@ -1,6 +1,7 @@
 package dev.badbird.griefpreventiontp.commands.impl;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.*;
@@ -36,6 +37,7 @@ public class GPTPCommand {
             long start = System.currentTimeMillis();
             sender.sendMessage(CC.GREEN + "Reloading...");
             GriefPreventionTP.getInstance().reloadConfig();
+            MenuManager.getInstance().init();
             sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
             return;
         }

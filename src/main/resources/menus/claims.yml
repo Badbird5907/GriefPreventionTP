@@ -1,0 +1,29 @@
+# =============================================
+# THIS FILE WILL EVENTUALLY BE REPLACED.
+# =============================================
+
+title: 'Claims'
+
+filter:
+  enabled:
+    name: '<green>Viewing Public Claims: Yes'
+    lore:
+      - '<gray>Click to toggle'
+  disabled:
+    name: '<green>Viewing Public Claims: <red>No'
+    lore:
+      - '<gray>Click to toggle'
+claim:
+  name: '<green>{name}'
+  lore:
+    - '<gray>Owner: {owner}'
+    - '<gray>ID: {id}'
+    - '<gray>{x}, {y}, {z}'
+    - ''
+    - '<gray>Click to teleport.'
+    - 'canEdit:<gray>Right click to manage.'
+search:
+  type: OAK_SIGN
+  name: '<green>Search'
+  lore:
+    - '<gray>Click to search claims!'

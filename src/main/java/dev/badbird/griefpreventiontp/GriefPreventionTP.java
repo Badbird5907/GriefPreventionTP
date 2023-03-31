@@ -7,6 +7,7 @@ import dev.badbird.griefpreventiontp.commands.provider.PlayerDataProvider;
 import dev.badbird.griefpreventiontp.data.StorageProvider;
 import dev.badbird.griefpreventiontp.data.impl.FlatFileStorageProvider;
 import dev.badbird.griefpreventiontp.listener.ClaimListener;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
@@ -155,6 +156,8 @@ public final class GriefPreventionTP extends JavaPlugin {
         this.claimManager.init();
 
         this.teleportManager = new TeleportManager(this);
+
+        MenuManager.getInstance().init();
 
 
         Listener[] listeners = {

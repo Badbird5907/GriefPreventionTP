@@ -1,0 +1,18 @@
+# =============================================
+# THIS FILE WILL EVENTUALLY BE REPLACED.
+# =============================================
+
+title: 'Manage Claim - {claim}'
+action-delete-this-claim: 'delete this claim' # Used in the confirm menu
+enable-delete: true
+rename-claim:
+  name: '<green>Rename Claim'
+  lore:
+    - ''
+    - '<gray>Click to rename.'
+claim:
+  name: '<green>{name}'
+  lore:
+    - '<gray>Owner: {owner}'
+    - '<gray>ID: {id}'
+    - '<gray>{x}, {y}, {z}'

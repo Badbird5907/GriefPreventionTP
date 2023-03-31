@@ -1,9 +1,11 @@
 package dev.badbird.griefpreventiontp.util;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import net.badbird5907.blib.util.Logger;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.entity.Player;
@@ -68,8 +70,8 @@ public class AdventureUtil {
         }
     }
 
-    public static Component getComponentFromConfig(String key, String def, Object... placeholders) {
-        String raw = GriefPreventionTP.getInstance().getConfig().getString(key, def);
+    public static Component getComponentFromConfig(String menu, String key, String def, Object... placeholders) {
+        String raw = MenuManager.getMenu(menu).getString(key, def);
         if (placeholders != null && placeholders.length >= 2) {
             // placeholders used like this: ["key1", "value1", "key2", "value2"]
             for (int i = 0; i < placeholders.length; i += 2) {
@@ -78,11 +80,11 @@ public class AdventureUtil {
                 raw = raw.replace(key1, value);
             }
         }
-        return MiniMessage.miniMessage().deserialize(raw);
+        return cleanItalics(MiniMessage.miniMessage().deserialize(raw));
     }
 
-    public static List<Component> getComponentListFromConfig(String key, Object... placeholders) {
-        List<String> raw = GriefPreventionTP.getInstance().getConfig().getStringList(key);
+    public static List<Component> getComponentListFromConfig(String menu, String key, Object... placeholders) {
+        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
         List<Component> components = new ArrayList<>();
         for (String s : raw) {
             if (placeholders != null && placeholders.length >= 2) {
@@ -93,13 +95,13 @@ public class AdventureUtil {
                     s = s.replace(key1, value);
                 }
             }
-            components.add(MiniMessage.miniMessage().deserialize(s));
+            components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
         }
         return components;
     }
 
-    public static List<Component> getComponentListFromConfigDef(String key, List<String> defaults, Object... placeholders) {
-        List<String> raw = GriefPreventionTP.getInstance().getConfig().getStringList(key);
+    public static List<Component> getComponentListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
+        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
         if (placeholders != null && placeholders.length >= 2) {
             // placeholders used like this: ["key1", "value1", "key2", "value2"]
             for (int i = 0; i < placeholders.length; i += 2) {
@@ -120,10 +122,13 @@ public class AdventureUtil {
         List<Component> components = new ArrayList<>();
         if (raw.isEmpty())
             for (String s : defaults)
-                components.add(MiniMessage.miniMessage().deserialize(s));
+                components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
         else
             for (String s : raw)
-                components.add(MiniMessage.miniMessage().deserialize(s));
+                components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
         return components;
+    }
+    public static Component cleanItalics(Component in) {
+        return Component.empty().decoration(TextDecoration.ITALIC, false).append(in);
     }
 }

@@ -1,6 +1,7 @@
 package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
+import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -25,16 +26,6 @@ import java.util.stream.IntStream;
 
 @RequiredArgsConstructor
 public class ConfirmMenu extends Menu {
-    private final String action;
-
-    private final Consumer<Boolean> callback;
-
-    @Getter
-    @Setter
-    private boolean permanent = false;
-
-    private boolean done = false;
-
     private static final int[] PLACEHOLDERS;
 
     static {
@@ -45,6 +36,13 @@ public class ConfirmMenu extends Menu {
         });
         PLACEHOLDERS = a.stream().mapToInt(i -> i).toArray();
     }
+
+    private final String action;
+    private final Consumer<Boolean> callback;
+    @Getter
+    @Setter
+    private boolean permanent = false;
+    private boolean done = false;
 
     @Override
     public List<Button> getButtons(Player player) {
@@ -58,7 +56,8 @@ public class ConfirmMenu extends Menu {
 
     @Override
     public String getName(Player player) {
-        return CC.translate(GriefPreventionTP.getInstance().getConfig().getString("menu.confirm.title", "Are you sure?"));
+        // return CC.translate(GriefPreventionTP.getInstance().getConfig().getString("menu.confirm.title", "Are you sure?"));
+        return CC.translate(MenuManager.getString("confirm", "title", "Are you sure?"));
     }
 
     @Override
@@ -85,9 +84,9 @@ public class ConfirmMenu extends Menu {
                     .name(CC.GREEN + "Yes")
                     .build();
              */
-            Material material = Material.valueOf(GriefPreventionTP.getInstance().getConfig().getString("menu.confirm.items.confirm.type", "GREEN_STAINED_GLASS_PANE"));
-            Component name = AdventureUtil.getComponentFromConfig("menu.confirm.items.confirm.name", "<green>Yes");
-            List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.confirm.items.confirm.lore", Arrays.asList("<gray>Click to confirm"));
+            Material material = Material.valueOf(MenuManager.getString("confirm", "confirm.type", "GREEN_STAINED_GLASS_PANE"));
+            Component name = AdventureUtil.getComponentFromConfig("confirm", "confirm.name", "<green>Yes");
+            List<Component> lore = AdventureUtil.getComponentListFromConfig("confirm", "confirm.lore", Arrays.asList("<gray>Click to confirm"));
             ItemStack item = new ItemStack(material);
             AdventureUtil.setItemDisplayName(item, name);
             AdventureUtil.setItemLore(item, lore);
@@ -117,9 +116,9 @@ public class ConfirmMenu extends Menu {
                     .name(CC.RED + "No")
                     .build();
              */
-            Material material = Material.valueOf(GriefPreventionTP.getInstance().getConfig().getString("menu.confirm.items.cancel.type", "RED_STAINED_GLASS_PANE"));
-            Component name = AdventureUtil.getComponentFromConfig("menu.confirm.items.cancel.name", "<red>No");
-            List<Component> lore = AdventureUtil.getComponentListFromConfig("menu.confirm.items.cancel.lore", Arrays.asList("<gray>Click to cancel"));
+            Material material = Material.valueOf(GriefPreventionTP.getInstance().getConfig().getString("cancel.type", "RED_STAINED_GLASS_PANE"));
+            Component name = AdventureUtil.getComponentFromConfig("confirm", "cancel.name", "<red>No");
+            List<Component> lore = AdventureUtil.getComponentListFromConfig("confirm", "cancel.lore", Arrays.asList("<gray>Click to cancel"));
             ItemStack item = new ItemStack(material);
             AdventureUtil.setItemDisplayName(item, name);
             AdventureUtil.setItemLore(item, lore);
@@ -151,9 +150,9 @@ public class ConfirmMenu extends Menu {
             }
             return builder.build();
              */
-            Material material = Material.valueOf(GriefPreventionTP.getInstance().getConfig().getString("menu.confirm.items.info.type", "PAPER"));
-            Component name = AdventureUtil.getComponentFromConfig("menu.confirm.items.info.name", "<green>Are you sure you want to {action}?", "action", action);
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("menu.confirm.items.info.lore", Arrays.asList("<gray>Click <green>yes</green> to confirm, or <red>no</red> to cancel.",
+            Material material = Material.valueOf(GriefPreventionTP.getInstance().getConfig().getString("info.type", "PAPER"));
+            Component name = AdventureUtil.getComponentFromConfig("confirm", "info.name", "<green>Are you sure you want to {action}?", "action", action);
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("confirm", "info.lore", Arrays.asList("<gray>Click <green>yes</green> to confirm, or <red>no</red> to cancel.",
                     "permanent:<gray>This action cannot be undone."
             ), "action", action);
             for (int i = 0; i < lore.size(); i++) {
