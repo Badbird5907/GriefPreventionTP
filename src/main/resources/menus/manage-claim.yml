@@ -1,6 +1,6 @@
-# =============================================
-# THIS FILE WILL EVENTUALLY BE REPLACED.
-# =============================================
+# ===========================================================
+# THIS FILE WILL EVENTUALLY BE REPLACED. WITH THE V2 REWRITE.
+# ===========================================================
 
 title: 'Manage Claim - {claim}'
 action-delete-this-claim: 'delete this claim' # Used in the confirm menu
