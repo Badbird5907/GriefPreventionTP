@@ -56,7 +56,7 @@ public class ManageClaimMenu extends Menu {
         hasPrivatePerm = player.hasPermission("gptp.command.private");
         Claim claim = claimInfo.getClaim();
         ArrayList<Button> buttons = new ArrayList<>();
-        if (claim.ownerID.equals(player.getUniqueId()) && MenuManager.getBoolean("manage-claim", "enable-delete", true)) // Only allow owner to delete claim
+        if (claim.getOwnerID().equals(player.getUniqueId()) && MenuManager.getBoolean("manage-claim", "enable-delete", true)) // Only allow owner to delete claim
             buttons.add(new DeleteButton());
         buttons.add(new RenameButton());
         buttons.add(new ClaimButton());
