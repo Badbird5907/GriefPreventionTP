@@ -60,10 +60,10 @@ vault-integration:
       mvp: 10
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
-  enable-search: true
-  enable-delete: true # Enable the delete claim button in the manager menu
 
 menu:
+  enable-search: true
+  enable-delete: true # Enable the delete claim button in the manager menu
   close-button:
     type: 'BARRIER'
     name: '<red>Close'
