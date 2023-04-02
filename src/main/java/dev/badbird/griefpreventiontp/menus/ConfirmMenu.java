@@ -12,6 +12,8 @@ import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -157,14 +159,16 @@ public class ConfirmMenu extends Menu {
             ), "action", action);
             for (int i = 0; i < lore.size(); i++) {
                 Component component = lore.get(i);
-                if (component instanceof TextComponent tc) {
-                    if (tc.content().startsWith("permanent:")) {
-                        if (!permanent) {
-                            lore.set(i, tc.content(tc.content().substring(10)));
-                            continue;
-                        }
-                        lore.remove(i);
+                String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
+                if (content.startsWith("permanent:")) {
+                    if (permanent) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("permanent:")
+                                .replacement("")
+                                .build()));
+                        continue;
                     }
+                    lore.remove(component);
                 }
             }
             ItemStack item = new ItemStack(material);
