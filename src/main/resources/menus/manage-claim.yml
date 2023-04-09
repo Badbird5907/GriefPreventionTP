@@ -6,6 +6,7 @@ title: 'Manage Claim - {claim}'
 action-delete-this-claim: 'delete this claim' # Used in the confirm menu
 enable-delete: true
 rename-claim:
+  type: 'NAME_TAG'
   name: '<green>Rename Claim'
   lore:
     - ''
@@ -16,3 +17,20 @@ claim:
     - '<gray>Owner: {owner}'
     - '<gray>ID: {id}'
     - '<gray>{x}, {y}, {z}'
+delete-claim:
+  type: 'REDSTONE_BLOCK'
+  name: '<red>Delete Claim'
+  lore:
+    - '<gray>Click to delete this claim.'
+toggle-public:
+  public:
+    type: 'OAK_DOOR'
+    name: '<green>Public'
+    lore:
+      - '<gray>Click to toggle to private.'
+  private:
+    type: 'OAK_DOOR'
+    name: '<red>Private'
+    lore:
+      - 'cost:<gray>Cost: <green>${cost}' # If you have set a cost to make a claim public, this line will show the cost. (will be hidden otherwise)
+      - '<gray>Click to toggle to public.'

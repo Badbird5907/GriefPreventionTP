@@ -17,8 +17,8 @@ import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextDecoration;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.octopvp.commander.command.CommandInfo;
 import org.bukkit.Bukkit;
@@ -126,7 +126,14 @@ public class ManageClaimMenu extends Menu {
     private final class DeleteButton extends Button {
         @Override
         public ItemStack getItem(Player player) {
-            return new ItemBuilder(Material.REDSTONE_BLOCK).setName(CC.RED + "Delete Claim").lore(CC.GRAY + "Click to delete this claim.").build();
+            ItemStack item = new ItemStack(
+                    Material.valueOf(MenuManager.getString("manage-claim", "delete-claim.type", "REDSTONE_BLOCK"))
+            );
+            Component name = AdventureUtil.getComponentFromConfig("manage-claim", "delete-claim.name", "<red>Delete Claim");
+            List<Component> lore = AdventureUtil.getComponentListFromConfig("manage-claim", "delete-claim.lore", Arrays.asList("<gray>Click to delete this claim."));
+            AdventureUtil.setItemDisplayName(item, name);
+            AdventureUtil.setItemLore(item, lore);
+            return item;
         }
 
         @Override
@@ -165,7 +172,9 @@ public class ManageClaimMenu extends Menu {
                     .lore("", CC.GRAY + "Click to rename.")
                     .build();
              */
-            ItemStack itemStack = new ItemStack(Material.NAME_TAG);
+            ItemStack itemStack = new ItemStack(
+                    Material.valueOf(MenuManager.getString("manage-claim", "rename-claim.type", "NAME_TAG"))
+            );
             Component name = AdventureUtil.getComponentFromConfig("manage-claim", "rename-claim.title", "<green>Rename Claim");
             AdventureUtil.setItemDisplayName(itemStack, name);
             List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "rename-claim.lore", Arrays.asList("", "<gray>Click to rename."));
@@ -220,8 +229,14 @@ public class ManageClaimMenu extends Menu {
             }
             boolean isPublic = claimInfo.isPublic();
             int cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
-            ItemStack item = new ItemStack(Material.OAK_DOOR);
-            AdventureUtil.setItemDisplayName(item, LegacyComponentSerializer.legacySection().deserialize(CC.translate(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")).decoration(TextDecoration.ITALIC, false));
+            String base = "toggle-public." + (isPublic ? "public" : "private") + ".";
+            ItemStack item = new ItemStack(
+                    Material.valueOf(MenuManager.getString("manage-claim", base + "type", "OAK_DOOR"))
+            );
+            // AdventureUtil.setItemDisplayName(item, LegacyComponentSerializer.legacySection().deserialize(CC.translate(claimInfo.isPublic() ? CC.GREEN + "Public" : CC.RED + "Private")).decoration(TextDecoration.ITALIC, false));
+            Component name = AdventureUtil.getComponentFromConfig("manage-claim", base + "name", claimInfo.isPublic() ? "<green>Public" : "<red>Private");
+            AdventureUtil.setItemDisplayName(item, name);
+            /*
             List<Component> lore = new ArrayList<>();
             lore.add(Component.empty());
             if (!isPublic && cost > 0) {
@@ -229,7 +244,31 @@ public class ManageClaimMenu extends Menu {
                 lore.add(component);
             }
             lore.add(LegacyComponentSerializer.legacySection().deserialize(CC.GRAY + "Click to toggle public/private.").decoration(TextDecoration.ITALIC, false));
-            AdventureUtil.setItemLore(item, lore);
+             */
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", base + "lore",
+                    isPublic ? Arrays.asList(
+                            "cost:<gray>Cost: <green>${cost}",
+                            "<gray>Click to toggle to public."
+                    ) : Arrays.asList(
+                            "<gray>Click to toggle to private."
+                    ),
+                    "cost", cost
+            );
+            for (int i = 0; i < lore.size(); i++) {
+                Component component = lore.get(i);
+                String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
+                if (content.startsWith("cost:")) {
+                    if (!isPublic && cost > 0) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("cost:")
+                                .replacement("")
+                                .build()));
+                        continue;
+                    }
+                    lore.remove(component);
+                }
+            }
+            if (!lore.isEmpty()) AdventureUtil.setItemLore(item, lore);
             return item;
         }
 
