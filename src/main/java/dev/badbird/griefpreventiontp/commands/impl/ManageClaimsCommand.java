@@ -15,7 +15,7 @@ import net.octopvp.commander.bukkit.annotation.PlayerOnly;
 import org.bukkit.entity.Player;
 
 public class ManageClaimsCommand {
-    @Command(name = "manageclaims", description = "Manage claims")
+    @Command(name = "manageclaim", description = "Manage claims")
     @PlayerOnly
     public void execute(@Sender Player sender, @Required @Name("name") @JoinStrings String name) {
         ClaimInfo claim;
