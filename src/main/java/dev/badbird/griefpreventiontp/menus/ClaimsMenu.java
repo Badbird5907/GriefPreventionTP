@@ -15,7 +15,6 @@ import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -185,6 +184,7 @@ public class ClaimsMenu extends PaginatedMenu {
         private final Player player;
         private Claim claim;
         private boolean canEdit;
+
         public ClaimButton(ClaimInfo claimInfo, Player player) {
             this.claimInfo = claimInfo;
             this.player = player;
@@ -236,6 +236,15 @@ public class ClaimsMenu extends PaginatedMenu {
                     if (canEdit && bedrock) {
                         lore.set(i, component.replaceText(TextReplacementConfig.builder()
                                 .match("canEdit:bedrock:")
+                                .replacement("")
+                                .build()));
+                        continue;
+                    }
+                    lore.remove(component);
+                } else if (content.startsWith("canEdit:java:")) {
+                    if (canEdit && !bedrock) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("canEdit:java:")
                                 .replacement("")
                                 .build()));
                         continue;

@@ -6,11 +6,7 @@ import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.menus.ManageClaimMenu;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.badbird5907.blib.command.Command;
-import net.octopvp.commander.annotation.JoinStrings;
-import net.octopvp.commander.annotation.Name;
-import net.octopvp.commander.annotation.Required;
-import net.octopvp.commander.annotation.Sender;
+import net.octopvp.commander.annotation.*;
 import net.octopvp.commander.bukkit.annotation.PlayerOnly;
 import org.bukkit.entity.Player;
 
