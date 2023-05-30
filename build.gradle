@@ -38,7 +38,7 @@ repositories {
         dirs 'libs'
     }
     maven { url 'https://jitpack.io' }
-
+    maven { url 'https://repo.opencollab.dev/maven-snapshots/' }
 }
 configurations {
     impl
@@ -58,6 +58,7 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 
     compileOnly "com.github.MilkBowl:VaultAPI:1.7"
+    compileOnly "org.geysermc.floodgate:api:2.2.0-SNAPSHOT"
 
     implementation "net.kyori:adventure-platform-bukkit:4.2.0"
     configurations.impl.dependencies.each {

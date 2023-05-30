@@ -26,6 +26,7 @@ import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -227,13 +228,32 @@ public class ClaimsMenu extends PaginatedMenu {
                             "<gray>Click to teleport.",
                             "canEdit:<gray>Right click to manage."
                     )), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ()));
+            boolean bedrock = Bukkit.getPluginManager().isPluginEnabled("floodgate") && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
             for (int i = 0; i < lore.size(); i++) {
                 Component component = lore.get(i);
                 String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
-                if (content.startsWith("canEdit:")) {
+                if (content.startsWith("canEdit:bedrock:")) {
+                    if (canEdit && bedrock) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("canEdit:bedrock:")
+                                .replacement("")
+                                .build()));
+                        continue;
+                    }
+                    lore.remove(component);
+                } else if (content.startsWith("canEdit:")) {
                     if (canEdit) {
                         lore.set(i, component.replaceText(TextReplacementConfig.builder()
                                 .match("canEdit:")
+                                .replacement("")
+                                .build()));
+                        continue;
+                    }
+                    lore.remove(component);
+                } else if (content.startsWith("bedrock:")) {
+                    if (bedrock) {
+                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                                .match("bedrock:")
                                 .replacement("")
                                 .build()));
                         continue;

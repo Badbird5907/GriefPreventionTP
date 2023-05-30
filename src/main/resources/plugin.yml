@@ -8,6 +8,7 @@ depend:
   - GriefPrevention
 softdepend:
   - Vault
+  - floodgate
 permissions:
   gptp.reload:
     description: Permission for /gptp reload
