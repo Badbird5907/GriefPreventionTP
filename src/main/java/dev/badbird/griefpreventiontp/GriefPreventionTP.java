@@ -145,7 +145,9 @@ public final class GriefPreventionTP extends JavaPlugin {
                         new GPTPCommand(),
                         new RenameCommand(),
                         new SetSpawnCommand(),
-                        new TPCommand());
+                        new TPCommand(),
+                        new ManageClaimsCommand()
+                        );
         if (getConfig().getBoolean("enable-public"))
             commander.register(new PublicCommand());
 
