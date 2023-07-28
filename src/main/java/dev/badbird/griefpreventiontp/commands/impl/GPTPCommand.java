@@ -6,10 +6,12 @@ import net.badbird5907.blib.util.CC;
 import net.badbird5907.blib.util.Tasks;
 import net.octopvp.commander.annotation.*;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Command(name = "griefpreventiontp", aliases = "gptp", description = "GriefPreventionTP Command")
@@ -76,5 +78,28 @@ public class GPTPCommand {
         sender.sendMessage(CC.GREEN + "Reloading...");
         GriefPreventionTP.getInstance().reloadConfig();
         sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
+    }
+    @Command(name = "setall", description = "Set the public/private state of all claims for a player")
+    public void setAll(@Sender CommandSender sender, @Name("player") OfflinePlayer offlinePlayer, @Name("state") String state) {
+        if (!sender.hasPermission("gptp.command.setall")) {
+            sender.sendMessage(CC.RED + "No permission.");
+            return;
+        }
+        if (offlinePlayer == null) {
+            sender.sendMessage(CC.RED + "Invalid player.");
+            return;
+        }
+        if (!state.equalsIgnoreCase("public") && !state.equalsIgnoreCase("private")) {
+            sender.sendMessage(CC.RED + "Invalid state.");
+            return;
+        }
+        boolean isPublic = state.equalsIgnoreCase("public");
+        AtomicInteger updated = new AtomicInteger();
+        GriefPreventionTP.getInstance().getStorageProvider().getClaims().stream().filter(claimInfo -> claimInfo.getOwner().equals(offlinePlayer.getUniqueId())).forEach(claimInfo -> {
+            claimInfo.setPublic(isPublic);
+            claimInfo.save();
+            updated.getAndIncrement();
+        });
+        sender.sendMessage(CC.GREEN + "Updated " + updated.get() + " claims.");
     }
 }
