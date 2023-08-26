@@ -16,6 +16,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
 import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -70,7 +71,15 @@ public class ClaimListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         if ((event.getPlayer().hasPermission("gptp.staff") || event.getPlayer().isOp()) && (GriefPreventionTP.getInstance().getConfig().getBoolean("update-check") && GriefPreventionTP.getInstance().getUpdateChecker() != null)) {
             if (GriefPreventionTP.getInstance().isUpdateAvailable()){
-                event.getPlayer().sendMessage(CC.translate("&7[&bGriefPreventionTP&7] &aThere is a update available! Your current version is: " + CC.B + GriefPreventionTP.getInstance().getDescription().getVersion() + CC.R + CC.GREEN + " and the new version is: " + CC.B + GriefPreventionTP.getInstance().getNewVersion() + CC.R + CC.GREEN + ".\nDownload @ https://badbird5907.xyz/gptp?ref=server"));
+                // event.getPlayer().sendMessage(CC.translate("&7[&bGriefPreventionTP&7] &aThere is a update available! Your current version is: " + CC.B + GriefPreventionTP.getInstance().getDescription().getVersion() + CC.R + CC.GREEN + " and the new version is: " + CC.B + GriefPreventionTP.getInstance().getNewVersion() + CC.R + CC.GREEN + ".\nDownload @ https://s.badbird.dev/gptp?ref=server"));
+                Component component = GriefPreventionTP.getInstance().getMiniMessage().deserialize(
+                        "<gray>[<aqua>GriefPreventionTP<gray>] <green>There is a update available! Your current version is: <gold>" + GriefPreventionTP.getInstance().getDescription().getVersion() + "<green> and the new version is: <gold>" + GriefPreventionTP.getInstance().getNewVersion() + "<green>.\nDownload @ <gold>https://s.badbird.dev/gptp?ref=server"
+                );
+                Component component1 = Component.text("Click here to download")
+                        .color(NamedTextColor.GOLD)
+                        .clickEvent(ClickEvent.openUrl("https://s.badbird.dev/gptp?ref=server"));
+                AdventureUtil.sendMessage(event.getPlayer(), component);
+                AdventureUtil.sendMessage(event.getPlayer(), component1);
             }
         }
         UUID uuid = event.getPlayer().getUniqueId();
