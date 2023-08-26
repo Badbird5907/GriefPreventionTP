@@ -106,5 +106,25 @@ commands: # Permissions required to use the commands, set to false to stop check
   claimtp: # gptp.command.claimtp
     permission:
       enabled: true
-
+allowed-icons: # https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+  - 'GRASS_BLOCK'
+  - 'DIRT'
+  - 'STONE'
+  - 'OAK_LOG'
+  - 'OAK_PLANKS'
+  - 'END_STONE'
+  - 'ENDER_PEARL'
+  - 'ENDER_CHEST'
+  - 'CHEST'
+  - 'OAK_DOOR'
+  - 'OAK_SIGN'
+  - 'OAK_STAIRS'
+  - 'OAK_SLAB'
+  - 'OAK_TRAPDOOR'
+  - 'BEACON'
+  - 'ENDER_EYE'
+  - 'REPEATER'
+  - 'COMPARATOR'
+  - 'REDSTONE_TORCH'
+  - 'FISHING_ROD'
 update-check: true

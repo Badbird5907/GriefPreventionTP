@@ -21,6 +21,7 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.milkbowl.vault.economy.Economy;
 import net.octopvp.commander.command.CommandInfo;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.Prompt;
@@ -337,15 +338,19 @@ public class ManageClaimMenu extends Menu {
 
             ItemStack stack = builder.build();
              */
-            ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+            Material icon = claimInfo.getIcon();
+            if (icon == null) icon = Material.PLAYER_HEAD;
+            ItemStack stack = new ItemStack(icon);
             Component name = AdventureUtil.getComponentFromConfig("manage-claim", "claim.name", "<green>{name}", "name", claimInfo.getName(), "owner", claimInfo.getOwnerName());
             AdventureUtil.setItemDisplayName(stack, name);
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "claim.lore", Arrays.asList("<gray>Owner: {owner}", "<gray>ID: {id}", "<gray>{x}, {y}, {z}"), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "claim.lore", Arrays.asList("<gray>Owner: {owner}", "<gray>ID: {id}", "<gray>{x}, {y}, {z}", "", "<gray>Click to change icon"), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
             AdventureUtil.setItemLore(stack, lore);
             UUID owner = claimInfo.getOwner();
-            SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
-            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
-            stack.setItemMeta(skullMeta);
+            if (stack.getType() == Material.PLAYER_HEAD) {
+                SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
+                skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                stack.setItemMeta(skullMeta);
+            }
             return stack;
         }
 
@@ -356,7 +361,7 @@ public class ManageClaimMenu extends Menu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-
+            new SetIconMenu(claimInfo, ManageClaimMenu.this).open(player);
         }
     }
 }

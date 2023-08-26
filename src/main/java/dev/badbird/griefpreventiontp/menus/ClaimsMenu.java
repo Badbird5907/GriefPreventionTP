@@ -217,7 +217,8 @@ public class ClaimsMenu extends PaginatedMenu {
             }
             ItemStack stack = builder.build();
              */
-            ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+            Material setMat = claimInfo.getIcon();
+            ItemStack stack = new ItemStack(setMat == null ? Material.PLAYER_HEAD : setMat);
             Component name = AdventureUtil.getComponentFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
             List<Component> lore =
                     new ArrayList<>(AdventureUtil.getComponentListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
@@ -274,9 +275,11 @@ public class ClaimsMenu extends PaginatedMenu {
             AdventureUtil.setItemLore(stack, lore);
 
             UUID owner = claimInfo.getOwner();
-            SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
-            skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
-            stack.setItemMeta(skullMeta);
+            if (stack.getType() == Material.PLAYER_HEAD) {
+                SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
+                skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
+                stack.setItemMeta(skullMeta);
+            }
             return stack;
         }
 

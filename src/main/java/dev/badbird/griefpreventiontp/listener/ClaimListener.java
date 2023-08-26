@@ -73,7 +73,7 @@ public class ClaimListener implements Listener {
             if (GriefPreventionTP.getInstance().isUpdateAvailable()){
                 // event.getPlayer().sendMessage(CC.translate("&7[&bGriefPreventionTP&7] &aThere is a update available! Your current version is: " + CC.B + GriefPreventionTP.getInstance().getDescription().getVersion() + CC.R + CC.GREEN + " and the new version is: " + CC.B + GriefPreventionTP.getInstance().getNewVersion() + CC.R + CC.GREEN + ".\nDownload @ https://s.badbird.dev/gptp?ref=server"));
                 Component component = GriefPreventionTP.getInstance().getMiniMessage().deserialize(
-                        "<gray>[<aqua>GriefPreventionTP<gray>] <green>There is a update available! Your current version is: <gold>" + GriefPreventionTP.getInstance().getDescription().getVersion() + "<green> and the new version is: <gold>" + GriefPreventionTP.getInstance().getNewVersion() + "<green>.\nDownload @ <gold>https://s.badbird.dev/gptp?ref=server"
+                        "<gray>[<aqua>GriefPreventionTP<gray>] <green>There is a update available! Your current version is: <gold>" + GriefPreventionTP.getInstance().getDescription().getVersion() + "<green> and the new version is: <gold>" + GriefPreventionTP.getInstance().getNewVersion() + "<green>."
                 );
                 Component component1 = Component.text("Click here to download")
                         .color(NamedTextColor.GOLD)

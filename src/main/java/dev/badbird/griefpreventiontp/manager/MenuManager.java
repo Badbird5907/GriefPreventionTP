@@ -31,7 +31,7 @@ public class MenuManager {
         }
          */
         String[] files = {
-          "claims", "confirm", "manage-claim"
+          "claims", "confirm", "manage-claim", "set-icon"
         };
         for (String file : files) {
             File f = new File(dataFolder, file + ".yml");

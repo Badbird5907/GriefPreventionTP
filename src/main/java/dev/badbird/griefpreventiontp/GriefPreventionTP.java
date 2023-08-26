@@ -23,6 +23,7 @@ import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -30,6 +31,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.List;
 import java.util.logging.Logger;
 
 public final class GriefPreventionTP extends JavaPlugin {
@@ -84,6 +86,9 @@ public final class GriefPreventionTP extends JavaPlugin {
 
     @Getter
     private static String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
+
+    @Getter
+    private static List<Material> allowedIcons;
 
     @Override
     public void onLoad() {
@@ -169,6 +174,8 @@ public final class GriefPreventionTP extends JavaPlugin {
         for (Listener listener : listeners) {
             getServer().getPluginManager().registerEvents(listener, this);
         }
+
+        allowedIcons = getConfig().getStringList("allowed-icons").stream().map(Material::valueOf).toList();
 
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);

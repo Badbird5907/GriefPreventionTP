@@ -17,6 +17,8 @@ claim:
     - '<gray>Owner: {owner}'
     - '<gray>ID: {id}'
     - '<gray>{x}, {y}, {z}'
+    - ''
+    - '<gray>Click to change icon'
 delete-claim:
   type: 'REDSTONE_BLOCK'
   name: '<red>Delete Claim'

@@ -11,6 +11,7 @@ import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -24,6 +25,7 @@ public class ClaimInfo {
     private StoredLocation spawn;
     private boolean isPublic;
     private String name, ownerName;
+    private Material icon = null;
 
     private int playerClaimCount = -1;
 
@@ -100,5 +102,14 @@ public class ClaimInfo {
         //set Y value to the highest block
         l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
         return l;
+    }
+
+    public Material getIcon() {
+        if (icon != null) {
+            if (!GriefPreventionTP.getAllowedIcons().contains(icon)) {
+                return icon = null;
+            }
+        }
+        return icon;
     }
 }
