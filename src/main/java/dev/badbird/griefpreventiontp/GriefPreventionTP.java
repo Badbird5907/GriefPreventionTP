@@ -11,27 +11,36 @@ import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.PermissionsManager;
 import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
+import dev.badbird.griefpreventiontp.object.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
+import dev.badbird.griefpreventiontp.util.ItemUtil;
 import dev.badbird.griefpreventiontp.util.Metrics;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
 import net.badbird5907.blib.spigotmc.UpdateChecker;
+import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.conversations.ConversationFactory;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 public final class GriefPreventionTP extends JavaPlugin {
@@ -88,7 +97,7 @@ public final class GriefPreventionTP extends JavaPlugin {
     private static String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
 
     @Getter
-    private static List<Material> allowedIcons;
+    private static List<IconWrapper> allowedIcons;
 
     @Override
     public void onLoad() {
@@ -152,7 +161,7 @@ public final class GriefPreventionTP extends JavaPlugin {
                         new SetSpawnCommand(),
                         new TPCommand(),
                         new ManageClaimsCommand()
-                        );
+                );
         if (getConfig().getBoolean("enable-public"))
             commander.register(new PublicCommand());
 
@@ -175,7 +184,42 @@ public final class GriefPreventionTP extends JavaPlugin {
             getServer().getPluginManager().registerEvents(listener, this);
         }
 
-        allowedIcons = getConfig().getStringList("allowed-icons").stream().map(Material::valueOf).toList();
+        // allowedIcons = getConfig().getStringList("icons").stream().map(Material::valueOf).toList();
+        allowedIcons = new ArrayList<>();
+        if (getConfig().isList("icons")) {
+            List<?> iconsList = getConfig().getList("icons");
+            getLogger().info("Loading icons");
+            for (Object obj : iconsList) {
+                getLogger().info(" - Found obj: " + obj.getClass().getName());
+                if (obj instanceof LinkedHashMap) {
+                    LinkedHashMap<?,?> map1 = (LinkedHashMap<?,?>) obj;
+                    LinkedHashMap<?,?> map = (LinkedHashMap<?, ?>) map1.get("head");
+                    map.keySet().forEach(key -> getLogger().info("  - Found key: " + key + " | " + key.getClass().getName() + " | " + map.get(key) + " | " + map.get(key).getClass().getName()));
+                    if (map.get("texture") != null) {
+                        String texture = (String) map.get("texture");
+                        getLogger().info("  - Found texture: " + texture);
+                        if (texture.equals("e...")) {
+                            continue;
+                        }
+                        String id = (String) map.get("id");
+                        String name = (String) map.get("name");
+                        if (name ==  null) name = "";
+                        getLogger().info("  - Found id: " + id);
+                        getLogger().info("  - Found name: " + name);
+                        allowedIcons.add(new IconWrapper(new IconWrapper.CustomIcon(id, name, texture)));
+                    }
+                } else if (obj instanceof String) {
+                    Material material = Material.getMaterial((String) obj);
+                    if (material != null) {
+                        getLogger().info("  - Found material: " + material);
+                        allowedIcons.add(new IconWrapper(material));
+                    } else {
+                        getLogger().warning("  - Invalid material: " + obj);
+                    }
+                }
+            }
+        }
+        getLogger().info("Loaded " + allowedIcons.size() + " icons.");
 
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);

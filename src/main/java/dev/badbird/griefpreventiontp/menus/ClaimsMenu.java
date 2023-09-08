@@ -5,6 +5,7 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
+import dev.badbird.griefpreventiontp.object.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
@@ -217,8 +218,8 @@ public class ClaimsMenu extends PaginatedMenu {
             }
             ItemStack stack = builder.build();
              */
-            Material setMat = claimInfo.getIcon();
-            ItemStack stack = new ItemStack(setMat == null ? Material.PLAYER_HEAD : setMat);
+            IconWrapper setIcon = claimInfo.getIcon();
+            ItemStack stack = setIcon != null ? setIcon.getItemStack() : new ItemStack(Material.PLAYER_HEAD);
             Component name = AdventureUtil.getComponentFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
             List<Component> lore =
                     new ArrayList<>(AdventureUtil.getComponentListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
@@ -275,7 +276,7 @@ public class ClaimsMenu extends PaginatedMenu {
             AdventureUtil.setItemLore(stack, lore);
 
             UUID owner = claimInfo.getOwner();
-            if (stack.getType() == Material.PLAYER_HEAD) {
+            if (stack.getType() == Material.PLAYER_HEAD && setIcon == null) {
                 SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
                 skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
                 stack.setItemMeta(skullMeta);

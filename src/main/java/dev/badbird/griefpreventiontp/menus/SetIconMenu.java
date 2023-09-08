@@ -2,17 +2,13 @@ package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.object.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
-import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextReplacementConfig;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.apache.commons.lang3.StringUtils;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -39,12 +35,20 @@ public class SetIconMenu extends PaginatedMenu {
 
     @RequiredArgsConstructor
     private class IconButton extends Button {
-        private final Material material;
+        private final IconWrapper item;
 
         @Override
         public ItemStack getItem(Player player) {
-            Material icon = claimInfo.getIcon();
-            boolean isSelected = icon != null && icon.equals(material);
+            IconWrapper icon = claimInfo.getIcon();
+            boolean isSelected = icon != null && icon.equals(item);
+            String name;
+            if (icon == null) {
+                // name = StringUtils.capitalize(item.isMaterial() ? item.getMaterial().name().toLowerCase().replace("_", " ") : item.getIcon().getName());
+                name = item.getName();
+            } else {
+                // name = StringUtils.capitalize(icon.isMaterial() ? icon.getMaterial().name().toLowerCase().replace("_", " ") : icon.getIcon().getName());
+                name = icon.getName();
+            }
             List<Component> lore = AdventureUtil.getComponentListFromConfigDef("set-icon", "icon.lore." + (isSelected ? "select" : "deselect"),
                     !isSelected ? Arrays.asList(
                             "",
@@ -53,13 +57,13 @@ public class SetIconMenu extends PaginatedMenu {
                             "",
                             "<gray>Click to deselect this icon."
                     ),
-                    "name", StringUtils.capitalize(material.name().toLowerCase().replace("_", " "))
+                    "name", name
             );
-            ItemStack stack = new ItemBuilder(material).build();
+            ItemStack stack = item.getItemStack();
             AdventureUtil.setItemLore(stack, lore);
             Component displayName = AdventureUtil.getComponentFromConfig("set-icon", "icon.name",
                     "{name}",
-                    "name", StringUtils.capitalize(material.name().toLowerCase().replace("_", " "))
+                    "name", name
             );
             AdventureUtil.setItemDisplayName(stack, displayName);
             return stack;
@@ -72,13 +76,13 @@ public class SetIconMenu extends PaginatedMenu {
 
         @Override
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
-            boolean isSelected = claimInfo.getIcon() == material;
+            boolean isSelected = claimInfo.getIcon() != null && claimInfo.getIcon().equals(item);
             if (!isSelected) {
-                claimInfo.setIcon(material);
+                claimInfo.setIcon(item);
                 claimInfo.save();
                 Component message = AdventureUtil.getComponentFromConfig("set-icon", "icon.message.set",
                         "{name}",
-                        "name", StringUtils.capitalize(material.name().toLowerCase().replace("_", " "))
+                        "name", item.getName()
                 );
                 AdventureUtil.sendMessage(player, message);
                 player.closeInventory();
@@ -87,7 +91,7 @@ public class SetIconMenu extends PaginatedMenu {
                 claimInfo.save();
                 Component message = AdventureUtil.getComponentFromConfig("set-icon", "icon.message.unset",
                         "{name}",
-                        "name", StringUtils.capitalize(material.name().toLowerCase().replace("_", " "))
+                        "name", item.getName()
                 );
                 AdventureUtil.sendMessage(player, message);
                 player.closeInventory();

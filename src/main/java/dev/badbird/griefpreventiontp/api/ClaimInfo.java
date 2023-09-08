@@ -2,7 +2,7 @@ package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.manager.TPClaimManager;
+import dev.badbird.griefpreventiontp.object.IconWrapper;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -11,7 +11,6 @@ import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -25,7 +24,7 @@ public class ClaimInfo {
     private StoredLocation spawn;
     private boolean isPublic;
     private String name, ownerName;
-    private Material icon = null;
+    private IconWrapper icon = null;
 
     private int playerClaimCount = -1;
 
@@ -104,9 +103,9 @@ public class ClaimInfo {
         return l;
     }
 
-    public Material getIcon() {
+    public IconWrapper getIcon() {
         if (icon != null) {
-            if (!GriefPreventionTP.getAllowedIcons().contains(icon)) {
+            if (GriefPreventionTP.getAllowedIcons().stream().noneMatch(icn -> icon.equals(icn))) {
                 return icon = null;
             }
         }

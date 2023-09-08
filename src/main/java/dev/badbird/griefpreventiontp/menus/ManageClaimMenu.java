@@ -5,6 +5,7 @@ import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
+import dev.badbird.griefpreventiontp.object.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -338,15 +339,14 @@ public class ManageClaimMenu extends Menu {
 
             ItemStack stack = builder.build();
              */
-            Material icon = claimInfo.getIcon();
-            if (icon == null) icon = Material.PLAYER_HEAD;
-            ItemStack stack = new ItemStack(icon);
+            IconWrapper icon = claimInfo.getIcon();
+            ItemStack stack = icon != null ? icon.getItemStack() : new ItemStack(Material.PLAYER_HEAD);
             Component name = AdventureUtil.getComponentFromConfig("manage-claim", "claim.name", "<green>{name}", "name", claimInfo.getName(), "owner", claimInfo.getOwnerName());
             AdventureUtil.setItemDisplayName(stack, name);
             List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "claim.lore", Arrays.asList("<gray>Owner: {owner}", "<gray>ID: {id}", "<gray>{x}, {y}, {z}", "", "<gray>Click to change icon"), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ(), "owner", claimInfo.getOwnerName(), "name", claimInfo.getName());
             AdventureUtil.setItemLore(stack, lore);
             UUID owner = claimInfo.getOwner();
-            if (stack.getType() == Material.PLAYER_HEAD) {
+            if (stack.getType() == Material.PLAYER_HEAD && icon == null) {
                 SkullMeta skullMeta = (SkullMeta) stack.getItemMeta();
                 skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
                 stack.setItemMeta(skullMeta);
