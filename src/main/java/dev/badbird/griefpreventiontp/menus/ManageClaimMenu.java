@@ -177,7 +177,7 @@ public class ManageClaimMenu extends Menu {
             ItemStack itemStack = new ItemStack(
                     Material.valueOf(MenuManager.getString("manage-claim", "rename-claim.type", "NAME_TAG"))
             );
-            Component name = AdventureUtil.getComponentFromConfig("manage-claim", "rename-claim.title", "<green>Rename Claim");
+            Component name = AdventureUtil.getComponentFromConfig("manage-claim", "rename-claim.title", "<green>Rename Claim", "name", claimInfo.getName());
             AdventureUtil.setItemDisplayName(itemStack, name);
             List<Component> lore = AdventureUtil.getComponentListFromConfigDef("manage-claim", "rename-claim.lore", Arrays.asList("", "<gray>Click to rename."));
             if (!lore.isEmpty()) AdventureUtil.setItemLore(itemStack, lore);

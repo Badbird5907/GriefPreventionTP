@@ -221,7 +221,7 @@ public class ClaimsMenu extends PaginatedMenu {
             IconWrapper setIcon = claimInfo.getIcon();
             ItemStack stack = setIcon != null ? setIcon.getItemStack() : new ItemStack(Material.PLAYER_HEAD);
             Component name = AdventureUtil.getComponentFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
-            List<Component> lore =
+            List<Component> lore1 =
                     new ArrayList<>(AdventureUtil.getComponentListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
                             "<gray>Owner: {owner}",
                             "<gray>ID: {id}",
@@ -230,47 +230,48 @@ public class ClaimsMenu extends PaginatedMenu {
                             "<gray>Click to teleport.",
                             "canEdit:<gray>Right click to manage."
                     )), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ()));
+            List<Component> lore = new ArrayList<>();
             boolean bedrock = Bukkit.getPluginManager().isPluginEnabled("floodgate") && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
-            for (int i = 0; i < lore.size(); i++) {
-                Component component = lore.get(i);
+            for (int i = 0; i < lore1.size(); i++) {
+                Component component = lore1.get(i);
                 String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
                 if (content.startsWith("canEdit:bedrock:")) {
                     if (canEdit && bedrock) {
-                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                        lore.add(component.replaceText(TextReplacementConfig.builder()
                                 .match("canEdit:bedrock:")
                                 .replacement("")
                                 .build()));
                         continue;
                     }
-                    lore.remove(component);
+                    // lore.remove(component);
                 } else if (content.startsWith("canEdit:java:")) {
                     if (canEdit && !bedrock) {
-                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                        lore.add(component.replaceText(TextReplacementConfig.builder()
                                 .match("canEdit:java:")
                                 .replacement("")
                                 .build()));
                         continue;
                     }
-                    lore.remove(component);
+                    // lore.remove(component);
                 } else if (content.startsWith("canEdit:")) {
                     if (canEdit) {
-                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                        lore.add(component.replaceText(TextReplacementConfig.builder()
                                 .match("canEdit:")
                                 .replacement("")
                                 .build()));
                         continue;
                     }
-                    lore.remove(component);
+                    // lore.remove(component);
                 } else if (content.startsWith("bedrock:")) {
                     if (bedrock) {
-                        lore.set(i, component.replaceText(TextReplacementConfig.builder()
+                        lore.add(component.replaceText(TextReplacementConfig.builder()
                                 .match("bedrock:")
                                 .replacement("")
                                 .build()));
                         continue;
                     }
-                    lore.remove(component);
-                }
+                    // lore.remove(component);
+                } else lore.add(component);
             }
             AdventureUtil.setItemDisplayName(stack, name);
             AdventureUtil.setItemLore(stack, lore);

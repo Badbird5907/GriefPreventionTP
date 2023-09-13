@@ -15,3 +15,10 @@ icon:
   message:
     set: '<green>Icon set to <white>{name}<green>.'
     unset: '<green>Successfully unset icon.'
+reset-icon:
+  type: 'PLAYER_HEAD' # Material type. If it is a player head, it will use the player's head.
+  name: '<red>Reset Icon'
+  message: '<green>Successfully reset icon.'
+  lore:
+    - ''
+    - '<gray>Click to reset icon.'
