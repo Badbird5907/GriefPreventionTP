@@ -188,33 +188,33 @@ public final class GriefPreventionTP extends JavaPlugin {
         allowedIcons = new ArrayList<>();
         if (getConfig().isList("icons")) {
             List<?> iconsList = getConfig().getList("icons");
-            getLogger().info("Loading icons");
+            // getLogger().info("Loading icons");
             for (Object obj : iconsList) {
-                getLogger().info(" - Found obj: " + obj.getClass().getName());
+                // getLogger().info(" - Found obj: " + obj.getClass().getName());
                 if (obj instanceof LinkedHashMap) {
                     LinkedHashMap<?,?> map1 = (LinkedHashMap<?,?>) obj;
                     LinkedHashMap<?,?> map = (LinkedHashMap<?, ?>) map1.get("head");
-                    map.keySet().forEach(key -> getLogger().info("  - Found key: " + key + " | " + key.getClass().getName() + " | " + map.get(key) + " | " + map.get(key).getClass().getName()));
+                    // map.keySet().forEach(key -> getLogger().info("  - Found key: " + key + " | " + key.getClass().getName() + " | " + map.get(key) + " | " + map.get(key).getClass().getName()));
                     if (map.get("texture") != null) {
                         String texture = (String) map.get("texture");
-                        getLogger().info("  - Found texture: " + texture);
+                        // getLogger().info("  - Found texture: " + texture);
                         if (texture.equals("e...")) {
                             continue;
                         }
                         String id = (String) map.get("id");
                         String name = (String) map.get("name");
                         if (name ==  null) name = "";
-                        getLogger().info("  - Found id: " + id);
-                        getLogger().info("  - Found name: " + name);
+                        // getLogger().info("  - Found id: " + id);
+                        // getLogger().info("  - Found name: " + name);
                         allowedIcons.add(new IconWrapper(new IconWrapper.CustomIcon(id, name, texture)));
                     }
                 } else if (obj instanceof String) {
                     Material material = Material.getMaterial((String) obj);
                     if (material != null) {
-                        getLogger().info("  - Found material: " + material);
+                        // getLogger().info("  - Found material: " + material);
                         allowedIcons.add(new IconWrapper(material));
                     } else {
-                        getLogger().warning("  - Invalid material: " + obj);
+                        getLogger().warning("Invalid material: " + obj);
                     }
                 }
             }
