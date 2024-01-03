@@ -1,14 +1,12 @@
-package dev.badbird.griefpreventiontp.object;
+package dev.badbird.griefpreventiontp.api;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
-import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import dev.badbird.griefpreventiontp.util.ItemUtil;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;

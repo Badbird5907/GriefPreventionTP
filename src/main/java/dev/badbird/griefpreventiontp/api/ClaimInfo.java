@@ -2,7 +2,6 @@ package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
-import dev.badbird.griefpreventiontp.object.IconWrapper;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;

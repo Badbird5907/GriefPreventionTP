@@ -3,7 +3,7 @@ package dev.badbird.griefpreventiontp.menus;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
-import dev.badbird.griefpreventiontp.object.IconWrapper;
+import dev.badbird.griefpreventiontp.api.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;

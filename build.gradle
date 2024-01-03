@@ -47,9 +47,9 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'com.github.TechFortress:GriefPrevention:16.18'
 
-    impl 'net.badbird5907:bLib-Bukkit:2.1.10-REL'
-    impl 'net.kyori:adventure-text-minimessage:4.10.1'
+    impl 'net.badbird5907:bLib-Bukkit:2.1.11-REL'
     impl 'net.octopvp:Commander-Bukkit:0.0.3-REL'
+    impl 'net.kyori:adventure-text-minimessage:4.10.1'
 
     compileOnly 'org.projectlombok:lombok:1.18.24'
     annotationProcessor 'org.projectlombok:lombok:1.18.24'
@@ -146,6 +146,7 @@ shadowJar {
     //relocate 'javax', 'dev.badbird.griefpreventiontp.dependencies.javax'
     //relocate 'javaassist', 'dev.badbird.griefpreventiontp.dependencies.javaassist'
     //relocate 'com.google', 'dev.badbird.griefpreventiontp.dependencies'
+    exclude '*.lombok'
     archiveName(jarName + '.jar')
 }
 task copyPlugin(type: Copy) {
