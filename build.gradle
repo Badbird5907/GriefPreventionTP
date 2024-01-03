@@ -47,7 +47,7 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'com.github.TechFortress:GriefPrevention:16.18'
 
-    impl 'net.badbird5907:bLib-Bukkit:2.1.7-REL'
+    impl 'net.badbird5907:bLib-Bukkit:2.1.10-REL'
     impl 'net.kyori:adventure-text-minimessage:4.10.1'
     impl 'net.octopvp:Commander-Bukkit:0.0.3-REL'
 

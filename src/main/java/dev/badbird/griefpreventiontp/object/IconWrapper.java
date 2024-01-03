@@ -1,5 +1,7 @@
 package dev.badbird.griefpreventiontp.object;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import dev.badbird.griefpreventiontp.util.ItemUtil;
@@ -9,11 +11,14 @@ import lombok.Setter;
 import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.apache.commons.lang3.StringUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -67,10 +72,18 @@ public class IconWrapper {
         if (isMaterial()) {
             return new ItemStack(material);
         }
+        /*
         ItemStack stack = new ItemBuilder(Material.PLAYER_HEAD)
                 .toSkullBuilder()
                 .base64Skin(icon.getTexture())
                 .buildSkull();
+         */
+        ItemStack stack = new ItemStack(Material.PLAYER_HEAD);
+        SkullMeta meta = (SkullMeta) stack.getItemMeta();
+        PlayerProfile profile = Bukkit.createProfile(UUID.randomUUID());
+        profile.setProperty(new ProfileProperty("textures", icon.getTexture()));
+        meta.setPlayerProfile(profile);
+        stack.setItemMeta(meta);
         ItemUtil.setPersistentData(stack, "gptp-icon-id", PersistentDataType.STRING, icon.getId());
         AdventureUtil.setItemDisplayName(stack, MiniMessage.miniMessage().deserialize(icon.getName()));
         return stack;

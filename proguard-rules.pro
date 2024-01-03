@@ -62,3 +62,4 @@
 
 -dontwarn java.util.logging.Logger
 
+-dontwarn dev.badbird.griefpreventiontp.data.impl.FlatFileStorageProvider

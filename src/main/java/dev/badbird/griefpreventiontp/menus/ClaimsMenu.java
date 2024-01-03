@@ -1,5 +1,6 @@
 package dev.badbird.griefpreventiontp.menus;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
