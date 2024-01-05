@@ -19,6 +19,7 @@ import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.bLib;
 import net.badbird5907.blib.spigotmc.UpdateChecker;
+import net.badbird5907.blib.util.Tasks;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
@@ -95,16 +96,7 @@ public final class GriefPreventionTP extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        boolean bruh = !getDescription().getName().equals("GriefPreventionTP") || !getDescription().getWebsite().equals("https://badbird.dev");
-        if (getDescription().getAuthors().size() < 1) bruh = true;
-        else if (!getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
-        if (bruh) {
-            getLogger().severe("Please do not modify the plugin! To receive help, join the support server @ https://discord.badbird.dev/");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
-        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907, Licensed to User: " + USER + " | ID: " + NONCE);
+        getLogger().info("GriefPreventionTP v" + getDescription().getVersion() + " By Badbird5907");
 
         instance = this;
     }
@@ -254,6 +246,21 @@ public final class GriefPreventionTP extends JavaPlugin {
         }, 20l, 10l);
          */
         getLogger().info("Please ignore any warnings about deprecated listeners. It is a bug (https://github.com/TechFortress/GriefPrevention/issues/1791#issuecomment-1312809553)");
+
+        boolean disableMsg = Boolean.getBoolean("gptp.disableSponsorMsg");
+        if (!disableMsg) {
+            if (USER.startsWith("%%")) {
+                Tasks.runLater(() -> {
+                    getLogger().severe("------------------------------------------------");
+                    getLogger().severe("Please consider supporting me by purchasing the plugin at https://s.badbird.dev/gptp?ref=console_sponsor");
+                    getLogger().severe("Or by sponsoring me at https://sponsor.badbird.dev/");
+                    getLogger().severe("To disable this message in the future, include -Dgptp.disableSponsorMsg=true before the -jar flag in your startup script.");
+                    getLogger().severe("------------------------------------------------");
+                }, 80);
+            } else {
+                getLogger().info("Thank you for purchasing GriefPreventionTP! <3");
+            }
+        }
     }
 
     @Override

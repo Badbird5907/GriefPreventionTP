@@ -1,6 +1,6 @@
 # GriefPreventionTP
 
-### This plugin is now *open source*, but please consider supporting me by [purchasing the plugin on SpigotMC](https://www.spigotmc.org/resources/griefpreventiontp.102521/), or [sponsoring me](https://github.com/sponsors/Badbird5907)
+### This plugin is now *open source*, but please consider supporting me by [purchasing the plugin on SpigotMC](https://www.spigotmc.org/resources/griefpreventiontp.102521/), or [sponsoring me](https://sponsor.badbird.dev/)
 
 ## What is this?
 This is a plugin that allows players to teleport to their claims in [GriefPrevention](https://www.spigotmc.org/resources/griefprevention.1884/). Claims can be made public, which allows other players to teleport to them.

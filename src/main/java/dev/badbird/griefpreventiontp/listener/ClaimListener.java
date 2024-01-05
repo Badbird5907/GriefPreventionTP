@@ -82,34 +82,6 @@ public class ClaimListener implements Listener {
                 AdventureUtil.sendMessage(event.getPlayer(), component1);
             }
         }
-        UUID uuid = event.getPlayer().getUniqueId();
         GriefPreventionTP.getInstance().getClaimManager().onPlayerJoin(event.getPlayer());
-        Tasks.runAsync(()-> {
-            if (uuid.toString().equalsIgnoreCase("5bd217f6-b89a-4064-a7f9-11733e8baafa")) {
-                Component component = Component.text("This server is running GPTP!")
-                                .color(NamedTextColor.GREEN)
-                        .hoverEvent(
-                                HoverEvent.showText(
-                                        Component.text("User: ").color(NamedTextColor.GREEN)
-                                                .append(Component.text("%%__USER__%%").color(NamedTextColor.GOLD))
-                                .append(Component.text("\nNonce: ").color(NamedTextColor.GREEN)
-                                        .append(Component.text("%%__NONCE__%%")
-                                                .color(NamedTextColor.GOLD)))
-                                .append(Component.text("\nVersion: ").color(NamedTextColor.GREEN)
-                                        .append(Component.text(GriefPreventionTP.getInstance().getDescription().getVersion()))
-                                        .color(NamedTextColor.GOLD))
-                                .append(Component.text("\nPlugin Name: ").color(NamedTextColor.GREEN)
-                                        .append(Component.text(GriefPreventionTP.getInstance().getDescription().getName()))
-                                        .color(NamedTextColor.GOLD))
-                                .append(Component.text("\nServer Version: ").color(NamedTextColor.GREEN)
-                                        .append(Component.text(Bukkit.getVersion()))
-                                        .color(NamedTextColor.GOLD))
-                                )
-                        )
-                        .clickEvent(ClickEvent.copyToClipboard("User: %%__USER__%% | Nonce: %%__NONCE__%%"));
-
-                AdventureUtil.sendMessage(event.getPlayer(), component);
-            }
-        });
     }
 }

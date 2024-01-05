@@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -38,11 +39,11 @@ public class AdventureUtil {
         return adventure;
     }
 
-    public static void sendMessage(Player player, Component component) {
+    public static void sendMessage(CommandSender sender, Component component) {
         if (runningOnPaper)
-            player.sendMessage(component);
+            sender.sendMessage(component);
         else
-            adventure().player(player).sendMessage(component);
+            adventure().sender(sender).sendMessage(component);
     }
 
     @SuppressWarnings("deprecation")

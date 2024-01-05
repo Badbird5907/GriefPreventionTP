@@ -25,16 +25,6 @@ public class PlayerDataProvider implements Provider<PlayerData> {
         if (!(context.getCommandSender() instanceof Player)) {
             throw new CommandException("This command is player only!");
         }
-        Tasks.runAsync(()-> {
-            boolean bruh = !GriefPreventionTP.getInstance().getDescription().getName().equals("GriefPreventionTP") || !GriefPreventionTP.getInstance().getDescription().getWebsite().equals("https://badbird.dev");
-            if (GriefPreventionTP.getInstance().getDescription().getAuthors().size() < 1) bruh = true;
-            else if (!GriefPreventionTP.getInstance().getDescription().getAuthors().get(0).equals("Badbird5907")) bruh = true;
-            if (bruh) {
-                Logger.error("Please do not modify the plugin! To receive help, join the support server @ https://discord.badbird.dev/");
-                Bukkit.getServer().getPluginManager().disablePlugin(GriefPreventionTP.getInstance());
-                return;
-            }
-        });
         Player player = ((Player) context.getCommandSender()).getPlayer();
         if (parameterInfo.getParameter().isAnnotationPresent(Sender.class)) {
             return GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId());
