@@ -58,10 +58,10 @@ public class IconWrapper {
         return false;
     }
     public boolean equals(IconWrapper wrapper) {
-        if (isMaterial()) {
-            return wrapper.isMaterial() && wrapper.getMaterial() == material;
-        } else if (isCustomIcon()) {
+        if (isCustomIcon()) {
             return wrapper.isCustomIcon() && wrapper.getIcon().getId().equals(icon.getId());
+        } else if (isMaterial()) {
+            return wrapper.isMaterial() && wrapper.getMaterial() == material;
         }
         return false;
     }

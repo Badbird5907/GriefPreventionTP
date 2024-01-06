@@ -68,7 +68,7 @@ public class SetIconMenu extends PaginatedMenu {
                 name = icon.getName();
             }
              */
-            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("set-icon", "icon.lore." + (isSelected ? "select" : "deselect"),
+            List<Component> lore = AdventureUtil.getComponentListFromConfigDef("set-icon", "icon.lore." + (!isSelected ? "select" : "deselect"),
                     !isSelected ? Arrays.asList(
                             "",
                             "<gray>Click to select this icon."

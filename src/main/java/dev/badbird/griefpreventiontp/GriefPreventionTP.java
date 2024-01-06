@@ -13,6 +13,7 @@ import dev.badbird.griefpreventiontp.manager.TPClaimManager;
 import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import dev.badbird.griefpreventiontp.api.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
+import dev.badbird.griefpreventiontp.util.IconWrapperSerializer;
 import dev.badbird.griefpreventiontp.util.Metrics;
 import lombok.Getter;
 import lombok.Setter;
@@ -43,7 +44,9 @@ public final class GriefPreventionTP extends JavaPlugin {
     private static GriefPreventionTP instance;
 
     @Getter
-    private Gson gson = new GsonBuilder().setPrettyPrinting().create();
+    private Gson gson = new GsonBuilder()
+            .registerTypeAdapter(IconWrapper.class, new IconWrapperSerializer())
+            .setPrettyPrinting().create();
 
     @Getter
     private StorageProvider storageProvider;
@@ -151,25 +154,6 @@ public final class GriefPreventionTP extends JavaPlugin {
         if (getConfig().getBoolean("enable-public"))
             commander.register(new PublicCommand());
 
-        this.storageProvider = new FlatFileStorageProvider();
-        this.storageProvider.init(this);
-
-        this.claimManager = new TPClaimManager();
-        this.claimManager.init();
-
-        this.teleportManager = new TeleportManager(this);
-
-        MenuManager.getInstance().init();
-
-
-        Listener[] listeners = {
-                new ClaimListener()
-        };
-
-        for (Listener listener : listeners) {
-            getServer().getPluginManager().registerEvents(listener, this);
-        }
-
         // allowedIcons = getConfig().getStringList("icons").stream().map(Material::valueOf).toList();
         allowedIcons = new ArrayList<>();
         if (getConfig().isList("icons")) {
@@ -206,6 +190,25 @@ public final class GriefPreventionTP extends JavaPlugin {
             }
         }
         getLogger().info("Loaded " + allowedIcons.size() + " icons.");
+
+        this.storageProvider = new FlatFileStorageProvider();
+        this.storageProvider.init(this);
+
+        this.claimManager = new TPClaimManager();
+        this.claimManager.init();
+
+        this.teleportManager = new TeleportManager(this);
+
+        MenuManager.getInstance().init();
+
+
+        Listener[] listeners = {
+                new ClaimListener()
+        };
+
+        for (Listener listener : listeners) {
+            getServer().getPluginManager().registerEvents(listener, this);
+        }
 
         if (Bukkit.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager().getRegistration(Permission.class);
