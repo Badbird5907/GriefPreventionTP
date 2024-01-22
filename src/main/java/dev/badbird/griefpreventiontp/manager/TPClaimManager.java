@@ -6,6 +6,7 @@ import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.objects.tuple.Pair;
+import net.badbird5907.blib.util.Tasks;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.entity.Player;
@@ -175,9 +176,14 @@ public class TPClaimManager {
     }
 
     public void onPlayerJoin(Player player) {
-        for (Claim claim : GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).getClaims()) {
-            fromClaim(claim); //just to make sure its in the list
-        }
+        Tasks.runLater(() -> {
+            Iterator<Claim> iterator = GriefPrevention.instance.dataStore.getPlayerData(player.getUniqueId()).getClaims().iterator();
+            // preventing concurrent modification exception
+            //noinspection WhileLoopReplaceableByForEach
+            while (iterator.hasNext()) {
+                fromClaim(iterator.next());
+            }
+        }, 10);
     }
 
     public int canMakePublic(Player player) { //We may need to optimize this
