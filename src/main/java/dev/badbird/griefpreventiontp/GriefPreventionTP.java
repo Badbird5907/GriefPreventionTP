@@ -228,7 +228,7 @@ public final class GriefPreventionTP extends JavaPlugin {
             if (USER.startsWith("%%")) {
                 Tasks.runLater(() -> {
                     getLogger().severe("------------------------------------------------");
-                    getLogger().severe("Please consider supporting me by purchasing the plugin at https://s.badbird.dev/gptp?ref=console_sponsor");
+                    getLogger().severe("Please consider supporting me by purchasing the plugin at https://qrt.badbird.dev/gptp?ref=csp");
                     getLogger().severe("Or by sponsoring me at https://sponsor.badbird.dev/");
                     getLogger().severe("To disable this message in the future, include -Dgptp.disableSponsorMsg=true before the -jar flag in your startup script.");
                     getLogger().severe("------------------------------------------------");
