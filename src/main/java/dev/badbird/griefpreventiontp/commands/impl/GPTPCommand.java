@@ -23,7 +23,7 @@ public class GPTPCommand {
         sender.sendMessage(CC.AQUA + "By: " + CC.GRAY + "Badbird5907 - https://badbird.dev/");
         if (GriefPreventionTP.getUSER().startsWith("%")) {
             Component component = Component.text("Please consider purchasing the plugin to support me!" + (sender instanceof Player ? " (Click Here)" : ""), NamedTextColor.RED)
-                    .clickEvent(ClickEvent.openUrl("https://www.spigotmc.org/resources/griefpreventiontp.102521/"))
+                    .clickEvent(ClickEvent.openUrl("https://qrt.badbird.dev/gptp/"))
                     .hoverEvent(HoverEvent.showText(Component.text("Click to open the plugin page on SpigotMC")));
             AdventureUtil.sendMessage(sender, component);
         }
