@@ -221,7 +221,6 @@ public final class GriefPreventionTP extends JavaPlugin {
             }
         }, 20l, 10l);
          */
-        getLogger().info("Please ignore any warnings about deprecated listeners. It is a bug (https://github.com/TechFortress/GriefPrevention/issues/1791#issuecomment-1312809553)");
 
         boolean disableMsg = Boolean.getBoolean("gptp.disableSponsorMsg");
         if (!disableMsg) {
