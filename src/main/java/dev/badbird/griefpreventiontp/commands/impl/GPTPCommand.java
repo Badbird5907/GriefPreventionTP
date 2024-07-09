@@ -49,18 +49,15 @@ public class GPTPCommand {
         sender.sendMessage(CC.GREEN + "Reloaded in " + CC.GOLD + (System.currentTimeMillis() - start) + "ms.");
     }
 
+    @Permission("gptp.command.setall")
     @Command(name = "setall", description = "Set the public/private state of all claims for a player")
     public void setAll(@Sender CommandSender sender, @Name("player") OfflinePlayer offlinePlayer, @Name("state") String state) {
-        if (!sender.hasPermission("gptp.command.setall")) {
-            sender.sendMessage(CC.RED + "No permission.");
-            return;
-        }
         if (offlinePlayer == null) {
             sender.sendMessage(CC.RED + "Invalid player.");
             return;
         }
         if (!state.equalsIgnoreCase("public") && !state.equalsIgnoreCase("private")) {
-            sender.sendMessage(CC.RED + "Invalid state.");
+            sender.sendMessage(CC.RED + "Invalid state (public/private).");
             return;
         }
         boolean isPublic = state.equalsIgnoreCase("public");
