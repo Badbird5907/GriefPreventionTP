@@ -28,6 +28,10 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
     claim-renamed: '<green>Claim renamed to %1.'
     claim-deleted: '<red>Claim deleted.'
 teleport:
+  permission: # gptp.teleport
+    # see menus/claims.yml to edit the menu buttons
+    enabled: false
+    no-permission-message: '<red>You do not have permission to teleport to claims!'
   warmup:
     enabled: true
     seconds: 5
@@ -104,6 +108,8 @@ commands: # Permissions required to use the commands, set to false to stop check
     permission:
       enabled: true
   claimtp: # gptp.command.claimtp
+    # if you need to enable a permission for actually teleporting, toggle teleport.permission.enabled above
+    # this permission is only for the command, not actually teleporting
     permission:
       enabled: true
 icons: # https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html

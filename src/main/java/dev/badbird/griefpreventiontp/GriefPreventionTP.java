@@ -39,61 +39,34 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.logging.Logger;
 
+@Getter
 public final class GriefPreventionTP extends JavaPlugin {
     @Getter
     private static GriefPreventionTP instance;
 
-    @Getter
     private Gson gson = new GsonBuilder()
             .registerTypeAdapter(IconWrapper.class, new IconWrapperSerializer())
             .setPrettyPrinting().create();
 
-    @Getter
     private StorageProvider storageProvider;
 
-    @Getter
     @Setter
     private boolean disabled = false;
-    @Getter
     @Setter
     private String disabledReason = "";
-
-    @Getter
     private TPClaimManager claimManager;
-
-    @Getter
     private TeleportManager teleportManager;
-
-    @Getter
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
-
-    @Getter
     private final ConversationFactory conversationFactory = new ConversationFactory(this);
-
-    @Getter
     private PermissionsManager permissionsManager;
-
-    @Getter
     private Commander commander;
-
-    @Getter
     private UpdateChecker updateChecker = null;
-
-    @Getter
     private boolean updateAvailable = false;
-
-    @Getter
     private String newVersion = "";
-
-    @Getter
     private Permission vaultPermissions;
-
-    @Getter
     private boolean useVault = false;
-
     @Getter
     private static String USER = "%%__USER__%%", RESOURCE = "%%__RESOURCE__%%", NONCE = "%%__NONCE__%%";
-
     @Getter
     private static List<IconWrapper> allowedIcons;
 

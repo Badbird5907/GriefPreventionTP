@@ -20,7 +20,8 @@ claim:
     - '<gray>ID: {id}'
     - '<gray>{x}, {y}, {z}'
     - ''
-    - '<gray>Click to teleport.'
+    - 'hasPerm:<gray>Click to teleport.' # check teleport.permission.enabled in config.yml
+    - 'noPerm:<red>No permission to teleport.' # remove this line to not show anything
     - 'canEdit:<gray>Right click to manage.'
 search:
   type: OAK_SIGN

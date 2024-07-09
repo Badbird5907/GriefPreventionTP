@@ -2,10 +2,10 @@ package dev.badbird.griefpreventiontp.menus;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import dev.badbird.griefpreventiontp.api.IconWrapper;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.object.ComponentQuestionConversation;
-import dev.badbird.griefpreventiontp.api.IconWrapper;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import me.ryanhamshire.GriefPrevention.Claim;
 import net.badbird5907.blib.menu.buttons.Button;
@@ -16,7 +16,9 @@ import net.badbird5907.blib.menu.buttons.impl.PreviousPageButton;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
 import net.badbird5907.blib.util.CC;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.TextReplacementConfig;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -28,15 +30,17 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.geysermc.floodgate.api.FloodgateApi;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
+
+import static dev.badbird.griefpreventiontp.util.AdventureUtil.cleanItalics;
 
 public class ClaimsMenu extends PaginatedMenu {
     private final UUID uuid;
     private String searchTerm;
     private boolean privateClaims = true;
+
 
     public ClaimsMenu(UUID uuid, String searchTerm) {
         this.uuid = uuid;
@@ -61,12 +65,18 @@ public class ClaimsMenu extends PaginatedMenu {
 
     @Override
     public List<Button> getPaginatedButtons(Player player) {
+        boolean hasPermission = true;
+        if (GriefPreventionTP.getInstance().getConfig().getBoolean("teleport.permission.enabled", false)) {
+            if (!player.hasPermission("gptp.teleport")) {
+                hasPermission = false;
+            }
+        }
         List<Button> buttons = new ArrayList<>();
         Collection<ClaimInfo> claims = privateClaims ? GriefPreventionTP.getInstance().getClaimManager().getClaims(uuid) : GriefPreventionTP.getInstance().getClaimManager().getAllPublicClaims();
         for (ClaimInfo claim : claims) {
             if (searchTerm != null && !claim.getName().toLowerCase().contains(searchTerm.toLowerCase()) && !claim.getOwnerName().toLowerCase().contains(searchTerm.toLowerCase()))
                 continue;
-            buttons.add(new ClaimButton(claim, player));
+            buttons.add(new ClaimButton(claim, player, hasPermission));
         }
         return buttons;
     }
@@ -185,95 +195,37 @@ public class ClaimsMenu extends PaginatedMenu {
         private final Player player;
         private Claim claim;
         private boolean canEdit;
+        private final boolean hasPermission;
 
-        public ClaimButton(ClaimInfo claimInfo, Player player) {
+        public ClaimButton(ClaimInfo claimInfo, Player player, boolean hasPermission) {
             this.claimInfo = claimInfo;
             this.player = player;
             this.claim = claimInfo.getClaim();
             this.canEdit = player.hasPermission("gptp.staff") ||
                     GriefPreventionTP.getInstance().getPermissionsManager()
                             .hasClaimPermission(player, claim);
+            this.hasPermission = hasPermission;
             claimInfo.checkValid();
         }
 
         @Override
         public ItemStack getItem(Player player) {
-            boolean valid = claimInfo.getSpawn() != null;
-            /*
-            ItemBuilder builder = new ItemBuilder(Material.PLAYER_HEAD)
-                    .setName(CC.GREEN + claimInfo.getName())
-                    .lore(CC.GRAY + "Owner: " + claimInfo.getOwnerName())
-                    .amount(claimInfo.getPlayerClaimCount());
-            builder.lore(CC.GRAY + "ID: " + claimInfo.getClaimID());
-            if (showCoords)
-                builder.lore(CC.D_GRAY + claimInfo.getSpawn().getX() + ", " + claimInfo.getSpawn().getY() + ", " + claimInfo.getSpawn().getZ());
-            if (valid)
-                builder.lore(
-                        "", CC.GRAY + "Click to teleport."
-                );
-            else builder.lore("", CC.RED + "No spawn set!");
-
-            if (canEdit) {
-                builder.lore(CC.GRAY + "Right Click to manage.");
-            }
-            ItemStack stack = builder.build();
-             */
             IconWrapper setIcon = claimInfo.getIcon();
             ItemStack stack = setIcon != null ? setIcon.getItemStack() : new ItemStack(Material.PLAYER_HEAD);
-            Component name = AdventureUtil.getComponentFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
-            List<Component> lore1 =
-                    new ArrayList<>(AdventureUtil.getComponentListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
+            String name = AdventureUtil.getMiniMessageFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
+            List<String> lore1 =
+                    new ArrayList<>(AdventureUtil.getMiniMessageListFromConfigDef("claims", "claim.lore", new ArrayList<>(List.of(
                             "<gray>Owner: {owner}",
                             "<gray>ID: {id}",
                             "<gray>{x}, {y}, {z}",
                             "",
-                            "<gray>Click to teleport.",
+                            "hasPerm:<gray>Click to teleport.",
+                            "noPerm:<red>No permission to teleport.",
                             "canEdit:<gray>Right click to manage."
                     )), "owner", claimInfo.getOwnerName(), "id", claimInfo.getClaimID(), "x", claimInfo.getSpawn().getX(), "y", claimInfo.getSpawn().getY(), "z", claimInfo.getSpawn().getZ()));
-            List<Component> lore = new ArrayList<>();
             boolean bedrock = Bukkit.getPluginManager().isPluginEnabled("floodgate") && FloodgateApi.getInstance().isFloodgatePlayer(player.getUniqueId());
-            for (int i = 0; i < lore1.size(); i++) {
-                Component component = lore1.get(i);
-                String content = PlainTextComponentSerializer.plainText().serialize(component); // TODO optimize
-                if (content.startsWith("canEdit:bedrock:")) {
-                    if (canEdit && bedrock) {
-                        lore.add(component.replaceText(TextReplacementConfig.builder()
-                                .match("canEdit:bedrock:")
-                                .replacement("")
-                                .build()));
-                        continue;
-                    }
-                    // lore.remove(component);
-                } else if (content.startsWith("canEdit:java:")) {
-                    if (canEdit && !bedrock) {
-                        lore.add(component.replaceText(TextReplacementConfig.builder()
-                                .match("canEdit:java:")
-                                .replacement("")
-                                .build()));
-                        continue;
-                    }
-                    // lore.remove(component);
-                } else if (content.startsWith("canEdit:")) {
-                    if (canEdit) {
-                        lore.add(component.replaceText(TextReplacementConfig.builder()
-                                .match("canEdit:")
-                                .replacement("")
-                                .build()));
-                        continue;
-                    }
-                    // lore.remove(component);
-                } else if (content.startsWith("bedrock:")) {
-                    if (bedrock) {
-                        lore.add(component.replaceText(TextReplacementConfig.builder()
-                                .match("bedrock:")
-                                .replacement("")
-                                .build()));
-                        continue;
-                    }
-                    // lore.remove(component);
-                } else lore.add(component);
-            }
-            AdventureUtil.setItemDisplayName(stack, name);
+            List<Component> lore = processLore(lore1, canEdit, bedrock, hasPermission);
+            AdventureUtil.setItemDisplayName(stack, MiniMessage.miniMessage().deserialize(name));
             AdventureUtil.setItemLore(stack, lore);
 
             UUID owner = claimInfo.getOwner();
@@ -285,6 +237,31 @@ public class ClaimsMenu extends PaginatedMenu {
             return stack;
         }
 
+        private static List<Component> processLore(List<String> lore1, boolean canEdit, boolean bedrock, boolean hasPermission) { // fuck it we're doing this for now
+            Map<String, BiPredicate<Boolean, Boolean>> conditions = Map.of(
+                    "canEdit:bedrock:", (c, b) -> c && b,
+                    "canEdit:java:", (c, b) -> c && !b,
+                    "canEdit:", (c, b) -> c,
+                    "bedrock:", (c, b) -> b,
+                    "hasPerm:", (c, b) -> hasPermission,
+                    "noPerm:", (c, b) -> !hasPermission
+            );
+
+            return lore1.stream().map(str -> {
+                for (Map.Entry<String, BiPredicate<Boolean, Boolean>> entry : conditions.entrySet()) {
+                    String prefix = entry.getKey();
+                    BiPredicate<Boolean, Boolean> condition = entry.getValue();
+                    if (str.startsWith(prefix)) { // note to self: maybe the return is fucking up the loop something
+                        if (condition.test(canEdit, bedrock)) {
+                            return MiniMessage.miniMessage().deserialize(str.substring(prefix.length()));
+                        }
+                        return  null;
+                    }
+                }
+                return MiniMessage.miniMessage().deserialize(str);
+            }).filter(Objects::nonNull).toList();
+        }
+
         @Override
         public int getSlot() {
             return 0;
@@ -294,6 +271,10 @@ public class ClaimsMenu extends PaginatedMenu {
         public void onClick(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
             if (clickType.isRightClick() && canEdit) {
                 new ManageClaimMenu(claimInfo, ClaimsMenu.this).open(player);
+                return;
+            }
+            if (!hasPermission) {
+                MessageManager.sendMessage(player, "teleport.permission.no-permission-message");
                 return;
             }
             if (claimInfo.getSpawn() == null) {

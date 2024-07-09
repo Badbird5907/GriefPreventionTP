@@ -14,6 +14,8 @@ permissions:
     description: Permission for /gptp reload
   gptp.staff:
     description: Staff permissions
+  gptp.teleport:
+    description: Allows players to teleport to claims
   gptp.command.claims:
     description: Permission for /claims
   gptp.command.claimtp:

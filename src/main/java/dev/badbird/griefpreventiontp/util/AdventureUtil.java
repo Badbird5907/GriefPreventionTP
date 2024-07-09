@@ -49,10 +49,10 @@ public class AdventureUtil {
     @SuppressWarnings("deprecation")
     public static void setItemDisplayName(ItemStack item, Component component) {
         if (runningOnPaper)
-            item.editMeta(meta -> meta.displayName(component));
+            item.editMeta(meta -> meta.displayName(cleanItalics(component)));
         else {
             ItemMeta meta = item.getItemMeta();
-            meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(component));
+            meta.setDisplayName(LegacyComponentSerializer.legacySection().serialize(cleanItalics(component)));
             item.setItemMeta(meta);
         }
     }
@@ -60,7 +60,7 @@ public class AdventureUtil {
     @SuppressWarnings("deprecation")
     public static void setItemLore(ItemStack item, List<Component> component) {
         if (runningOnPaper)
-            item.editMeta(meta -> meta.lore(component));
+            item.editMeta(meta -> meta.lore(component.stream().map(AdventureUtil::cleanItalics).toList()));
         else {
             ItemMeta meta = item.getItemMeta();
             List<String> lore = new ArrayList<>();
@@ -71,37 +71,47 @@ public class AdventureUtil {
         }
     }
 
-    public static Component getComponentFromConfig(String menu, String key, String def, Object... placeholders) {
+    public static String getMiniMessageFromConfig(String menu, String key, String def, Object... placeholders) {
         String raw = MenuManager.getMenu(menu).getString(key, def);
-        if (placeholders != null && placeholders.length >= 2) {
-            // placeholders used like this: ["key1", "value1", "key2", "value2"]
-            for (int i = 0; i < placeholders.length; i += 2) {
-                String key1 = "{" + placeholders[i] + "}";
-                String value = placeholders[i + 1].toString();
-                raw = raw.replace(key1, value);
-            }
-        }
-        return cleanItalics(MiniMessage.miniMessage().deserialize(raw));
+        raw = replaceVariables(raw, placeholders);
+        return raw;
     }
+    public static Component getComponentFromConfig(String menu, String key, String def, Object... placeholders) {
+        return cleanItalics(MiniMessage.miniMessage().deserialize(
+                getMiniMessageFromConfig(menu, key, def, placeholders)
+        ));
+    }
+
 
     public static List<Component> getComponentListFromConfig(String menu, String key, Object... placeholders) {
         List<String> raw = MenuManager.getMenu(menu).getStringList(key);
         List<Component> components = new ArrayList<>();
         for (String s : raw) {
-            if (placeholders != null && placeholders.length >= 2) {
-                // placeholders used like this: ["key1", "value1", "key2", "value2"]
-                for (int i = 0; i < placeholders.length; i += 2) {
-                    String key1 = "{" + placeholders[i] + "}";
-                    String value = placeholders[i + 1].toString();
-                    s = s.replace(key1, value);
-                }
-            }
+            s = replaceVariables(s, placeholders);
             components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
         }
         return components;
     }
 
-    public static List<Component> getComponentListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
+    public static List<String> getMiniMessageListFromConfig(String menu, String key, Object... placeholders) {
+        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
+        raw.replaceAll(s -> replaceVariables(s, placeholders));
+        return raw;
+    }
+
+    private static String replaceVariables(String s, Object[] placeholders) {
+        if (placeholders != null && placeholders.length >= 2) {
+            // placeholders used like this: ["key1", "value1", "key2", "value2"]
+            for (int i = 0; i < placeholders.length; i += 2) {
+                String key1 = "{" + placeholders[i] + "}";
+                String value = placeholders[i + 1].toString();
+                s = s.replace(key1, value);
+            }
+        }
+        return s;
+    }
+
+    public static List<String> getMiniMessageListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
         List<String> raw = MenuManager.getMenu(menu).getStringList(key);
         if (placeholders != null && placeholders.length >= 2) {
             // placeholders used like this: ["key1", "value1", "key2", "value2"]
@@ -120,15 +130,14 @@ public class AdventureUtil {
                 }
             }
         }
-        List<Component> components = new ArrayList<>();
-        if (raw.isEmpty())
-            for (String s : defaults)
-                components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
-        else
-            for (String s : raw)
-                components.add(cleanItalics(MiniMessage.miniMessage().deserialize(s)));
-        return components;
+        if (raw.isEmpty()) return defaults;
+        else return raw;
     }
+
+    public static List<Component> getComponentListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
+        return getMiniMessageListFromConfigDef(menu, key, defaults, placeholders).stream().map(str -> cleanItalics(MiniMessage.miniMessage().deserialize(str))).toList();
+    }
+
     public static Component cleanItalics(Component in) {
         return Component.empty().decoration(TextDecoration.ITALIC, false).append(in);
     }
