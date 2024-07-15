@@ -104,7 +104,9 @@ commands: # Permissions required to use the commands, set to false to stop check
   rename: # gptp.command.rename
     permission:
       enabled: true
-  setspawn: # gptp.command.setspawn
+  setspawn: # /gptp setspawn | gptp.command.setspawn
+    alias:
+      enabled: true # Enable the root level alias (/setspawn)
     permission:
       enabled: true
   claimtp: # gptp.command.claimtp

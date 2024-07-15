@@ -120,12 +120,14 @@ public final class GriefPreventionTP extends JavaPlugin {
                 .register(new ClaimsCommand(),
                         new GPTPCommand(),
                         new RenameCommand(),
-                        new SetSpawnCommand(),
                         new TPCommand(),
                         new ManageClaimsCommand()
                 );
         if (getConfig().getBoolean("enable-public"))
             commander.register(new PublicCommand());
+        if (getConfig().getBoolean("commands.setspawn.alias.enabled", true)) {
+            commander.register(new SetSpawnCommand());
+        }
 
         // allowedIcons = getConfig().getStringList("icons").stream().map(Material::valueOf).toList();
         allowedIcons = new ArrayList<>();
