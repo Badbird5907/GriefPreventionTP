@@ -135,7 +135,7 @@ public class AdventureUtil {
     }
 
     public static List<Component> getComponentListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
-        return getMiniMessageListFromConfigDef(menu, key, defaults, placeholders).stream().map(str -> cleanItalics(MiniMessage.miniMessage().deserialize(str))).toList();
+        return new ArrayList<>(getMiniMessageListFromConfigDef(menu, key, defaults, placeholders).stream().map(str -> cleanItalics(MiniMessage.miniMessage().deserialize(str))).toList());
     }
 
     public static Component cleanItalics(Component in) {
