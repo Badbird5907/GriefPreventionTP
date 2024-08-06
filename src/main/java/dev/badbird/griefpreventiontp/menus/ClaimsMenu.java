@@ -129,7 +129,7 @@ public class ClaimsMenu extends PaginatedMenu {
             public ItemStack getItem(Player player) {
                 // return new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.close-button-type"))).name(CC.RED + "Close").build();
                 ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
-                Component name = AdventureUtil.getComponentFromConfig("", "menu.close-button.title", "<red>Close");
+                Component name = AdventureUtil.getComponentFromConfig("", "menu.close-button.name", "<red>Close");
                 AdventureUtil.setItemDisplayName(itemStack, name);
                 List<Component> lore = AdventureUtil.getComponentListFromConfig("", "menu.close-button.lore");
                 if (!lore.isEmpty())

@@ -103,7 +103,7 @@ public class ManageClaimMenu extends Menu {
             @Override
             public ItemStack getItem(Player player) {
                 ItemStack itemStack = new ItemStack(Material.valueOf(plugin.getConfig().getString("menu.close-button.type")));
-                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.close-button.title", "<red>Close");
+                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.close-button.name", "<red>Close");
                 AdventureUtil.setItemDisplayName(itemStack, name);
                 List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.close-button.lore");
                 if (!lore.isEmpty()) AdventureUtil.setItemLore(itemStack, lore);
