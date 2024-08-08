@@ -6,7 +6,7 @@ plugins {
     id("io.freefair.lombok") version "8.6"
 }
 group = "dev.badbird"
-version="3.2.3"
+version="3.3.0"
 
 val jarName = "GriefPreventionTP-${version}"
 

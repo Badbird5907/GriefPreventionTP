@@ -28,6 +28,9 @@ messages: # See https://docs.adventure.kyori.net/minimessage/format.html
     claim-renamed: '<green>Claim renamed to %1.'
     claim-deleted: '<red>Claim deleted.'
 teleport:
+  check-tp-location: # checks if the teleport location is safe (i.e not inside a block/in the air, etc...)
+    enabled: true
+    message: '<red>The teleport location is not safe!'
   permission: # gptp.teleport
     # see menus/claims.yml to edit the menu buttons
     enabled: false

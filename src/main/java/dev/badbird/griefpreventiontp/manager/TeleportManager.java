@@ -6,6 +6,7 @@ import net.badbird5907.blib.objects.tuple.Pair;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,6 +46,10 @@ public class TeleportManager implements Listener {
     }
 
     public void teleport(Player player, Location loc) {
+        if (GriefPreventionTP.getInstance().getConfig().getBoolean("teleport.check-tp-location.enabled", true) && !isSafeLocation(loc)) {
+            MessageManager.sendMessage(player, "teleport.check-tp-location.message");
+            return;
+        }
         if (!GriefPreventionTP.getInstance().getConfig().getBoolean("teleport.warmup.enabled")) {
             player.teleport(loc);
             return;
@@ -62,6 +67,15 @@ public class TeleportManager implements Listener {
         runnableMap.put(player.getUniqueId(), runnable);
         MessageManager.sendMessage(player, "messages.teleporting");
         runnable.runTaskTimer(GriefPreventionTP.getInstance(), 0, 20);
+    }
+
+    public boolean isSafeLocation(Location location) {
+        Block under = location.clone().subtract(0, 1, 0).getBlock();
+        return under.isSolid() && !under.isLiquid() && isBlockSafe(location) && isBlockSafe(location.clone().add(0, 1, 0));
+    }
+
+    private boolean isBlockSafe(Location location) {
+        return !location.getBlock().isSolid() && !location.getBlock().isLiquid();
     }
 
     public int getTPCost(Player player) {
