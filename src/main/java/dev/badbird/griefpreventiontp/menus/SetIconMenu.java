@@ -4,12 +4,14 @@ import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
 import dev.badbird.griefpreventiontp.manager.MenuManager;
 import dev.badbird.griefpreventiontp.api.IconWrapper;
+import dev.badbird.griefpreventiontp.manager.MessageManager;
 import dev.badbird.griefpreventiontp.util.AdventureUtil;
 import lombok.RequiredArgsConstructor;
 import net.badbird5907.blib.menu.buttons.Button;
 import net.badbird5907.blib.menu.buttons.impl.BackButton;
 import net.badbird5907.blib.menu.menu.Menu;
 import net.badbird5907.blib.menu.menu.PaginatedMenu;
+import net.badbird5907.blib.util.ItemBuilder;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,6 +44,14 @@ public class SetIconMenu extends PaginatedMenu {
     @Override
     public Button getCloseButton() {
         return new BackButton() {
+            @Override
+            public ItemStack getItem(Player player) {
+                ItemStack item = new ItemBuilder(Material.valueOf(plugin.getConfig().getString("menu.back-button.type"))).build();
+                Component component = MessageManager.getComponent("menu.back-button.name");
+                AdventureUtil.setItemDisplayName(item, component);
+                return item;
+            }
+
             @Override
             public void clicked(Player player, int slot, ClickType clickType, InventoryClickEvent event) {
                 if (previousMenu != null)

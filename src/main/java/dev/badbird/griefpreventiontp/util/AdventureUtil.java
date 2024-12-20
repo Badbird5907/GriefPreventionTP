@@ -9,6 +9,7 @@ import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -71,11 +72,17 @@ public class AdventureUtil {
         }
     }
 
+    private static FileConfiguration getCfg(String menu) {
+        if (menu.equals("config")) return GriefPreventionTP.getInstance().getConfig();
+        return MenuManager.getMenu(menu);
+    }
+
     public static String getMiniMessageFromConfig(String menu, String key, String def, Object... placeholders) {
-        String raw = MenuManager.getMenu(menu).getString(key, def);
+        String raw = getCfg(menu).getString(key, def);
         raw = replaceVariables(raw, placeholders);
         return raw;
     }
+
     public static Component getComponentFromConfig(String menu, String key, String def, Object... placeholders) {
         return cleanItalics(MiniMessage.miniMessage().deserialize(
                 getMiniMessageFromConfig(menu, key, def, placeholders)
@@ -84,7 +91,7 @@ public class AdventureUtil {
 
 
     public static List<Component> getComponentListFromConfig(String menu, String key, Object... placeholders) {
-        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
+        List<String> raw = getCfg(menu).getStringList(key);
         List<Component> components = new ArrayList<>();
         for (String s : raw) {
             s = replaceVariables(s, placeholders);
@@ -94,7 +101,7 @@ public class AdventureUtil {
     }
 
     public static List<String> getMiniMessageListFromConfig(String menu, String key, Object... placeholders) {
-        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
+        List<String> raw = getCfg(menu).getStringList(key);
         raw.replaceAll(s -> replaceVariables(s, placeholders));
         return raw;
     }
@@ -112,7 +119,7 @@ public class AdventureUtil {
     }
 
     public static List<String> getMiniMessageListFromConfigDef(String menu, String key, List<String> defaults, Object... placeholders) {
-        List<String> raw = MenuManager.getMenu(menu).getStringList(key);
+        List<String> raw = getCfg(menu).getStringList(key);
         if (placeholders != null && placeholders.length >= 2) {
             // placeholders used like this: ["key1", "value1", "key2", "value2"]
             for (int i = 0; i < placeholders.length; i += 2) {

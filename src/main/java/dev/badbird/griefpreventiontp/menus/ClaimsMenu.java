@@ -156,8 +156,8 @@ public class ClaimsMenu extends PaginatedMenu {
             public ItemStack getItem(Player player) {
                 Material material = Material.valueOf(plugin.getConfig().getString("menu.next-page.type"));
                 ItemStack item = new ItemStack(material);
-                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.next-page.name", "<green>Next Page");
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.next-page.lore", List.of(
+                Component name = AdventureUtil.getComponentFromConfig("config", "menu.next-page.name", "<green>Next Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("config", "menu.next-page.lore", List.of(
                         "<gray>Click to go to the next page."
                 ));
                 AdventureUtil.setItemDisplayName(item, name);
@@ -179,8 +179,8 @@ public class ClaimsMenu extends PaginatedMenu {
             public ItemStack getItem(Player player) {
                 Material material = Material.valueOf(plugin.getConfig().getString("menu.previous-page.type"));
                 ItemStack item = new ItemStack(material);
-                Component name = AdventureUtil.getComponentFromConfig("claims", "menu.previous-page.name", "<green>Previous Page");
-                List<Component> lore = AdventureUtil.getComponentListFromConfig("claims", "menu.previous-page.lore", List.of(
+                Component name = AdventureUtil.getComponentFromConfig("config", "menu.previous-page.name", "<green>Previous Page");
+                List<Component> lore = AdventureUtil.getComponentListFromConfig("config", "menu.previous-page.lore", List.of(
                         "<gray>Click to go to the previous page."
                 ));
                 AdventureUtil.setItemDisplayName(item, name);
