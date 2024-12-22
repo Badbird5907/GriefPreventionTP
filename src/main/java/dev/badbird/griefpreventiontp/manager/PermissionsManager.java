@@ -37,6 +37,9 @@ public class PermissionsManager {
     }
 
     public boolean canTeleportToClaim(UUID player, Claim c) {
-        return c.getOwnerID().equals(player) || c.hasExplicitPermission(player, ClaimPermission.Access) || c.hasExplicitPermission(player, ClaimPermission.Build);
+        return c.getOwnerID().equals(player) ||
+                c.hasExplicitPermission(player, ClaimPermission.Access) ||
+                c.hasExplicitPermission(player, ClaimPermission.Build) ||
+                c.hasExplicitPermission(player, ClaimPermission.Manage);
     }
 }

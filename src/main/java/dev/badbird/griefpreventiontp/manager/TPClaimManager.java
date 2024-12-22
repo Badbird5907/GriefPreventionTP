@@ -2,14 +2,18 @@ package dev.badbird.griefpreventiontp.manager;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.api.ClaimInfo;
+import lombok.Getter;
 import me.ryanhamshire.GriefPrevention.Claim;
 import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.badbird5907.blib.objects.tuple.Pair;
+import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.Tasks;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +31,7 @@ public class TPClaimManager {
     private boolean enableMaxPublic = false, enableVaultIntegration = false, enablePublicCost = false;
 
 
+    @Getter
     private Object vaultEconomy;
 
     public void init() {
@@ -82,6 +87,13 @@ public class TPClaimManager {
                 enableVaultIntegration = false;
                 return;
             }
+            RegisteredServiceProvider<Economy> registration = GriefPreventionTP.getInstance().getServer().getServicesManager().getRegistration(Economy.class);
+            if (registration == null) {
+                GriefPreventionTP.getInstance().getLogger().warning("vault-integration was enabled in the config, but no economy ");
+                enableVaultIntegration = false;
+                return;
+            }
+            vaultEconomy = registration.getProvider();
         }
         if (enableVaultIntegration && enablePublicCost) {
             Map<String, Object> map = GriefPreventionTP.getInstance().getConfig().getConfigurationSection("vault-integration.public-claim-cost.groups").getValues(false);
@@ -111,8 +123,6 @@ public class TPClaimManager {
                     return i1 < i2 ? 1 : -1;
                 }
             });
-
-            vaultEconomy = GriefPreventionTP.getInstance().getServer().getServicesManager().getRegistration(Economy.class).getProvider();
         }
 
 
@@ -262,6 +272,17 @@ public class TPClaimManager {
         return true;
     }
 
+    public boolean withdrawPlayer(Player player, int cost) {
+        if (GriefPreventionTP.getInstance().isUseVault() && vaultEconomy != null && cost > 0) {
+            if (!playerHasEnough(player, cost)) {
+                return false;
+            }
+            Economy economy = (Economy) vaultEconomy;
+            return economy.withdrawPlayer(player, cost).transactionSuccess();
+        }
+        return true;
+    }
+
     public void updateClaims(UUID owner) {
         PlayerData playerData = GriefPrevention.instance.dataStore.getPlayerData(owner);
         for (ClaimInfo claim : getClaims(owner)) {
@@ -270,9 +291,5 @@ public class TPClaimManager {
                 claim.setName("Unnamed (" + claim.getPlayerClaimCount() + ")");
             }
         }
-    }
-
-    public Object getVaultEconomy() {
-        return vaultEconomy;
     }
 }

@@ -296,8 +296,11 @@ public class ManageClaimMenu extends Menu {
                 if (claimInfo.isPublic()) {
                     cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(player);
                     if (cost > 0) {
-                        Economy economy = (Economy) GriefPreventionTP.getInstance().getClaimManager().getVaultEconomy();
-                        if (!player.hasPermission("gptp.bypass.public")) economy.withdrawPlayer(player, cost);
+                        boolean success = GriefPreventionTP.getInstance().getClaimManager().withdrawPlayer(player, cost);
+                        if (!success) {
+                            MessageManager.sendMessage(player, "messages.not-enough-money.public");
+                            return;
+                        }
                     }
                 }
                 claimInfo.setPublic(!claimInfo.isPublic());

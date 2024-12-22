@@ -32,10 +32,11 @@ public class TeleportRunnable extends BukkitRunnable {
             return;
         }
         if (countdown <= 0) {
-            if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost)) {
+            if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().withdrawPlayer(player, cost)) {
                 MessageManager.sendMessage(player, "messages.not-enough-money.tp");
                 return;
             }
+
             player.teleport(to);
             MessageManager.sendMessage(player, "messages.teleported");
             cancel();
