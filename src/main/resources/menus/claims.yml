@@ -19,8 +19,10 @@ claim:
     - '<gray>Owner: {owner}'
     - '<gray>ID: {id}'
     - '<gray>{x}, {y}, {z}'
+    # - '<gray>Cost: <gold>{cost}' # uncomment these if you are using vault integration
     - ''
-    - 'hasPerm:<gray>Click to teleport.' # check teleport.permission.enabled in config.yml
+    # - 'noMoney:<red>You do not have enough money to teleport!'
+    - 'canTp:<gray>Click to teleport.' # check teleport.permission.enabled in config.yml
     - 'noPerm:<red>No permission to teleport.' # remove this line to not show anything
     - 'canEdit:<gray>Right click to manage.'
 search:

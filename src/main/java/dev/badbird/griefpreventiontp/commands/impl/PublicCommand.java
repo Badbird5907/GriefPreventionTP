@@ -58,7 +58,7 @@ public class PublicCommand {
                 MessageManager.sendMessage(sender, "messages.max-public-exceeded");
                 return;
             } else if (canMakePublic == 2) {
-                MessageManager.sendMessage(sender, "messages.not-enough-money");
+                MessageManager.sendMessage(sender, "messages.not-enough-money.public");
                 return;
             }
             cost = GriefPreventionTP.getInstance().getClaimManager().getCostToMakePublic(sender.getPlayer());

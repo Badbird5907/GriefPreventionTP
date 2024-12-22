@@ -3,7 +3,6 @@ package dev.badbird.griefpreventiontp.manager;
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.object.TeleportRunnable;
 import net.badbird5907.blib.objects.tuple.Pair;
-import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -13,7 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -22,7 +23,6 @@ public class TeleportManager implements Listener {
     private List<Pair<String, Integer>> tpCost = new CopyOnWriteArrayList<>();
 
     private boolean enableTPCost = false;
-    private Object vaultEconomy;
 
     public TeleportManager(GriefPreventionTP plugin) {
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
@@ -41,7 +41,6 @@ public class TeleportManager implements Listener {
                 }
                 tpCost.add(new Pair<>(k, i));
             }
-            vaultEconomy = Objects.requireNonNull(GriefPreventionTP.getInstance().getServer().getServicesManager().getRegistration(Economy.class)).getProvider();
         }
     }
 
@@ -63,7 +62,12 @@ public class TeleportManager implements Listener {
             player.teleport(loc);
             return;
         }
-        TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation());
+        int cost = getTPCost(player);
+        if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost)) {
+            MessageManager.sendMessage(player, "messages.not-enough-money.tp");
+            return;
+        }
+        TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation(), cost);
         runnableMap.put(player.getUniqueId(), runnable);
         MessageManager.sendMessage(player, "messages.teleporting");
         runnable.runTaskTimer(GriefPreventionTP.getInstance(), 0, 20);
@@ -79,8 +83,8 @@ public class TeleportManager implements Listener {
     }
 
     public int getTPCost(Player player) {
-        if (!enableTPCost) return 0;
-        if (player.hasPermission("gptp.bypass.cost.tp")) return 0;
+        if (!GriefPreventionTP.getInstance().isUseVault() || !enableTPCost) return 0;
+        if (player.hasPermission("gptp.bypass.cost.tp") || player.hasPermission("gptp.bypass.cost")) return 0;
         Permission permission = GriefPreventionTP.getInstance().getVaultPermissions();
         for (Pair<String, Integer> pair : tpCost) {
             if (permission.playerInGroup(player, pair.getValue0())) {

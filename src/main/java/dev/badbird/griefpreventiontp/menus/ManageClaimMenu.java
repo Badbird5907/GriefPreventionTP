@@ -304,7 +304,7 @@ public class ManageClaimMenu extends Menu {
                 claimInfo.save();
             } else {
                 if (canMakePublic == 2) {
-                    MessageManager.sendMessage(player, "messages.not-enough-money");
+                    MessageManager.sendMessage(player, "messages.not-enough-money.public");
                     update(player);
                     return;
                 }

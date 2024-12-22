@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.object;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,17 +10,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.UUID;
 
+@RequiredArgsConstructor
 public class TeleportRunnable extends BukkitRunnable {
     private final UUID uuid;
     private final Location to, from;
+    private final int cost;
 
     private int countdown = GriefPreventionTP.getInstance().getConfig().getInt("teleport.warmup.seconds"); //TODO implement cooldowns
-
-    public TeleportRunnable(UUID uuid, Location to, Location from) {
-        this.uuid = uuid;
-        this.to = to;
-        this.from = from;
-    }
 
 
     @Override
@@ -35,6 +32,10 @@ public class TeleportRunnable extends BukkitRunnable {
             return;
         }
         if (countdown <= 0) {
+            if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost)) {
+                MessageManager.sendMessage(player, "messages.not-enough-money.tp");
+                return;
+            }
             player.teleport(to);
             MessageManager.sendMessage(player, "messages.teleported");
             cancel();
