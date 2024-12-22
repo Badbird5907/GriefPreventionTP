@@ -49,7 +49,16 @@ public class TeleportManager implements Listener {
             MessageManager.sendMessage(player, "teleport.check-tp-location.message");
             return;
         }
+        int cost = getTPCost(player);
+        if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost)) {
+            MessageManager.sendMessage(player, "messages.not-enough-money.tp");
+            return;
+        }
         if (!GriefPreventionTP.getInstance().getConfig().getBoolean("teleport.warmup.enabled")) {
+            if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().withdrawPlayer(player, cost)) {
+                MessageManager.sendMessage(player, "messages.not-enough-money.tp");
+                return;
+            }
             player.teleport(loc);
             return;
         }
@@ -60,11 +69,6 @@ public class TeleportManager implements Listener {
         if (player.hasPermission("gptp.bypass.warmup")) {
             MessageManager.sendMessage(player, "messages.teleported");
             player.teleport(loc);
-            return;
-        }
-        int cost = getTPCost(player);
-        if (cost > 0 && !GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost)) {
-            MessageManager.sendMessage(player, "messages.not-enough-money.tp");
             return;
         }
         TeleportRunnable runnable = new TeleportRunnable(player.getUniqueId(), loc, player.getLocation(), cost);
