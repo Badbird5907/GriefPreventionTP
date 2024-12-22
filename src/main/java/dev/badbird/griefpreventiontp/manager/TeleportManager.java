@@ -60,6 +60,7 @@ public class TeleportManager implements Listener {
                 return;
             }
             player.teleport(loc);
+            MessageManager.sendMessage(player, "messages.teleported");
             return;
         }
         if (runnableMap.containsKey(player.getUniqueId())) {
