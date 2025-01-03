@@ -6,7 +6,7 @@ plugins {
     id("io.freefair.lombok") version "8.6"
 }
 group = "dev.badbird"
-version="3.4.0"
+version="3.4.2"
 
 val jarName = "GriefPreventionTP-${version}"
 
@@ -15,7 +15,7 @@ repositories {
     mavenLocal()
     maven {
         name = "papermc-repo"
-        url = uri("https://papermc.io/repo/repository/maven-public/")
+        url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
         name = "sonatype"

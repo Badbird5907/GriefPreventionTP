@@ -49,24 +49,30 @@ enable-public: true
 max-public:
   enable: false
   rules:
-    default: -1
-    vip: -1
     mvp: -1
+    vip: -1
+    default: -1
 vault-integration:
   enabled: true
   public-claim-cost:
     enabled: false
     verify: true # Asks the player to confirm when using the command. check messages above
     groups:
-      default: 100
-      vip: 50
       mvp: 10
+      vip: 50
+      default: 100
   tp-cost: # Cost to teleport to a claim
-    enabled: false
+    enabled: false # if this is enabled, and cost-private is disabled, this cost will be in effect for all claims.
     groups:
-      default: 100
-      vip: 50
       mvp: 10
+      vip: 50
+      default: 100
+    cost-private:
+      enabled: false # if true, private tp costs override the main tp costs, treating the above configuration as public tp costs.
+      groups:
+        mvp: 50
+        vip: 100
+        default: 200
 permissions:
   allow-manager: true # Weather to allow players with manager permission to manage claims
 

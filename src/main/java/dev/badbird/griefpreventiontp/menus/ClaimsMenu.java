@@ -207,7 +207,7 @@ public class ClaimsMenu extends PaginatedMenu {
             IconWrapper setIcon = claimInfo.getIcon();
             ItemStack stack = setIcon != null ? setIcon.getItemStack() : new ItemStack(Material.PLAYER_HEAD);
             String name = AdventureUtil.getMiniMessageFromConfig("claims", "claim.name", "<green>{name}", "name", claimInfo.getName());
-            int cost = GriefPreventionTP.getInstance().getTeleportManager().getTPCost(player);
+            int cost = GriefPreventionTP.getInstance().getTeleportManager().getTPCost(player, claimInfo.isPublic());
             boolean hasMoney = cost <= 0 || GriefPreventionTP.getInstance().getClaimManager().playerHasEnough(player, cost);
             List<String> lore1 =
                     new ArrayList<>(
@@ -289,7 +289,7 @@ public class ClaimsMenu extends PaginatedMenu {
                 MessageManager.sendMessage(player, "messages.no-spawn-set");
                 return;
             }
-            GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getSpawn().getLocation());
+            GriefPreventionTP.getInstance().getTeleportManager().teleport(player, claimInfo.getSpawn().getLocation(), claimInfo.isPublic());
         }
     }
 

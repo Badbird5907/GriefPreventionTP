@@ -54,6 +54,6 @@ public class TPCommand {
             return;
         }
 
-        GriefPreventionTP.getInstance().getTeleportManager().teleport(sender, claim.getSpawn().getLocation());
+        GriefPreventionTP.getInstance().getTeleportManager().teleport(sender, claim.getSpawn().getLocation(), claim.isPublic());
     }
 }
