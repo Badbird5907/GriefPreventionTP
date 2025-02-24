@@ -38,7 +38,7 @@ dependencies {
     compileOnly("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
 
     implementation("net.badbird5907:bLib-Bukkit:2.1.11-REL")
-    implementation("net.octopvp:Commander-Bukkit:0.0.11-REL")
+    implementation("net.octopvp:Commander-Bukkit:0.0.12-REL")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.3")
 }
