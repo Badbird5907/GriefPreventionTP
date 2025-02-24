@@ -25,6 +25,9 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.milkbowl.vault.permission.Permission;
 import net.octopvp.commander.Commander;
 import net.octopvp.commander.bukkit.BukkitCommander;
+import net.octopvp.commander.bukkit.BukkitPlatform;
+import net.octopvp.commander.config.CommanderConfig;
+import net.octopvp.commander.lang.DefaultResponseHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.conversations.ConversationFactory;
@@ -37,6 +40,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 @Getter
@@ -108,7 +112,8 @@ public final class GriefPreventionTP extends JavaPlugin {
             });
         }
 
-        commander = BukkitCommander.getCommander(this)
+        CommanderConfig commanderConfig = new CommanderConfig.Builder().setLocale(Locale.ENGLISH).setResponseHandler(new DefaultResponseHandler(Locale.ENGLISH)).build();
+        commander = BukkitCommander.getCommander(new BukkitPlatform(this), commanderConfig)
                 .registerProvider(PlayerData.class, new PlayerDataProvider())
                 .registerDependency(GriefPreventionTP.class, this)
                 .registerDependency(TPClaimManager.class, claimManager)
