@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -11,6 +12,7 @@ import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -97,9 +99,24 @@ public class ClaimInfo {
 
     public static Location getDefaultLocation(Claim claim) {
         Location l = claim.getGreaterBoundaryCorner().clone().add(claim.getLesserBoundaryCorner().clone()).multiply(0.5);
-        //set Y value to the highest block
-        l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
-        return l;
+        // set Y value to the highest block
+        World w = l.getWorld();
+        Location top = l.clone();
+        top.setY(w.getHighestBlockYAt(l) + 1.5);
+        if (w.getEnvironment() == World.Environment.NETHER) { // handle bedrock roof
+            // recursively loop down until we find a safe location
+            Location loc = top.clone();
+            while (loc.getBlockY() > 1 && !TeleportManager.isSafeLocation(loc)) {
+                loc.setY(loc.getBlockY() - 2);
+            }
+            if (loc.getBlockY() <= 1) {
+                Logger.warn("Could not find safe location for claim " + claim.getID() + " in nether, using top of roof");
+                return top;
+            }
+            return loc;
+        } else {
+            return top;
+        }
     }
 
     public IconWrapper getIcon() {
