@@ -6,7 +6,7 @@ plugins {
     id("io.freefair.lombok") version "9.5.0"
 }
 group = "dev.badbird"
-version="3.5.0"
+version="3.6.0"
 
 val jarName = "GriefPreventionTP-${version}"
 
@@ -61,8 +61,10 @@ tasks.withType<JavaCompile>().configureEach {
     }
 }
 tasks.withType<ProcessResources> {
+    val props = mapOf("version" to version)
+    inputs.properties(props)
     filesMatching("plugin.yml") {
-        expand(project.properties)
+        expand(props)
     }
 }
 tasks.create<Copy>("copyPlugin") {
