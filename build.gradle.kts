@@ -2,11 +2,11 @@ plugins {
     java
     `maven-publish`
     signing
-    id("io.github.goooler.shadow") version "8.1.8"
-    id("io.freefair.lombok") version "8.6"
+    id("com.gradleup.shadow") version "9.4.3"
+    id("io.freefair.lombok") version "9.5.0"
 }
 group = "dev.badbird"
-version="3.4.3"
+version="3.5.0"
 
 val jarName = "GriefPreventionTP-${version}"
 
@@ -31,19 +31,21 @@ repositories {
     maven("https://repo.octomc.dev/public/")
 }
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
     compileOnly("com.github.TechFortress:GriefPrevention:16.18.4")
 
-    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7") {
+        exclude(group = "org.bukkit", module = "bukkit")
+    }
     compileOnly("org.geysermc.floodgate:api:2.2.0-SNAPSHOT")
 
-    implementation("net.badbird5907:bLib-Bukkit:2.1.11-REL")
+    implementation("net.badbird5907:bLib-Bukkit:2.2.0-REL")
     implementation("net.octopvp:Commander-Bukkit:0.0.12-REL")
     implementation("net.kyori:adventure-text-minimessage:4.17.0")
     implementation("net.kyori:adventure-platform-bukkit:4.3.3")
 }
 
-val targetJavaVersion = 21
+val targetJavaVersion = 25
 java {
     val javaVersion = JavaVersion.toVersion(targetJavaVersion)
     sourceCompatibility = javaVersion
@@ -86,6 +88,7 @@ tasks {
 
         relocate("net.badbird5907.blib", "dev.badbird.griefpreventiontp.relocate.blib")
         relocate("net.octopvp.commander", "dev.badbird.griefpreventiontp.relocate.commander")
+        relocate("com.cryptomorin.xseries", "dev.badbird.griefpreventiontp.relocate.xseries")
 
         exclude("*.txt")
         exclude("*.md")
