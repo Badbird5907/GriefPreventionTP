@@ -84,12 +84,12 @@ public class TeleportManager implements Listener {
         runnable.runTaskTimer(GriefPreventionTP.getInstance(), 0, 20);
     }
 
-    public boolean isSafeLocation(Location location) {
+    public static boolean isSafeLocation(Location location) {
         Block under = location.clone().subtract(0, 1, 0).getBlock();
         return under.getType().isSolid() && !under.isLiquid() && isBlockSafe(location) && isBlockSafe(location.clone().add(0, 1, 0));
     }
 
-    private boolean isBlockSafe(Location location) {
+    private static boolean isBlockSafe(Location location) {
         return !location.getBlock().getType().isSolid() && !location.getBlock().isLiquid();
     }
 

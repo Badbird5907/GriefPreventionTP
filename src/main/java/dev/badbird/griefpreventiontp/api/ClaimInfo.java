@@ -2,6 +2,7 @@ package dev.badbird.griefpreventiontp.api;
 
 import dev.badbird.griefpreventiontp.GriefPreventionTP;
 import dev.badbird.griefpreventiontp.manager.MessageManager;
+import dev.badbird.griefpreventiontp.manager.TeleportManager;
 import lombok.Getter;
 import lombok.Setter;
 import me.ryanhamshire.GriefPrevention.Claim;
@@ -10,7 +11,10 @@ import net.badbird5907.blib.util.Logger;
 import net.badbird5907.blib.util.StoredLocation;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -97,9 +101,53 @@ public class ClaimInfo {
 
     public static Location getDefaultLocation(Claim claim) {
         Location l = claim.getGreaterBoundaryCorner().clone().add(claim.getLesserBoundaryCorner().clone()).multiply(0.5);
-        //set Y value to the highest block
+        
+        // Handle Nether dimensions specially to avoid spawning on the bedrock ceiling
+        if (l.getWorld().getEnvironment() == World.Environment.NETHER) {
+            // Start from Y=120 (below bedrock ceiling) and search downward for a safe spawn
+            l.setY(120);
+            Location safeLoc = findSafeNetherLocation(l);
+            if (safeLoc != null) {
+                return safeLoc;
+            }
+            // Fallback to a reasonable height if no safe location found
+            l.setY(64);
+            return l;
+        }
+        
+        // For Overworld and End, use the highest block
         l.setY(l.getWorld().getHighestBlockYAt(l) + 1.5);
         return l;
+    }
+    
+    /**
+     * Finds a safe spawn location in the Nether by searching downward
+     * @param start The starting location to search from
+     * @return A safe location with solid ground and air above, or null if none found
+     */
+    private static Location findSafeNetherLocation(Location start) {
+        World world = start.getWorld();
+        int x = start.getBlockX();
+        int z = start.getBlockZ();
+        
+        // Search downward from starting Y to bedrock floor (Y=5)
+        for (int y = start.getBlockY(); y > 5; y--) {
+            Block block = world.getBlockAt(x, y, z);
+            Block above1 = world.getBlockAt(x, y + 1, z);
+            Block above2 = world.getBlockAt(x, y + 2, z);
+            
+            // Check if this is a safe spawn: solid block with 2 air blocks above
+            if (block.getType().isSolid() && 
+                !block.getType().equals(Material.LAVA) &&
+                (above1.getType().isAir() || above1.getType().equals(Material.CAVE_AIR)) &&
+                (above2.getType().isAir() || above2.getType().equals(Material.CAVE_AIR))) {
+                
+                Location safeLoc = new Location(world, x + 0.5, y + 1.5, z + 0.5);
+                return safeLoc;
+            }
+        }
+        
+        return null;
     }
 
     public IconWrapper getIcon() {
