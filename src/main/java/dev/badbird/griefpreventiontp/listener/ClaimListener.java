@@ -46,6 +46,9 @@ public class ClaimListener implements Listener {
     @EventHandler
     public void onClaimTransfer(ClaimTransferEvent event) {
         ClaimInfo claimInfo = GriefPreventionTP.getInstance().getClaimManager().fromClaim(event.getClaim());
+        if (event.getNewOwner() == null) {
+            return;
+        }
         claimInfo.setOwner(event.getNewOwner());
         claimInfo.save();
         GriefPreventionTP.getInstance().getClaimManager().updateClaims(claimInfo.getOwner());

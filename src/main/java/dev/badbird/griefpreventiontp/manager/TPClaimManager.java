@@ -11,6 +11,7 @@ import net.badbird5907.blib.objects.tuple.Pair;
 import net.badbird5907.blib.util.Tasks;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -107,7 +108,21 @@ public class TPClaimManager {
             if (claim.isPublic()) {
                 publicClaims.add(claim);
             }
-            claims.computeIfAbsent(claim.getOwner(), k -> new CopyOnWriteArrayList<>()).add(claim);
+            UUID owner = claim.getOwner();
+            if (owner == null) {
+                if (claim.getOwnerName() != null) {
+                    GriefPreventionTP.getInstance().getLogger().warning("claim owner was null for " + claim.getOwnerName());
+                    OfflinePlayer op = GriefPreventionTP.getInstance().getServer().getOfflinePlayer(claim.getOwnerName());
+                    if (op.hasPlayedBefore()) {
+                        owner = op.getUniqueId();
+                        claim.setOwner(owner);
+                        GriefPreventionTP.getInstance().getLogger().warning(" -> This has been automatically fixed: " + owner);
+                    }
+                } else {
+                    GriefPreventionTP.getInstance().getLogger().warning("claim owner was null for " + claim.getClaimID());
+                }
+            }
+            claims.computeIfAbsent(owner, k -> new CopyOnWriteArrayList<>()).add(claim);
         }
     }
 
